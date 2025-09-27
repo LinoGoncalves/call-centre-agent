@@ -279,13 +279,26 @@ def display_sentiment_analysis(result: EnhancedClassificationResult):
     sentiment_class = get_sentiment_color_class(result.sentiment_label)
     priority_class = get_priority_badge_class(result.priority_level)
     
+    # Clean the sentiment reasoning by removing any HTML tags and unwanted prefixes
+    import re
+    clean_reasoning = result.sentiment_reasoning
+    
+    # Remove HTML tags
+    clean_reasoning = re.sub(r'<[^>]*>', '', clean_reasoning)
+    
+    # Remove common prefixes that the LLM might add
+    clean_reasoning = re.sub(r'^(Reasoning:\s*|reasoning:\s*)', '', clean_reasoning, flags=re.IGNORECASE)
+    
+    # Clean up any extra whitespace
+    clean_reasoning = clean_reasoning.strip()
+    
     st.markdown(f"""
     <div class="sentiment-box {sentiment_class}">
         <h4><span class="sentiment-emoji">{sentiment_emoji}</span>Sentiment Analysis</h4>
         <p><strong>Sentiment:</strong> {result.sentiment_label} (Score: {result.sentiment_score:+.1f})</p>
         <p><strong>Priority Level:</strong> <span class="{priority_class} priority-badge">{result.priority_level.replace('_', ' ')}</span></p>
         {f'<div class="escalation-required">⚠️ IMMEDIATE ESCALATION REQUIRED</div>' if result.escalation_required else ''}
-        <p><strong>Reasoning:</strong> {result.sentiment_reasoning}</p>
+        <p><strong>Reasoning:</strong> {clean_reasoning}</p>
     </div>
     """, unsafe_allow_html=True)
 
