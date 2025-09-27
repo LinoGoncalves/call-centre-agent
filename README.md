@@ -39,9 +39,9 @@ copy .env.example .env
 2. Create API key
 3. Add to `.env` file: `GOOGLE_API_KEY=your_key_here`
 
-### 3. **Launch Enhanced Demo**
+### 3. **Launch Demo**
 ```bash
-python launch_enhanced_demo.py
+python launch_demo.py
 ```
 
 **Demo opens at:** http://localhost:8502
@@ -103,8 +103,8 @@ call-centre-agent/
 │   ├── src/models/                 # Traditional ML pipeline
 │   └── src/data/                   # Data generation
 ├── 🎨 Demo Interface  
-│   ├── enhanced_streamlit_demo.py  # Enhanced demo UI
-│   ├── launch_enhanced_demo.py     # Demo launcher
+│   ├── streamlit_demo.py           # Professional demo UI
+│   ├── launch_demo.py              # Demo launcher
 │   └── setup_env.py               # Interactive setup
 ├── 🔧 Configuration
 │   ├── .env.example               # Environment template
