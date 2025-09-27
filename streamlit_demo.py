@@ -279,18 +279,41 @@ def display_sentiment_analysis(result: EnhancedClassificationResult):
     sentiment_class = get_sentiment_color_class(result.sentiment_label)
     priority_class = get_priority_badge_class(result.priority_level)
     
-    # Clean the sentiment reasoning by removing any HTML tags and unwanted prefixes
+    # Ultra-robust HTML cleaning for sentiment reasoning
     import re
+    import html
+    
     clean_reasoning = result.sentiment_reasoning
     
-    # Remove HTML tags
-    clean_reasoning = re.sub(r'<[^>]*>', '', clean_reasoning)
+    # Debug: Show what we're receiving (remove this in production)
+    if st.session_state.get('debug_html', False):
+        st.text(f"DEBUG - Raw reasoning: {repr(clean_reasoning)}")
     
-    # Remove common prefixes that the LLM might add
-    clean_reasoning = re.sub(r'^(Reasoning:\s*|reasoning:\s*)', '', clean_reasoning, flags=re.IGNORECASE)
+    # Step 1: Decode HTML entities
+    clean_reasoning = html.unescape(clean_reasoning)
     
-    # Clean up any extra whitespace
-    clean_reasoning = clean_reasoning.strip()
+    # Step 2: Remove ALL HTML tags with multiple patterns
+    clean_reasoning = re.sub(r'<[^>]*?>', '', clean_reasoning)  # Standard tags
+    clean_reasoning = re.sub(r'<.*?>', '', clean_reasoning)     # Greedy match
+    clean_reasoning = re.sub(r'<[^<>]*>', '', clean_reasoning)  # Alternative pattern
+    
+    # Step 3: Remove markdown-style formatting that might leak through
+    clean_reasoning = re.sub(r'\*\*(.*?)\*\*', r'\1', clean_reasoning)  # Bold
+    clean_reasoning = re.sub(r'\*(.*?)\*', r'\1', clean_reasoning)      # Italic
+    
+    # Step 4: Remove common LLM prefixes
+    clean_reasoning = re.sub(r'^(Reasoning:\s*|reasoning:\s*|Analysis:\s*|analysis:\s*)', '', clean_reasoning, flags=re.IGNORECASE)
+    
+    # Step 5: Clean up whitespace and normalize
+    clean_reasoning = ' '.join(clean_reasoning.split())
+    
+    # Step 6: Fallback - if still contains < or >, do aggressive cleaning
+    if '<' in clean_reasoning or '>' in clean_reasoning:
+        clean_reasoning = re.sub(r'[<>]', '', clean_reasoning)
+    
+    # Final safety check - if empty after cleaning, provide fallback
+    if not clean_reasoning.strip():
+        clean_reasoning = "Sentiment analysis completed successfully."
     
     st.markdown(f"""
     <div class="sentiment-box {sentiment_class}">
@@ -391,6 +414,13 @@ def main():
             2. Get your key from: [Google AI Studio](https://aistudio.google.com/)
             3. Refresh this page
             """)
+        
+        st.markdown("---")
+        
+        # Debug settings (temporary)
+        st.subheader("🐛 Debug")
+        debug_html = st.checkbox("Show raw HTML from API", value=False, help="Enable to see raw API responses")
+        st.session_state.debug_html = debug_html
         
         st.markdown("---")
         

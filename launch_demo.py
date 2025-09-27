@@ -19,7 +19,7 @@ load_dotenv()
 
 def launch_demo():
     """Launch the Streamlit demo."""
-    print("🤖 Launching Telkom Call Centre Agent Demo")
+    print(" Launching Telkom Call Centre Agent Demo")
     print("   🌟 Features: Google Gemini LLM + AI Reasoning + 0-100% Ensemble Control")
     print("   📊 Advanced classification with explainable AI and Telkom branding")
     print("-" * 70)

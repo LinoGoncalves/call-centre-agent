@@ -214,6 +214,27 @@ RESPONSE FORMAT (JSON):
             sentiment_label = result.get('sentiment_label', 'NEUTRAL')
             sentiment_reasoning = result.get('sentiment_reasoning', 'No sentiment analysis provided')
             
+            # Clean HTML from sentiment reasoning at the source
+            import re
+            import html
+            
+            # Decode HTML entities
+            sentiment_reasoning = html.unescape(sentiment_reasoning)
+            
+            # Remove all HTML tags
+            sentiment_reasoning = re.sub(r'<[^>]*?>', '', sentiment_reasoning)
+            sentiment_reasoning = re.sub(r'<.*?>', '', sentiment_reasoning)
+            
+            # Remove common prefixes
+            sentiment_reasoning = re.sub(r'^(Reasoning:\s*|reasoning:\s*|Analysis:\s*)', '', sentiment_reasoning, flags=re.IGNORECASE)
+            
+            # Clean whitespace
+            sentiment_reasoning = ' '.join(sentiment_reasoning.split())
+            
+            # Fallback if empty
+            if not sentiment_reasoning.strip():
+                sentiment_reasoning = 'Sentiment analysis completed successfully.'
+            
             # Validate category
             if category not in self.categories:
                 category = 'OTHER'
