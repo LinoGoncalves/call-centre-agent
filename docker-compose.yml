@@ -1,0 +1,91 @@
+# Docker Compose for Local Development and Testing
+version: '3.8'
+
+services:
+  # Main API service
+  ticket-classifier-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: telkom-ticket-classifier
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - LOG_LEVEL=info
+      - MODEL_PATH=/app/models/ticket_classifier_model.pkl
+    volumes:
+      # Mount models directory for development
+      - ./models:/app/models:ro
+      - ./data:/app/data:ro
+      # Mount logs directory
+      - ./logs:/app/logs
+    networks:
+      - ticket-classifier-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Redis for caching (optional enhancement)
+  redis-cache:
+    image: redis:7-alpine
+    container_name: telkom-ticket-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - ticket-classifier-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+
+  # Monitoring with Prometheus (optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: telkom-ticket-prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - ticket-classifier-network
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+  # Grafana for visualization (optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: telkom-ticket-grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - ticket-classifier-network
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+    restart: unless-stopped
+
+networks:
+  ticket-classifier-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local

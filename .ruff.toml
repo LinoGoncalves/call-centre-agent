@@ -1,0 +1,65 @@
+# Ruff configuration for development phase
+target-version = "py313"
+line-length = 88
+indent-width = 4
+
+# Exclude markdown files from linting
+extend-exclude = [
+    "*.md", 
+    "**/*.md",
+    "telkom-call-centre/**/*.md"
+]
+
+[lint]
+# Development-phase ignore rules to reduce noise
+ignore = [
+    # Core style issues that don't affect functionality
+    "E501",  # line too long (handled by formatter)
+    
+    # F-string and import issues (common in development)
+    "F541",  # f-string without any placeholders
+    "F401",  # imported but unused
+    "F841",  # local variable assigned but never used
+    "F811",  # redefinition of unused variable (notebook imports)
+    
+    # Security warnings (acceptable for mock data generation)
+    "S104",  # possible binding to all interfaces  
+    "S301",  # pickle usage (needed for model serialization)
+    "S101",  # Use of assert (acceptable in test files)
+    "S311",  # Standard pseudo-random generators (acceptable for mock data)
+    
+    # Exception handling (can be addressed in production)
+    "B904",  # Within except clause, raise with from
+    
+    # Whitespace and formatting (can be auto-fixed later)
+    "W291",  # trailing whitespace
+    "W292",  # no newline at end of file
+    "W293",  # blank line contains whitespace
+    
+    # Import sorting (can be handled by formatter)
+    "I001",  # import block is un-sorted
+    
+    # Code style (can be addressed later)
+    "C420",  # Unnecessary dict comprehension
+    
+    # Type annotation modernization (can be ignored during development)  
+    "UP006", # Use list instead of List for type annotation
+    "UP007", # Use X | None instead of Optional[X]
+    "UP035", # Use dict/list instead of Dict/List
+    "UP045", # Use X | None instead of Optional[X] (union syntax)
+]
+
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # Pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+    "S",  # bandit security
+    "PT", # flake8-pytest-style
+]
+
+[format]
+quote-style = "double"

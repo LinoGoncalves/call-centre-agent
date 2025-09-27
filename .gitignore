@@ -1,0 +1,44 @@
+# 🔐 Security - Never commit sensitive files
+.env
+*.env
+.env.local
+.env.production
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# 🤖 AI/ML Models and Data
+models/*.pkl
+data/*.csv
+*.h5
+*.joblib
+
+# 📊 Logs and temporary files
+*.log
+logs/
+temp/
+tmp/
+
+# 📓 Jupyter Notebook
+.ipynb_checkpoints
+
+# 🔧 IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 🖥️ OS generated files
+.DS_Store
+Thumbs.db
+
+# 🎯 Streamlit
+.streamlit/
