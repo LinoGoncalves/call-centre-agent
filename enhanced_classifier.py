@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class EnhancedClassificationResult:
-    """Enhanced classification result with reasoning."""
+    """Enhanced classification result with reasoning and sentiment analysis."""
     predicted_category: str
     confidence: float
     reasoning: str
@@ -58,6 +58,12 @@ class EnhancedClassificationResult:
     all_probabilities: Dict[str, float]
     processing_time_ms: float
     is_other_category: bool = False
+    # New sentiment analysis fields
+    sentiment_score: float = 0.0
+    sentiment_label: str = "NEUTRAL"
+    priority_level: str = "P3_STANDARD"
+    escalation_required: bool = False
+    sentiment_reasoning: str = ""
 
 class GeminiEnhancedClassifier:
     """Enhanced ticket classifier using Google Gemini LLM."""
@@ -88,6 +94,29 @@ class GeminiEnhancedClassifier:
         self.categories = ["BILLING", "TECHNICAL", "SALES", "COMPLAINTS", "NETWORK", "ACCOUNT", "OTHER"]
         self.base_categories = ["BILLING", "TECHNICAL", "SALES", "COMPLAINTS", "NETWORK", "ACCOUNT"]
         
+        # Sentiment analysis configuration
+        self.sentiment_categories = {
+            "POSITIVE": 0.7,      # Happy, satisfied customers
+            "NEUTRAL": 0.0,       # Standard inquiries  
+            "NEGATIVE": -0.7,     # Frustrated, angry customers
+            "CRITICAL": -1.0      # Extremely upset, escalation required
+        }
+        
+        # Priority mapping based on category + sentiment
+        self.priority_map = {
+            ("COMPLAINTS", "CRITICAL"): "P0_IMMEDIATE",
+            ("COMPLAINTS", "NEGATIVE"): "P1_HIGH",
+            ("BILLING", "CRITICAL"): "P1_HIGH", 
+            ("BILLING", "NEGATIVE"): "P2_MEDIUM",
+            ("TECHNICAL", "CRITICAL"): "P1_HIGH",
+            ("TECHNICAL", "NEGATIVE"): "P2_MEDIUM",
+            # Default priorities
+            ("ANY", "CRITICAL"): "P1_HIGH",
+            ("ANY", "NEGATIVE"): "P2_MEDIUM", 
+            ("ANY", "NEUTRAL"): "P3_STANDARD",
+            ("ANY", "POSITIVE"): "P3_STANDARD"
+        }
+        
         # Confidence thresholds from environment or defaults
         self.other_threshold = float(os.getenv('OTHER_CATEGORY_THRESHOLD', 0.6))
         self.ensemble_weight = float(os.getenv('ENSEMBLE_WEIGHT', 0.7))
@@ -113,11 +142,11 @@ class GeminiEnhancedClassifier:
             raise
     
     def _create_gemini_prompt(self, ticket_text: str) -> str:
-        """Create optimized prompt for Gemini classification."""
+        """Create optimized prompt for Gemini classification with sentiment analysis."""
         prompt = f"""
 You are an expert customer service ticket classifier for Telkom, a South African telecommunications company.
 
-TASK: Classify the customer ticket and provide detailed reasoning.
+TASK: Classify the customer ticket, analyze sentiment, and provide detailed reasoning.
 
 CATEGORIES:
 1. BILLING - Bills, payments, charges, account balances, billing disputes
@@ -128,27 +157,41 @@ CATEGORIES:
 6. ACCOUNT - Profile updates, password resets, personal information changes
 7. OTHER - Tickets that don't clearly fit into the above categories
 
+SENTIMENT LEVELS:
+1. POSITIVE (0.7) - Happy, satisfied, appreciative customers
+2. NEUTRAL (0.0) - Standard inquiries, factual requests
+3. NEGATIVE (-0.7) - Frustrated, dissatisfied, annoyed customers
+4. CRITICAL (-1.0) - Extremely upset, angry, threatening to leave
+
 CUSTOMER TICKET:
 "{ticket_text}"
 
 INSTRUCTIONS:
 1. Classify into ONE category from the list above
-2. Provide a confidence score (0.0 to 1.0)
-3. Give detailed reasoning explaining your classification decision
-4. Consider South African telecommunications context
-5. If the ticket doesn't clearly fit any category (confidence < 0.6), classify as OTHER
+2. Analyze customer sentiment and assign sentiment score
+3. Provide confidence score for category classification (0.0 to 1.0)
+4. Give detailed reasoning for both category and sentiment decisions
+5. Consider South African telecommunications context
+6. If ticket doesn't clearly fit any category (confidence < 0.6), classify as OTHER
 
 RESPONSE FORMAT (JSON):
 {{
     "category": "CATEGORY_NAME",
     "confidence": 0.95,
-    "reasoning": "Detailed explanation of why this ticket belongs to this category, mentioning specific keywords or context that influenced the decision."
+    "reasoning": "Detailed explanation of category classification decision.",
+    "sentiment_score": -0.7,
+    "sentiment_label": "NEGATIVE",
+    "sentiment_reasoning": "Customer shows frustration with repeated use of words like 'terrible', 'fed up', indicating negative emotional state."
 }}
 """
         return prompt
     
-    def _query_gemini(self, ticket_text: str) -> Tuple[str, float, str]:
-        """Query Gemini for classification with error handling."""
+    def _query_gemini(self, ticket_text: str) -> Tuple[str, float, str, float, str, str]:
+        """Query Gemini for classification and sentiment analysis with error handling.
+        
+        Returns:
+            Tuple of (category, confidence, reasoning, sentiment_score, sentiment_label, sentiment_reasoning)
+        """
         try:
             prompt = self._create_gemini_prompt(ticket_text)
             response = self.model.generate_content(prompt)
@@ -166,20 +209,31 @@ RESPONSE FORMAT (JSON):
             confidence = float(result.get('confidence', 0.0))
             reasoning = result.get('reasoning', 'No reasoning provided')
             
+            # Parse sentiment data
+            sentiment_score = float(result.get('sentiment_score', 0.0))
+            sentiment_label = result.get('sentiment_label', 'NEUTRAL')
+            sentiment_reasoning = result.get('sentiment_reasoning', 'No sentiment analysis provided')
+            
             # Validate category
             if category not in self.categories:
                 category = 'OTHER'
                 confidence = 0.3
                 reasoning = f"Original category '{result.get('category')}' not recognized. Classified as OTHER."
             
-            return category, confidence, reasoning
+            # Validate sentiment label
+            if sentiment_label not in self.sentiment_categories:
+                sentiment_label = 'NEUTRAL'
+                sentiment_score = 0.0
+                sentiment_reasoning = f"Original sentiment '{result.get('sentiment_label')}' not recognized. Set to NEUTRAL."
+            
+            return category, confidence, reasoning, sentiment_score, sentiment_label, sentiment_reasoning
             
         except json.JSONDecodeError as e:
             logger.warning(f"Failed to parse Gemini response as JSON: {e}")
-            return "OTHER", 0.2, f"Failed to parse LLM response: {str(e)}"
+            return "OTHER", 0.2, f"Failed to parse LLM response: {str(e)}", 0.0, "NEUTRAL", "Error in sentiment analysis"
         except Exception as e:
             logger.error(f"Gemini API error: {e}")
-            return "OTHER", 0.1, f"API error occurred: {str(e)}"
+            return "OTHER", 0.1, f"API error occurred: {str(e)}", 0.0, "NEUTRAL", "Error in sentiment analysis"
     
     def _ensemble_prediction(self, traditional_pred: str, traditional_conf: float, 
                            gemini_pred: str, gemini_conf: float) -> Tuple[str, float]:
@@ -226,8 +280,35 @@ RESPONSE FORMAT (JSON):
                               (1 - self.ensemble_weight) * traditional_conf)
             return traditional_pred, final_confidence
     
+    def _calculate_priority_level(self, category: str, sentiment_label: str) -> str:
+        """Calculate priority level based on category and sentiment."""
+        # Direct mapping first
+        key = (category, sentiment_label)
+        if key in self.priority_map:
+            return self.priority_map[key]
+            
+        # Fallback to ANY category mapping
+        fallback_key = ("ANY", sentiment_label)
+        return self.priority_map.get(fallback_key, "P3_STANDARD")
+    
+    def _requires_escalation(self, category: str, sentiment_label: str, sentiment_score: float) -> bool:
+        """Determine if ticket requires immediate escalation."""
+        # Critical sentiment always requires escalation
+        if sentiment_label == "CRITICAL":
+            return True
+            
+        # COMPLAINTS with negative sentiment need escalation
+        if category == "COMPLAINTS" and sentiment_label == "NEGATIVE":
+            return True
+            
+        # High-priority categories with very low sentiment scores
+        if category in ["BILLING", "TECHNICAL"] and sentiment_score <= -0.8:
+            return True
+            
+        return False
+    
     def classify_ticket(self, ticket_text: str) -> EnhancedClassificationResult:
-        """Enhanced ticket classification with reasoning."""
+        """Enhanced ticket classification with reasoning and sentiment analysis."""
         start_time = time.time()
         
         # Get traditional model prediction
@@ -239,13 +320,17 @@ RESPONSE FORMAT (JSON):
         traditional_prob_dict = {cat: prob for cat, prob in zip(base_categories, traditional_proba)}
         traditional_confidence = max(traditional_proba)
         
-        # Get Gemini prediction
-        gemini_pred, gemini_conf, reasoning = self._query_gemini(ticket_text)
+        # Get Gemini prediction with sentiment analysis
+        gemini_pred, gemini_conf, reasoning, sentiment_score, sentiment_label, sentiment_reasoning = self._query_gemini(ticket_text)
         
         # Ensemble prediction
         final_pred, final_conf = self._ensemble_prediction(
             traditional_pred, traditional_confidence, gemini_pred, gemini_conf
         )
+        
+        # Calculate priority and escalation based on final prediction and sentiment
+        priority_level = self._calculate_priority_level(final_pred, sentiment_label)
+        escalation_required = self._requires_escalation(final_pred, sentiment_label, sentiment_score)
         
         # Check for OTHER category
         is_other = False
@@ -340,7 +425,13 @@ RESPONSE FORMAT (JSON):
             gemini_confidence=gemini_conf,
             all_probabilities=all_probabilities,
             processing_time_ms=processing_time,
-            is_other_category=is_other
+            is_other_category=is_other,
+            # New sentiment analysis fields
+            sentiment_score=sentiment_score,
+            sentiment_label=sentiment_label,
+            priority_level=priority_level,
+            escalation_required=escalation_required,
+            sentiment_reasoning=sentiment_reasoning
         )
     
     def batch_classify(self, ticket_texts: List[str]) -> List[EnhancedClassificationResult]:

@@ -155,6 +155,84 @@ st.markdown("""
         border-radius: 10px;
         margin: 1rem 0;
     }
+    
+    /* Sentiment Analysis Styles */
+    .sentiment-box {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-left: 5px solid #2196F3;
+    }
+    
+    .sentiment-positive {
+        background: #e8f5e8;
+        border-left-color: #4CAF50 !important;
+        color: #1b5e20;
+    }
+    
+    .sentiment-neutral {
+        background: #f5f5f5;
+        border-left-color: #9E9E9E !important;
+        color: #424242;
+    }
+    
+    .sentiment-negative {
+        background: #fff3e0;
+        border-left-color: #FF9800 !important;
+        color: #e65100;
+    }
+    
+    .sentiment-critical {
+        background: #ffebee;
+        border-left-color: #f44336 !important;
+        color: #c62828;
+    }
+    
+    .priority-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .priority-p0 {
+        background: #ffcdd2;
+        color: #c62828;
+    }
+    
+    .priority-p1 {
+        background: #ffe0b2;
+        color: #ef6c00;
+    }
+    
+    .priority-p2 {
+        background: #fff9c4;
+        color: #f57f17;
+    }
+    
+    .priority-p3 {
+        background: #e8f5e8;
+        color: #388e3c;
+    }
+    
+    .escalation-required {
+        background: #ffcdd2;
+        color: #c62828;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        font-weight: 600;
+        display: inline-block;
+        margin: 0.5rem 0;
+    }
+    
+    .sentiment-emoji {
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -169,6 +247,47 @@ if 'last_ensemble_weight' not in st.session_state:
     st.session_state.last_ensemble_weight = 0.7
 if 'last_other_threshold' not in st.session_state:
     st.session_state.last_other_threshold = 0.6
+
+# Sentiment analysis helper functions
+def get_sentiment_emoji(sentiment_label: str) -> str:
+    """Get appropriate emoji for sentiment."""
+    emoji_map = {
+        "POSITIVE": "😊",
+        "NEUTRAL": "😐", 
+        "NEGATIVE": "😠",
+        "CRITICAL": "🚨"
+    }
+    return emoji_map.get(sentiment_label, "😐")
+
+def get_sentiment_color_class(sentiment_label: str) -> str:
+    """Get CSS class for sentiment styling."""
+    return f"sentiment-{sentiment_label.lower()}"
+
+def get_priority_badge_class(priority_level: str) -> str:
+    """Get CSS class for priority badge."""
+    priority_map = {
+        "P0_IMMEDIATE": "priority-p0",
+        "P1_HIGH": "priority-p1", 
+        "P2_MEDIUM": "priority-p2",
+        "P3_STANDARD": "priority-p3"
+    }
+    return priority_map.get(priority_level, "priority-p3")
+
+def display_sentiment_analysis(result: EnhancedClassificationResult):
+    """Display sentiment analysis results with visual indicators."""
+    sentiment_emoji = get_sentiment_emoji(result.sentiment_label)
+    sentiment_class = get_sentiment_color_class(result.sentiment_label)
+    priority_class = get_priority_badge_class(result.priority_level)
+    
+    st.markdown(f"""
+    <div class="sentiment-box {sentiment_class}">
+        <h4><span class="sentiment-emoji">{sentiment_emoji}</span>Sentiment Analysis</h4>
+        <p><strong>Sentiment:</strong> {result.sentiment_label} (Score: {result.sentiment_score:+.1f})</p>
+        <p><strong>Priority Level:</strong> <span class="{priority_class} priority-badge">{result.priority_level.replace('_', ' ')}</span></p>
+        {f'<div class="escalation-required">⚠️ IMMEDIATE ESCALATION REQUIRED</div>' if result.escalation_required else ''}
+        <p><strong>Reasoning:</strong> {result.sentiment_reasoning}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 def initialize_classifier():
     """Initialize the enhanced classifier automatically."""
@@ -224,11 +343,10 @@ def main():
     st.markdown("""
     <div class="main-header">
         <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
-            <div class="telkom-logo">T</div>
             <div>
-                <h1 style="margin: 0;">🤖 Enhanced Telkom Ticket Classifier</h1>
-                <h3 style="margin: 0.5rem 0 0 0;">Powered by Google Gemini LLM + Traditional ML Ensemble</h3>
-                <p style="margin: 0.5rem 0 0 0;">Advanced ticket classification with AI reasoning and explainable decisions</p>
+                <h1 style="margin: 0; font-size: 3.6rem;">Telkom Ticket Classifier</h1>
+                <h3 style="margin: 0.5rem 0 0 0; font-size: 1.44rem;">Powered by Google Gemini LLM + Traditional ML Ensemble</h3>
+                <p style="margin: 0.5rem 0 0 0; font-size: 1.2rem;">Advanced ticket classification with AI reasoning and explainable decisions</p>
             </div>
         </div>
     </div>
@@ -323,7 +441,26 @@ def main():
                 if st.session_state.classifier:
                     st.session_state.classifier.other_threshold = other_threshold
                     st.session_state.classifier.ensemble_weight = ensemble_weight
-        
+            
+            st.markdown("---")
+            
+            # Sentiment Analysis Configuration
+            st.subheader("💭 Sentiment Analysis")
+            
+            st.markdown("""
+            **Sentiment Levels:**
+            - 😊 **POSITIVE** (+0.7): Happy, satisfied customers
+            - 😐 **NEUTRAL** (0.0): Standard inquiries  
+            - 😠 **NEGATIVE** (-0.7): Frustrated customers
+            - 🚨 **CRITICAL** (-1.0): Extremely upset, requires escalation
+            
+            **Priority Mapping:**
+            - 🔴 **P0 IMMEDIATE**: COMPLAINTS + CRITICAL sentiment
+            - 🟠 **P1 HIGH**: High-risk categories + NEGATIVE/CRITICAL sentiment
+            - 🟡 **P2 MEDIUM**: Standard categories + NEGATIVE sentiment
+            - 🟢 **P3 STANDARD**: All other combinations
+            """)
+            
         # Debug info to show current settings and mode
         if st.session_state.classifier:
             weight = st.session_state.classifier.ensemble_weight
@@ -406,14 +543,19 @@ def main():
         
         sample_tickets = [
             "Select a sample ticket...",
-            "My monthly bill shows extra charges I didn't authorize",
-            "Internet connection drops every 10 minutes",
-            "Want to upgrade to fiber package with higher speed",
-            "The technician never showed up for my appointment",
-            "No cellular coverage in Johannesburg CBD area",
-            "Need to change my contact details urgently",
-            "Just wanted to compliment your excellent service",
-            "Computer making strange noises, please advise"
+            # Sentiment test cases
+            "😊 Thank you so much for resolving my billing issue quickly! Excellent service team.",
+            "😐 Hello, I would like to inquire about upgrading my data package please.",
+            "😠 I'm really frustrated - my internet has been slow for weeks despite multiple calls!",
+            "🚨 This is absolutely unacceptable! I'm cancelling my contract and going to another provider!",
+            # Original samples with sentiment context
+            "My monthly bill shows unauthorized charges - I'm quite upset about this billing error",
+            "Internet connection drops every 10 minutes - this is really affecting my work",
+            "Want to upgrade to fiber package with higher speed and better deals",
+            "The technician never showed up for my appointment - I'm extremely disappointed",
+            "No cellular coverage in Johannesburg CBD area - this is frustrating for business",
+            "Need to change my contact details urgently for security purposes",
+            "Computer making strange noises after your technician visit - very concerned"
         ]
         
         selected_ticket = st.selectbox(
@@ -474,6 +616,9 @@ def main():
                     <p>{result.reasoning}</p>
                 </div>
                 """, unsafe_allow_html=True)
+                
+                # Sentiment Analysis Display
+                display_sentiment_analysis(result)
                 
                 # Model comparison
                 st.subheader("🔍 Model Comparison")
