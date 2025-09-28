@@ -19,7 +19,7 @@ def validate_demo_components():
     results = []
     
     # 1. Check model file exists
-    model_path = Path("models/telkom_ticket_classifier.pkl")
+    model_path = Path("models/telco_ticket_classifier.pkl")
     if model_path.exists():
         print("✅ Model file found")
         results.append(True)

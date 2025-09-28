@@ -107,7 +107,7 @@ python test_enhanced_classifier.py
 
 **"Traditional model not found"**
 - Run: `python train_model.py` first
-- Check `models/telkom_ticket_classifier.pkl` exists
+- Check `models/telco_ticket_classifier.pkl` exists
 
 **"Missing packages"**
 - Run: `pip install python-dotenv google-generativeai streamlit plotly`

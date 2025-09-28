@@ -254,7 +254,7 @@ class TicketClassificationPipeline:
 
 def main():
     """Main training script."""
-    logger.info("🎯 Starting Telkom Call Centre Ticket Classification Training")
+    logger.info("🎯 Starting Telco Call Centre Ticket Classification Training")
     
     # This would normally load from the generated dataset
     # For now, we'll create a placeholder that shows the expected interface

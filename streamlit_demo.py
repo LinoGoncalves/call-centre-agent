@@ -42,7 +42,7 @@ except ImportError:
 
 # Page configuration
 st.set_page_config(
-    page_title="Telkom Ticket Classifier - Gemini LLM",
+    page_title="Telco Ticket Classifier - Gemini LLM",
     page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -340,21 +340,24 @@ def display_sentiment_analysis(result: EnhancedClassificationResult):
     if st.session_state.get('debug_html', False):
         st.text(f"DEBUG - Final clean result: {repr(clean_reasoning)}")
     
-    # STEP 8: Simplified components.html with dynamic height calculation
-    # Use safe HTML component to bypass Markdown parsing entirely and prevent any HTML interpretation
-    safe_reasoning_js = json.dumps(clean_reasoning)  # proper escaping for JS/string literal
+    # STEP 8: Optimized dynamic height calculation similar to departmental routing
+    # Calculate height based on actual content length
+    reasoning_length = len(clean_reasoning) if clean_reasoning else 0
+    base_height = 200  # Base height for headers, sentiment info, etc.
     
-    # More generous height estimation with scrollbar fallback
-    base_height = 220  # Base height for headers, sentiment info, etc.
-    chars_per_line = 65  # More conservative estimate
-    newlines = clean_reasoning.count('\n')
-    estimated_lines = max(4, len(clean_reasoning) // chars_per_line + newlines + 3)  # Minimum 4 lines, +3 buffer
-    estimated_height = min(700, base_height + (estimated_lines * 28))  # 28px per line, max 700px
+    # More efficient height calculation (25px per 70 characters)
+    additional_height = max(50, (reasoning_length // 70) * 25)
     
-    # Calculate max height for reasoning text area
-    reasoning_max_height = max(150, estimated_height - 160)  # Reserve space for headers
+    # Set reasonable bounds for the panel
+    total_height = min(base_height + additional_height, 450)
     
-    # Simple styling with proper text wrapping and scrollbars as fallback
+    # Calculate max height for reasoning text area (reserve space for headers/info)
+    reasoning_max_height = max(100, total_height - 140)
+    
+    # Use safe HTML component with proper escaping
+    safe_reasoning_js = json.dumps(clean_reasoning)
+    
+    # Simple styling with proper text wrapping and scrollbars
     html_block = f"""
     <div style="
         background: #f0f0f0; 
@@ -363,7 +366,7 @@ def display_sentiment_analysis(result: EnhancedClassificationResult):
         margin: 0; 
         border-left: 5px solid #2196F3; 
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-        height: {estimated_height}px;
+        height: {total_height}px;
         overflow-y: auto;
     ">
         <h4><span style="font-size:1.5rem; margin-right:0.5rem;">{sentiment_emoji}</span>Sentiment Analysis</h4>
@@ -393,8 +396,8 @@ def display_sentiment_analysis(result: EnhancedClassificationResult):
     </div>
     """
     
-    # Use estimated height with scrolling enabled as fallback
-    components.html(html_block, height=estimated_height, scrolling=True)
+    # Use optimized height with scrolling enabled
+    components.html(html_block, height=total_height, scrolling=True)
 
 def get_sentiment_color_for_text(sentiment_label: str) -> str:
     """Get text color for sentiment."""
@@ -425,6 +428,136 @@ def get_priority_text(priority_level: str) -> str:
         "P3_STANDARD": "#388e3c"
     }
     return colors.get(priority_level, "#388e3c")
+
+def display_departmental_routing(result: EnhancedClassificationResult):
+    """Display departmental routing and team allocation information."""
+    # Department emoji mapping
+    dept_emojis = {
+        "CREDIT_MGMT": "💰",
+        "ORDER_MGMT": "📋", 
+        "CRM": "🤝",
+        "BILLING": "🧾"
+    }
+    
+    dept_names = {
+        "CREDIT_MGMT": "Credit Management",
+        "ORDER_MGMT": "Order Management",
+        "CRM": "Customer Relationship Management", 
+        "BILLING": "Billing Support"
+    }
+    
+    # Get department color based on type
+    dept_colors = {
+        "CREDIT_MGMT": "#d32f2f",  # Red - high priority disputes
+        "ORDER_MGMT": "#1976d2",   # Blue - service orders
+        "CRM": "#388e3c",          # Green - customer relations
+        "BILLING": "#f57c00"       # Orange - billing support
+    }
+    
+    dept_emoji = dept_emojis.get(result.department_allocation, "🏢")
+    dept_name = dept_names.get(result.department_allocation, result.department_allocation)
+    dept_color = dept_colors.get(result.department_allocation, "#666666")
+    
+    # SLA response time display
+    sla_hours = result.sla_response_time_hours
+    if sla_hours == 1:
+        sla_text = "1 Hour"
+    elif sla_hours < 24:
+        sla_text = f"{sla_hours} Hours"
+    else:
+        sla_text = f"{sla_hours//24} Day{'s' if sla_hours > 24 else ''}"
+    
+    html_content = f"""
+    <div style="
+        background: #f8f9fa;
+        border: 2px solid {dept_color};
+        border-radius: 10px;
+        padding: 20px;
+        margin: 10px 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow-y: auto;
+        max-height: 600px;
+    ">
+        <h3 style="margin: 0 0 15px 0; color: #2c3e50; border-bottom: 2px solid {dept_color}; padding-bottom: 8px;">
+            🏛️ Departmental Routing & Team Assignment
+        </h3>
+        
+        <div style="
+            background: #e8f4fd; 
+            border-left: 4px solid #2196f3; 
+            padding: 12px; 
+            margin-bottom: 20px; 
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        ">
+            <h4 style="margin: 0 0 8px 0; color: #1565c0; font-size: 14px;">🧠 AI Routing Reasoning</h4>
+            <div style="
+                margin: 0; 
+                color: #424242; 
+                font-size: 13px; 
+                line-height: 1.5;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            ">
+                {result.routing_reasoning}
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #dee2e6;">
+                <h4 style="margin: 0 0 8px 0; color: #495057; font-size: 14px;">🏢 Assigned Department</h4>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 20px;">{dept_emoji}</span>
+                    <div>
+                        <div style="font-weight: bold; color: {dept_color}; font-size: 16px;">{dept_name}</div>
+                        <div style="color: #666; font-size: 12px;">Confidence: {result.routing_confidence:.1%}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #dee2e6;">
+                <h4 style="margin: 0 0 8px 0; color: #495057; font-size: 14px;">👥 Specific Team</h4>
+                <div style="font-weight: bold; color: #2c3e50; font-size: 16px;">{result.assigned_team}</div>
+                <div style="color: #666; font-size: 12px;">Service Desk: {result.service_desk_agent}</div>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+            <div style="background: {'#ffebee' if result.dispute_detected else '#e8f5e8'}; padding: 10px; border-radius: 6px; text-align: center;">
+                <div style="font-size: 18px; margin-bottom: 4px;">{'⚠️' if result.dispute_detected else '✅'}</div>
+                <div style="font-size: 12px; color: #666;">Dispute Status</div>
+                <div style="font-weight: bold; color: {'#d32f2f' if result.dispute_detected else '#388e3c'};">
+                    {'DETECTED' if result.dispute_detected else 'NONE'}
+                </div>
+                {f'<div style="font-size: 10px; color: #666;">{result.dispute_confidence:.0%} confidence</div>' if result.dispute_detected else ''}
+            </div>
+            
+            <div style="background: #e3f2fd; padding: 10px; border-radius: 6px; text-align: center;">
+                <div style="font-size: 18px; margin-bottom: 4px;">⏰</div>
+                <div style="font-size: 12px; color: #666;">SLA Response</div>
+                <div style="font-weight: bold; color: #1976d2;">{sla_text}</div>
+                <div style="font-size: 10px; color: #666;">{result.priority_level.replace('_', ' ')}</div>
+            </div>
+            
+            <div style="background: {'#fff3e0' if result.requires_hitl else '#e8f5e8'}; padding: 10px; border-radius: 6px; text-align: center;">
+                <div style="font-size: 18px; margin-bottom: 4px;">{'👨‍💼' if result.requires_hitl else '🤖'}</div>
+                <div style="font-size: 12px; color: #666;">Validation</div>
+                <div style="font-weight: bold; color: {'#f57c00' if result.requires_hitl else '#388e3c'};">
+                    {'HITL REQUIRED' if result.requires_hitl else 'AUTO-APPROVED'}
+                </div>
+            </div>
+        </div>
+    </div>
+    """
+    
+    # Use fixed height since we now have scrollbars for overflow content
+    total_height = 450  # Fixed height with scrollbars handling overflow
+    
+    # Display using components.html with dynamic height
+    components.html(html_content, height=total_height)
 
 def initialize_classifier():
     """Initialize the enhanced classifier automatically."""
@@ -477,12 +610,12 @@ def create_probability_chart(probabilities: dict, title: str):
 def main():
     """Main Streamlit application."""
     
-    # Header with Telkom branding
+    # Header with Telco branding
     st.markdown("""
     <div class="main-header">
         <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
             <div>
-                <h1 style="margin: 0; font-size: 3.6rem;">Telkom Ticket Classifier</h1>
+                <h1 style="margin: 0; font-size: 3.6rem;">Telco Ticket Classifier</h1>
                 <h3 style="margin: 0.5rem 0 0 0; font-size: 1.44rem;">Powered by Google Gemini LLM + Traditional ML Ensemble</h3>
                 <p style="margin: 0.5rem 0 0 0; font-size: 1.2rem;">Advanced ticket classification with AI reasoning and explainable decisions</p>
             </div>
@@ -634,6 +767,10 @@ def main():
         <ul>
         <li>🤖 Google Gemini LLM integration</li>
         <li>💭 AI reasoning explanations</li>
+        <li>🏛️ <strong>Departmental routing & team assignment</strong></li>
+        <li>⚖️ <strong>Dispute detection for Credit Management</strong></li>
+        <li>👨‍💼 <strong>Human-in-the-loop (HITL) validation</strong></li>
+        <li>⏰ <strong>Priority-based SLA response times</strong></li>
         <li>⚠️ OTHER category for edge cases</li>
         <li>📊 Model comparison views</li>
         <li>⚡ Real-time ensemble predictions</li>
@@ -695,19 +832,26 @@ def main():
         
         sample_tickets = [
             "Select a sample ticket...",
-            # Sentiment test cases
-            "😊 Thank you so much for resolving my billing issue quickly! Excellent service team.",
-            "😐 Hello, I would like to inquire about upgrading my data package please.",
-            "😠 I'm really frustrated - my internet has been slow for weeks despite multiple calls!",
-            "🚨 This is absolutely unacceptable! I'm cancelling my contract and going to another provider!",
-            # Original samples with sentiment context
-            "My monthly bill shows unauthorized charges - I'm quite upset about this billing error",
-            "Internet connection drops every 10 minutes - this is really affecting my work",
-            "Want to upgrade to fiber package with higher speed and better deals",
-            "The technician never showed up for my appointment - I'm extremely disappointed",
-            "No cellular coverage in Johannesburg CBD area - this is frustrating for business",
-            "Need to change my contact details urgently for security purposes",
-            "Computer making strange noises after your technician visit - very concerned"
+            # CREDIT MANAGEMENT - Disputes
+            "� I dispute this R500 charge on my bill - I never authorized this premium service",
+            "� I was double charged for my data bundle last week - please refund one charge",
+            "� These international call charges are wrong - I was told they were included in my plan",
+            # BILLING - General Inquiries  
+            "🧾 Can you please explain why my bill is R200 higher than usual this month?",
+            "🧾 What are the different fees listed on my account statement?",
+            "🧾 When is my next payment due date and what payment methods do you accept?",
+            # ORDER MANAGEMENT - Service Requests
+            "📋 I want to upgrade my internet package to fiber and schedule installation",
+            "📋 Please activate the new mobile line I ordered and send me the SIM card", 
+            "📋 I need to change my current plan to include more data and international calling",
+            # CRM - Customer Relations
+            "🤝 Your customer service has been terrible and I'm thinking of cancelling my account",
+            "🤝 I'm very dissatisfied with the service quality and want to speak to a manager",
+            "🤝 The technician was rude during installation - this is unacceptable service",
+            # Mixed sentiment examples
+            "😊 Thank you for resolving my previous issue - now I'd like to upgrade my service",
+            "😠 Internet has been down for 3 days - this is affecting my business operations!",
+            "😐 Hello, I need information about your new data packages and pricing"
         ]
         
         selected_ticket = st.selectbox(
@@ -771,6 +915,9 @@ def main():
                 
                 # Sentiment Analysis Display
                 display_sentiment_analysis(result)
+                
+                # NEW: Departmental Routing Display
+                display_departmental_routing(result)
                 
                 # Model comparison
                 st.subheader("🔍 Model Comparison")

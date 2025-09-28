@@ -64,7 +64,7 @@ def setup_env_file():
         demo_port = "8502"
     
     # Create .env content
-    env_content = f"""# 🔐 Environment Variables for Telkom Call Centre Agent
+    env_content = f"""# 🔐 Environment Variables for Telco Call Centre Agent
 # Generated on {os.path.dirname(__file__) or 'local setup'}
 
 # Google Gemini API Configuration (REQUIRED)
@@ -131,7 +131,7 @@ def test_setup():
 
 def main():
     """Main setup flow."""
-    print("🚀 Enhanced Telkom Ticket Classifier Setup")
+    print("🚀 Enhanced Telco Ticket Classifier Setup")
     print("   Google Gemini LLM + Traditional ML Ensemble")
     print("   With AI reasoning and OTHER category support")
     print()

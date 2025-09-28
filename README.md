@@ -1,4 +1,4 @@
-# 🤖 Enhanced Telkom Call Centre Agent
+# 🤖 Enhanced Telco Call Centre Agent
 
 **AI-powered ticket classification system with Google Gemini LLM integration**
 
@@ -215,6 +215,6 @@ For technical questions:
 
 ---
 
-**Built with ❤️ for Telkom customer support excellence**
+**Built with ❤️ for telecommunications customer support excellence**
 
 *Enhanced with Google Gemini LLM for superior accuracy and explainable AI*

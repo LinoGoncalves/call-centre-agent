@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Training script for Telkom Call Centre Ticket Classification
+Training script for Telco Call Centre Ticket Classification
 Executes the hybrid ensemble model training pipeline
 """
 
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 def main():
     """Execute the complete training pipeline."""
-    logger.info("🎯 Starting Telkom Call Centre Ticket Classification Training")
+    logger.info("🎯 Starting Telco Call Centre Ticket Classification Training")
     
     # Load datasets
     try:
@@ -58,7 +58,7 @@ def main():
     evaluation_results = pipeline.evaluate(X_test, y_test)
     
     # Save trained model
-    model_path = 'models/telkom_ticket_classifier.pkl'
+    model_path = 'models/telco_ticket_classifier.pkl'
     os.makedirs('models', exist_ok=True)
     pipeline.save_model(model_path)
     

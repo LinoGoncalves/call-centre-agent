@@ -42,7 +42,7 @@ def test_enhanced_classifier():
     print("\n📋 Testing with required components...")
     
     # Check if traditional model exists
-    model_path = Path(__file__).parent / "models" / "telkom_ticket_classifier.pkl"
+    model_path = Path(__file__).parent / "models" / "telco_ticket_classifier.pkl"
     if model_path.exists():
         print(f"✅ Traditional model found: {model_path}")
     else:

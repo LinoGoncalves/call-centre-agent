@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🚀 Demo Launcher for Telkom Call Centre Agent
+🚀 Demo Launcher for Telco Call Centre Agent
 Quick launcher for the professional Streamlit demo interface
 
 Author: Data Scientist AI Assistant  
@@ -19,9 +19,9 @@ load_dotenv()
 
 def launch_demo():
     """Launch the Streamlit demo."""
-    print(" Launching Telkom Call Centre Agent Demo")
+    print(" Launching Telco Call Centre Agent Demo")
     print("   🌟 Features: Google Gemini LLM + AI Reasoning + 0-100% Ensemble Control")
-    print("   📊 Advanced classification with explainable AI and Telkom branding")
+    print("   📊 Advanced classification with explainable AI and Telco branding")
     print("-" * 70)
     
     # Set up environment
@@ -33,7 +33,7 @@ def launch_demo():
         sys.exit(1)
     
     # Check if models exist
-    model_path = Path(__file__).parent / "models" / "telkom_ticket_classifier.pkl"
+    model_path = Path(__file__).parent / "models" / "telco_ticket_classifier.pkl"
     if not model_path.exists():
         print("⚠️  Traditional model not found - will need to be trained first")
         print(f"   Expected: {model_path}")

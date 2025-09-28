@@ -47,7 +47,8 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class EnhancedClassificationResult:
-    """Enhanced classification result with reasoning and sentiment analysis."""
+    """Enhanced classification result with reasoning, sentiment analysis, and departmental routing."""
+    # Original classification fields
     predicted_category: str
     confidence: float
     reasoning: str
@@ -58,17 +59,69 @@ class EnhancedClassificationResult:
     all_probabilities: Dict[str, float]
     processing_time_ms: float
     is_other_category: bool = False
-    # New sentiment analysis fields
+    
+    # Sentiment analysis fields
     sentiment_score: float = 0.0
     sentiment_label: str = "NEUTRAL"
     priority_level: str = "P3_STANDARD"
     escalation_required: bool = False
     sentiment_reasoning: str = ""
+    
+    # NEW: Departmental routing fields
+    department_allocation: str = "BILLING"  # CREDIT_MGMT, ORDER_MGMT, CRM, BILLING
+    assigned_team: str = "General Support"  # Specific team within department
+    routing_confidence: float = 0.0  # Confidence in department allocation
+    routing_reasoning: str = ""  # Why this department was chosen
+    
+    # NEW: Service Desk & Escalation fields
+    service_desk_agent: str = "AI_CLASSIFIER"  # Agent responsible for routing
+    requires_hitl: bool = False  # Human-in-the-loop validation needed
+    dispute_detected: bool = False  # Specific dispute flag for Credit Management
+    dispute_confidence: float = 0.0  # Confidence in dispute detection
+    
+    # NEW: Age analysis and escalation tracking
+    ticket_age_days: int = 0  # Age of ticket in days
+    escalation_level: str = "INITIAL"  # INITIAL, TEAM_LEAD, PRODUCTION_SUPPORT
+    escalation_triggered: bool = False  # Whether escalation is needed
+    
+    # NEW: SLA and priority response times
+    sla_response_time_hours: int = 36  # P0=1, P1=6, P2=24, P3=36
+    sla_warning_triggered: bool = False  # Approaching SLA deadline
+    
+    # NEW: Quality assurance fields
+    routing_override_history: List[str] = None  # Track manual overrides
+    confidence_threshold_met: bool = True  # Met required confidence levels
+    
+    def __post_init__(self):
+        """Post-initialization processing for derived fields."""
+        if self.routing_override_history is None:
+            self.routing_override_history = []
+        
+        # Set SLA response times based on priority
+        sla_times = {
+            "P0_IMMEDIATE": 1,
+            "P1_HIGH": 6, 
+            "P2_MEDIUM": 24,
+            "P3_STANDARD": 36
+        }
+        self.sla_response_time_hours = sla_times.get(self.priority_level, 36)
+        
+        # Determine if HITL is required based on confidence thresholds
+        if self.dispute_detected and self.dispute_confidence < 0.95:
+            self.requires_hitl = True
+        elif not self.dispute_detected and self.routing_confidence < 0.80:
+            self.requires_hitl = True
+            
+        # Check if confidence thresholds are met
+        if self.dispute_detected:
+            self.confidence_threshold_met = self.dispute_confidence >= 0.95
+        else:
+            self.confidence_threshold_met = self.routing_confidence >= 0.80
 
 class GeminiEnhancedClassifier:
     """Enhanced ticket classifier using Google Gemini LLM."""
     
-    def __init__(self, api_key: Optional[str] = None, traditional_model_path: str = "models/telkom_ticket_classifier.pkl"):
+    def __init__(self, api_key: Optional[str] = None, traditional_model_path: str = "models/telco_ticket_classifier.pkl"):
         """Initialize the enhanced classifier."""
         # Get API key from parameter, environment variable, or fail
         self.api_key = api_key or os.getenv('GOOGLE_API_KEY')
@@ -142,14 +195,14 @@ class GeminiEnhancedClassifier:
             raise
     
     def _create_gemini_prompt(self, ticket_text: str) -> str:
-        """Create optimized prompt for Gemini classification with sentiment analysis."""
+        """Create optimized prompt for Gemini classification with sentiment analysis and departmental routing."""
         prompt = f"""
-You are an expert customer service ticket classifier for Telkom, a South African telecommunications company.
+You are an expert customer service ticket classifier and routing specialist for a telecommunications company.
 
-TASK: Classify the customer ticket, analyze sentiment, and provide detailed reasoning.
+TASK: Classify the customer ticket, analyze sentiment, detect disputes, and determine departmental routing.
 
-CATEGORIES:
-1. BILLING - Bills, payments, charges, account balances, billing disputes
+TICKET CATEGORIES:
+1. BILLING - Bills, payments, charges, account balances, billing inquiries
 2. TECHNICAL - Internet connectivity, speed issues, equipment problems, outages
 3. SALES - New services, upgrades, packages, promotions, product inquiries  
 4. COMPLAINTS - Service dissatisfaction, poor customer service, escalations
@@ -157,41 +210,77 @@ CATEGORIES:
 6. ACCOUNT - Profile updates, password resets, personal information changes
 7. OTHER - Tickets that don't clearly fit into the above categories
 
+DEPARTMENTAL ROUTING (Priority Order):
+1. CREDIT_MGMT - ALL disputes regardless of category (100% priority)
+2. ORDER_MGMT - New orders, plan changes, installations, equipment requests
+3. CRM - General complaints, retention issues, customer relationship problems
+4. BILLING - Non-disputed billing inquiries, payment questions, account balances
+
+DISPUTE vs GENERAL BILLING INQUIRY:
+**DISPUTE** (Route to Credit Management):
+- Customer explicitly contests validity of charges
+- Claims charges are incorrect, unauthorized, or wrong
+- Requires investigation (not just explanation)
+- Keywords: "dispute", "disagree with charges", "unauthorized", "never ordered", "double charged", "incorrect billing", "contest", "challenge", "refund", "credit", "overcharged", "billing error"
+
+**GENERAL INQUIRY** (Route to Billing):
+- Seeking explanation or clarification of charges
+- Can be resolved with itemized explanation
+- Keywords: "explain my bill", "why is my bill", "payment options", "account balance", "billing cycle"
+
 SENTIMENT LEVELS:
 1. POSITIVE (0.7) - Happy, satisfied, appreciative customers
 2. NEUTRAL (0.0) - Standard inquiries, factual requests
 3. NEGATIVE (-0.7) - Frustrated, dissatisfied, annoyed customers
 4. CRITICAL (-1.0) - Extremely upset, angry, threatening to leave
 
+PRIORITY LEVELS:
+- P0_IMMEDIATE: Critical outages, security breaches, escalated disputes
+- P1_HIGH: Service affecting issues, billing disputes, urgent complaints
+- P2_MEDIUM: Standard technical issues, general complaints, account changes
+- P3_STANDARD: Routine inquiries, information requests, minor issues
+
 CUSTOMER TICKET:
 "{ticket_text}"
 
 INSTRUCTIONS:
-1. Classify into ONE category from the list above
-2. Analyze customer sentiment and assign sentiment score
-3. Provide confidence score for category classification (0.0 to 1.0)
-4. Give detailed reasoning for both category and sentiment decisions
-5. Consider South African telecommunications context
-6. If ticket doesn't clearly fit any category (confidence < 0.6), classify as OTHER
-7. **CRITICAL: Use plain text only. Do NOT use HTML tags, markdown formatting, or any special formatting in your reasoning.**
+1. Classify into ONE category from the ticket categories
+2. Determine appropriate department routing based on content analysis
+3. **CRITICAL**: Detect if this is a billing dispute (requires Credit Management)
+4. Analyze customer sentiment and assign sentiment score
+5. Determine priority level based on urgency and impact
+6. Provide confidence scores for classification and departmental routing
+7. Give detailed reasoning for all decisions
+8. Consider South African telecommunications context
+9. If ticket doesn't clearly fit any category (confidence < 0.6), classify as OTHER
+10. **CRITICAL: Use plain text only. Do NOT use HTML tags, markdown formatting, or any special formatting in your reasoning.**
 
 RESPONSE FORMAT (JSON):
 {{
     "category": "CATEGORY_NAME",
     "confidence": 0.95,
     "reasoning": "Detailed explanation of category classification decision.",
+    "department_allocation": "CREDIT_MGMT",
+    "routing_confidence": 0.98,
+    "routing_reasoning": "Detailed explanation of why this department was chosen.",
+    "dispute_detected": true,
+    "dispute_confidence": 0.95,
     "sentiment_score": -0.7,
     "sentiment_label": "NEGATIVE",
-    "sentiment_reasoning": "Customer shows frustration with repeated use of words like terrible and fed up indicating negative emotional state."
+    "sentiment_reasoning": "Customer shows frustration with repeated use of words like terrible and fed up indicating negative emotional state.",
+    "priority_level": "P1_HIGH",
+    "escalation_required": false
 }}
 """
         return prompt
     
-    def _query_gemini(self, ticket_text: str) -> Tuple[str, float, str, float, str, str]:
-        """Query Gemini for classification and sentiment analysis with error handling.
+    def _query_gemini(self, ticket_text: str) -> Tuple[str, float, str, str, float, str, bool, float, float, str, str, str, bool]:
+        """Query Gemini for classification, sentiment analysis, and departmental routing.
         
         Returns:
-            Tuple of (category, confidence, reasoning, sentiment_score, sentiment_label, sentiment_reasoning)
+            Tuple of (category, confidence, reasoning, department_allocation, routing_confidence, 
+                     routing_reasoning, dispute_detected, dispute_confidence, sentiment_score, 
+                     sentiment_label, sentiment_reasoning, priority_level, escalation_required)
         """
         try:
             prompt = self._create_gemini_prompt(ticket_text)
@@ -206,41 +295,65 @@ RESPONSE FORMAT (JSON):
             
             result = json.loads(response_text)
             
+            # Category classification
             category = result.get('category', 'OTHER')
             confidence = float(result.get('confidence', 0.0))
             reasoning = result.get('reasoning', 'No reasoning provided')
             
-            # Parse sentiment data
+            # Departmental routing
+            department_allocation = result.get('department_allocation', 'BILLING')
+            routing_confidence = float(result.get('routing_confidence', 0.0))
+            routing_reasoning = result.get('routing_reasoning', 'Standard routing applied')
+            
+            # Dispute detection
+            dispute_detected = bool(result.get('dispute_detected', False))
+            dispute_confidence = float(result.get('dispute_confidence', 0.0))
+            
+            # Sentiment analysis
             sentiment_score = float(result.get('sentiment_score', 0.0))
             sentiment_label = result.get('sentiment_label', 'NEUTRAL')
             sentiment_reasoning = result.get('sentiment_reasoning', 'No sentiment analysis provided')
             
-            # Clean HTML from sentiment reasoning at the source
+            # Priority and escalation
+            priority_level = result.get('priority_level', 'P3_STANDARD')
+            escalation_required = bool(result.get('escalation_required', False))
+            
+            # Clean HTML from all reasoning fields at the source
             import re
             import html
             
-            # Decode HTML entities
-            sentiment_reasoning = html.unescape(sentiment_reasoning)
-            
-            # Remove all HTML tags
-            sentiment_reasoning = re.sub(r'<[^>]*?>', '', sentiment_reasoning)
-            sentiment_reasoning = re.sub(r'<.*?>', '', sentiment_reasoning)
-            
-            # Remove common prefixes
-            sentiment_reasoning = re.sub(r'^(Reasoning:\s*|reasoning:\s*|Analysis:\s*)', '', sentiment_reasoning, flags=re.IGNORECASE)
-            
-            # Clean whitespace
-            sentiment_reasoning = ' '.join(sentiment_reasoning.split())
-            
-            # Validation: Check if HTML tags are still present
-            if '<' in sentiment_reasoning or '>' in sentiment_reasoning:
-                # Aggressive cleaning for persistent HTML
-                sentiment_reasoning = re.sub(r'[<>]', '', sentiment_reasoning)
-                logger.warning(f"🚨 HTML tags detected in sentiment reasoning, cleaned aggressively")
-            
-            # Fallback if empty
-            if not sentiment_reasoning.strip():
-                sentiment_reasoning = 'Sentiment analysis completed successfully.'
+            for field_name, field_value in [
+                ('reasoning', reasoning),
+                ('routing_reasoning', routing_reasoning), 
+                ('sentiment_reasoning', sentiment_reasoning)
+            ]:
+                if field_value:
+                    # Decode HTML entities
+                    cleaned = html.unescape(field_value)
+                    
+                    # Remove all HTML tags
+                    cleaned = re.sub(r'<[^>]*?>', '', cleaned)
+                    cleaned = re.sub(r'<.*?>', '', cleaned)
+                    
+                    # Remove common prefixes
+                    cleaned = re.sub(r'^(Reasoning:\s*|reasoning:\s*|Analysis:\s*)', '', cleaned, flags=re.IGNORECASE)
+                    
+                    # Clean whitespace
+                    cleaned = ' '.join(cleaned.split())
+                    
+                    # Validation: Check if HTML tags are still present
+                    if '<' in cleaned or '>' in cleaned:
+                        # Aggressive cleaning for persistent HTML
+                        cleaned = re.sub(r'[<>]', '', cleaned)
+                        logger.warning(f"🚨 HTML tags detected in {field_name}, cleaned aggressively")
+                    
+                    # Update the variable
+                    if field_name == 'reasoning':
+                        reasoning = cleaned if cleaned.strip() else 'Classification completed successfully.'
+                    elif field_name == 'routing_reasoning':
+                        routing_reasoning = cleaned if cleaned.strip() else 'Standard routing applied.'
+                    elif field_name == 'sentiment_reasoning':
+                        sentiment_reasoning = cleaned if cleaned.strip() else 'Sentiment analysis completed successfully.'
             
             # Validate category
             if category not in self.categories:
@@ -248,20 +361,39 @@ RESPONSE FORMAT (JSON):
                 confidence = 0.3
                 reasoning = f"Original category '{result.get('category')}' not recognized. Classified as OTHER."
             
+            # Validate department allocation
+            valid_departments = ['CREDIT_MGMT', 'ORDER_MGMT', 'CRM', 'BILLING']
+            if department_allocation not in valid_departments:
+                department_allocation = 'BILLING'
+                routing_confidence = 0.5
+                routing_reasoning = f"Original department '{result.get('department_allocation')}' not recognized. Routed to BILLING."
+            
             # Validate sentiment label
             if sentiment_label not in self.sentiment_categories:
                 sentiment_label = 'NEUTRAL'
                 sentiment_score = 0.0
                 sentiment_reasoning = f"Original sentiment '{result.get('sentiment_label')}' not recognized. Set to NEUTRAL."
             
-            return category, confidence, reasoning, sentiment_score, sentiment_label, sentiment_reasoning
+            # Validate priority level
+            valid_priorities = ['P0_IMMEDIATE', 'P1_HIGH', 'P2_MEDIUM', 'P3_STANDARD']
+            if priority_level not in valid_priorities:
+                priority_level = 'P3_STANDARD'
+                escalation_required = False
+            
+            return (category, confidence, reasoning, department_allocation, routing_confidence, 
+                   routing_reasoning, dispute_detected, dispute_confidence, sentiment_score, 
+                   sentiment_label, sentiment_reasoning, priority_level, escalation_required)
             
         except json.JSONDecodeError as e:
             logger.warning(f"Failed to parse Gemini response as JSON: {e}")
-            return "OTHER", 0.2, f"Failed to parse LLM response: {str(e)}", 0.0, "NEUTRAL", "Error in sentiment analysis"
+            return ("OTHER", 0.2, f"Failed to parse LLM response: {str(e)}", "BILLING", 0.3, 
+                   "Error in routing analysis", False, 0.0, 0.0, "NEUTRAL", "Error in sentiment analysis", 
+                   "P3_STANDARD", False)
         except Exception as e:
             logger.error(f"Gemini API error: {e}")
-            return "OTHER", 0.1, f"API error occurred: {str(e)}", 0.0, "NEUTRAL", "Error in sentiment analysis"
+            return ("OTHER", 0.1, f"API error occurred: {str(e)}", "BILLING", 0.2, 
+                   "Error in routing analysis", False, 0.0, 0.0, "NEUTRAL", "Error in sentiment analysis", 
+                   "P3_STANDARD", False)
     
     def _ensemble_prediction(self, traditional_pred: str, traditional_conf: float, 
                            gemini_pred: str, gemini_conf: float) -> Tuple[str, float]:
@@ -335,6 +467,38 @@ RESPONSE FORMAT (JSON):
             
         return False
     
+    def _determine_assigned_team(self, department: str, category: str) -> str:
+        """Determine the specific team within a department based on category and routing rules."""
+        team_mapping = {
+            "CREDIT_MGMT": {
+                "default": "Credit Management Team",
+                "BILLING": "Billing Disputes Team",
+                "COMPLAINTS": "Credit Management Team",
+                "ACCOUNT": "Account Recovery Team"
+            },
+            "ORDER_MGMT": {
+                "default": "Order Processing Team", 
+                "SALES": "Sales Support Team",
+                "TECHNICAL": "Installation Team",
+                "ACCOUNT": "Service Activation Team"
+            },
+            "CRM": {
+                "default": "Customer Success Team",
+                "COMPLAINTS": "Customer Relations Team",
+                "ACCOUNT": "Account Management Team",
+                "SALES": "Retention Team"
+            },
+            "BILLING": {
+                "default": "Billing Support Team",
+                "BILLING": "Billing Inquiries Team",
+                "ACCOUNT": "Account Billing Team",
+                "TECHNICAL": "Billing Systems Team"
+            }
+        }
+        
+        dept_teams = team_mapping.get(department, {"default": "General Support"})
+        return dept_teams.get(category, dept_teams.get("default", "General Support"))
+    
     def classify_ticket(self, ticket_text: str) -> EnhancedClassificationResult:
         """Enhanced ticket classification with reasoning and sentiment analysis."""
         start_time = time.time()
@@ -348,8 +512,10 @@ RESPONSE FORMAT (JSON):
         traditional_prob_dict = {cat: prob for cat, prob in zip(base_categories, traditional_proba)}
         traditional_confidence = max(traditional_proba)
         
-        # Get Gemini prediction with sentiment analysis
-        gemini_pred, gemini_conf, reasoning, sentiment_score, sentiment_label, sentiment_reasoning = self._query_gemini(ticket_text)
+        # Get Gemini prediction with sentiment analysis and departmental routing
+        (gemini_pred, gemini_conf, reasoning, department_allocation, routing_confidence, 
+         routing_reasoning, dispute_detected, dispute_confidence, sentiment_score, 
+         sentiment_label, sentiment_reasoning, priority_level, escalation_required) = self._query_gemini(ticket_text)
         
         # Ensemble prediction
         final_pred, final_conf = self._ensemble_prediction(
@@ -487,12 +653,28 @@ RESPONSE FORMAT (JSON):
             all_probabilities=all_probabilities,
             processing_time_ms=processing_time,
             is_other_category=is_other,
-            # New sentiment analysis fields
+            # Sentiment analysis fields
             sentiment_score=sentiment_score,
             sentiment_label=sentiment_label,
             priority_level=priority_level,
             escalation_required=escalation_required,
-            sentiment_reasoning=sentiment_reasoning
+            sentiment_reasoning=sentiment_reasoning,
+            # Departmental routing fields
+            department_allocation=department_allocation,
+            assigned_team=self._determine_assigned_team(department_allocation, final_pred),
+            routing_confidence=routing_confidence,
+            routing_reasoning=routing_reasoning,
+            # Service Desk & Escalation fields
+            service_desk_agent="AI_CLASSIFIER",
+            dispute_detected=dispute_detected,
+            dispute_confidence=dispute_confidence,
+            # Age analysis fields (will be populated by external systems)
+            ticket_age_days=0,
+            escalation_level="INITIAL",
+            escalation_triggered=False,
+            # SLA fields (calculated in __post_init__)
+            sla_response_time_hours=36,  # Will be updated by priority
+            sla_warning_triggered=False
         )
     
     def batch_classify(self, ticket_texts: List[str]) -> List[EnhancedClassificationResult]:

@@ -25,12 +25,12 @@ logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Telkom Call Centre Ticket Classification API",
+    title="Telco Call Centre Ticket Classification API",
     description="Automated ticket classification system for call centre operations",
     version="1.0.0",
     contact={
         "name": "Call Centre AI Team",
-        "email": "ai-team@telkom.co.za"
+        "email": "ai-team@telco.com"
     }
 )
 
@@ -114,7 +114,7 @@ async def load_model():
     """Load the trained model on startup."""
     global model_pipeline, model_loaded_at
     
-    logger.info("🚀 Starting Telkom Ticket Classification API...")
+    logger.info("🚀 Starting Telco Ticket Classification API...")
     
     try:
         # Initialize model pipeline
