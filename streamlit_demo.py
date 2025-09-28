@@ -18,12 +18,14 @@ Purpose: Product Owner validation of enhanced LLM features
 import os
 import sys
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 from pathlib import Path
 import time
 import logging
+import json
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -279,51 +281,150 @@ def display_sentiment_analysis(result: EnhancedClassificationResult):
     sentiment_class = get_sentiment_color_class(result.sentiment_label)
     priority_class = get_priority_badge_class(result.priority_level)
     
-    # Ultra-robust HTML cleaning for sentiment reasoning
+    # NUCLEAR OPTION: Ultimate HTML cleaning - clean at display time regardless of source
     import re
     import html
     
-    clean_reasoning = result.sentiment_reasoning
+    # Get original reasoning
+    original_reasoning = result.sentiment_reasoning
     
-    # Debug: Show what we're receiving (remove this in production)
+    # Debug: Always show what we received
     if st.session_state.get('debug_html', False):
-        st.text(f"DEBUG - Raw reasoning: {repr(clean_reasoning)}")
+        st.text(f"DEBUG - Original received: {repr(original_reasoning)}")
     
-    # Step 1: Decode HTML entities
+    # STEP 1: BeautifulSoup cleaning (handles all HTML structures)
+    clean_reasoning = original_reasoning
+    try:
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(clean_reasoning, 'html.parser')
+        clean_reasoning = soup.get_text()
+        if st.session_state.get('debug_html', False):
+            st.text(f"DEBUG - After BeautifulSoup: {repr(clean_reasoning)}")
+    except Exception as e:
+        if st.session_state.get('debug_html', False):
+            st.text(f"DEBUG - BeautifulSoup failed: {e}")
+    
+    # STEP 2: Decode HTML entities (like &#x27; &#39; &lt; &gt;)
     clean_reasoning = html.unescape(clean_reasoning)
+    if st.session_state.get('debug_html', False):
+        st.text(f"DEBUG - After HTML unescape: {repr(clean_reasoning)}")
     
-    # Step 2: Remove ALL HTML tags with multiple patterns
-    clean_reasoning = re.sub(r'<[^>]*?>', '', clean_reasoning)  # Standard tags
-    clean_reasoning = re.sub(r'<.*?>', '', clean_reasoning)     # Greedy match
-    clean_reasoning = re.sub(r'<[^<>]*>', '', clean_reasoning)  # Alternative pattern
+    # STEP 3: Nuclear regex cleaning - remove ALL possible HTML patterns
+    clean_reasoning = re.sub(r'<[^>]*>', '', clean_reasoning)      # Standard tags
+    clean_reasoning = re.sub(r'<.*?>', '', clean_reasoning)        # Greedy tags  
+    clean_reasoning = re.sub(r'&[a-zA-Z0-9#]+;', '', clean_reasoning)  # HTML entities
+    clean_reasoning = re.sub(r'<[^<>]*>', '', clean_reasoning)     # Alternative pattern
     
-    # Step 3: Remove markdown-style formatting that might leak through
-    clean_reasoning = re.sub(r'\*\*(.*?)\*\*', r'\1', clean_reasoning)  # Bold
-    clean_reasoning = re.sub(r'\*(.*?)\*', r'\1', clean_reasoning)      # Italic
+    # STEP 4: Remove specific problematic patterns
+    clean_reasoning = re.sub(r'^(Reasoning:\s*|reasoning:\s*)', '', clean_reasoning, flags=re.IGNORECASE)
     
-    # Step 4: Remove common LLM prefixes
-    clean_reasoning = re.sub(r'^(Reasoning:\s*|reasoning:\s*|Analysis:\s*|analysis:\s*)', '', clean_reasoning, flags=re.IGNORECASE)
+    # STEP 5: Character-by-character nuclear cleaning
+    if '<' in clean_reasoning or '>' in clean_reasoning or '&' in clean_reasoning:
+        clean_reasoning = ''.join(c for c in clean_reasoning if c not in '<>&')
+        if st.session_state.get('debug_html', False):
+            st.text(f"DEBUG - Applied nuclear cleaning")
     
-    # Step 5: Clean up whitespace and normalize
+    # STEP 6: Whitespace normalization
     clean_reasoning = ' '.join(clean_reasoning.split())
     
-    # Step 6: Fallback - if still contains < or >, do aggressive cleaning
-    if '<' in clean_reasoning or '>' in clean_reasoning:
-        clean_reasoning = re.sub(r'[<>]', '', clean_reasoning)
-    
-    # Final safety check - if empty after cleaning, provide fallback
-    if not clean_reasoning.strip():
+    # STEP 6.5: Remove Markdown code fences/backticks and blockquotes that can break Markdown rendering
+    # Rationale: If Markdown sees ``` or leading >, it may render our wrapper HTML as literal text.
+    clean_reasoning = re.sub(r"```[\s\S]*?```", " ", clean_reasoning)  # remove fenced code blocks
+    clean_reasoning = clean_reasoning.replace("```", "").replace("`", "")  # remove stray backticks
+    clean_reasoning = re.sub(r"^\s*>\s*", "", clean_reasoning, flags=re.MULTILINE)  # remove blockquote markers
+
+    # STEP 7: Safety fallback
+    if not clean_reasoning.strip() or len(clean_reasoning) < 5:
         clean_reasoning = "Sentiment analysis completed successfully."
     
-    st.markdown(f"""
-    <div class="sentiment-box {sentiment_class}">
-        <h4><span class="sentiment-emoji">{sentiment_emoji}</span>Sentiment Analysis</h4>
-        <p><strong>Sentiment:</strong> {result.sentiment_label} (Score: {result.sentiment_score:+.1f})</p>
-        <p><strong>Priority Level:</strong> <span class="{priority_class} priority-badge">{result.priority_level.replace('_', ' ')}</span></p>
-        {f'<div class="escalation-required">⚠️ IMMEDIATE ESCALATION REQUIRED</div>' if result.escalation_required else ''}
-        <p><strong>Reasoning:</strong> {clean_reasoning}</p>
+    if st.session_state.get('debug_html', False):
+        st.text(f"DEBUG - Final clean result: {repr(clean_reasoning)}")
+    
+    # STEP 8: Simplified components.html with dynamic height calculation
+    # Use safe HTML component to bypass Markdown parsing entirely and prevent any HTML interpretation
+    safe_reasoning_js = json.dumps(clean_reasoning)  # proper escaping for JS/string literal
+    
+    # More generous height estimation with scrollbar fallback
+    base_height = 220  # Base height for headers, sentiment info, etc.
+    chars_per_line = 65  # More conservative estimate
+    newlines = clean_reasoning.count('\n')
+    estimated_lines = max(4, len(clean_reasoning) // chars_per_line + newlines + 3)  # Minimum 4 lines, +3 buffer
+    estimated_height = min(700, base_height + (estimated_lines * 28))  # 28px per line, max 700px
+    
+    # Calculate max height for reasoning text area
+    reasoning_max_height = max(150, estimated_height - 160)  # Reserve space for headers
+    
+    # Simple styling with proper text wrapping and scrollbars as fallback
+    html_block = f"""
+    <div style="
+        background: #f0f0f0; 
+        padding: 1.5rem; 
+        border-radius: 10px; 
+        margin: 0; 
+        border-left: 5px solid #2196F3; 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        height: {estimated_height}px;
+        overflow-y: auto;
+    ">
+        <h4><span style="font-size:1.5rem; margin-right:0.5rem;">{sentiment_emoji}</span>Sentiment Analysis</h4>
+        <p><strong>Sentiment:</strong> <span style="color: {get_sentiment_color_for_text(result.sentiment_label)};">{result.sentiment_label}</span> (Score: {result.sentiment_score:+.1f})</p>
+        <p><strong>Priority Level:</strong> <span style="background: {get_priority_bg(result.priority_level)}; color: {get_priority_text(result.priority_level)}; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">{result.priority_level.replace('_', ' ')}</span></p>
+        {f'<div style="background: #ffcdd2; color: #c62828; padding: 0.5rem 1rem; border-radius: 5px; font-weight: 600; display: inline-block; margin: 0.5rem 0;">⚠️ IMMEDIATE ESCALATION REQUIRED</div>' if result.escalation_required else ''}
+        <p><strong>Reasoning:</strong></p>
+        <div id="sentiment-reasoning-text" style="
+            word-wrap: break-word; 
+            white-space: pre-wrap; 
+            line-height: 1.6; 
+            margin-top: 0.5rem;
+            max-height: {reasoning_max_height}px;
+            overflow-y: auto;
+            padding: 0.8rem;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        "></div>
+        <script>
+            (function() {{
+                const txt = {safe_reasoning_js};
+                const el = document.getElementById('sentiment-reasoning-text');
+                if (el) {{ el.textContent = txt; }}
+            }})();
+        </script>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    
+    # Use estimated height with scrolling enabled as fallback
+    components.html(html_block, height=estimated_height, scrolling=True)
+
+def get_sentiment_color_for_text(sentiment_label: str) -> str:
+    """Get text color for sentiment."""
+    colors = {
+        "POSITIVE": "#1b5e20",
+        "NEUTRAL": "#424242", 
+        "NEGATIVE": "#e65100",
+        "CRITICAL": "#c62828"
+    }
+    return colors.get(sentiment_label, "#424242")
+
+def get_priority_bg(priority_level: str) -> str:
+    """Get background color for priority badge."""
+    colors = {
+        "P0_IMMEDIATE": "#ffcdd2",
+        "P1_HIGH": "#ffe0b2", 
+        "P2_MEDIUM": "#fff9c4",
+        "P3_STANDARD": "#e8f5e8"
+    }
+    return colors.get(priority_level, "#e8f5e8")
+
+def get_priority_text(priority_level: str) -> str:
+    """Get text color for priority badge."""
+    colors = {
+        "P0_IMMEDIATE": "#c62828",
+        "P1_HIGH": "#ef6c00",
+        "P2_MEDIUM": "#f57f17", 
+        "P3_STANDARD": "#388e3c"
+    }
+    return colors.get(priority_level, "#388e3c")
 
 def initialize_classifier():
     """Initialize the enhanced classifier automatically."""
@@ -350,8 +451,9 @@ def create_probability_chart(probabilities: dict, title: str):
     probs = list(probabilities.values())
     
     # Sort by probability
-    sorted_data = sorted(zip(categories, probs), key=lambda x: x[1], reverse=True)
-    categories, probs = zip(*sorted_data)
+    sorted_data = sorted(zip(categories, probs, strict=True), key=lambda x: x[1], reverse=True)
+    categories = [cat for cat, _ in sorted_data]
+    probs = [p for _, p in sorted_data]
     
     fig = go.Figure(go.Bar(
         x=probs,
@@ -367,7 +469,7 @@ def create_probability_chart(probabilities: dict, title: str):
         xaxis_title="Confidence",
         yaxis_title="Category",
         height=300,
-        margin=dict(l=20, r=20, t=40, b=20)
+        margin={"l": 20, "r": 20, "t": 40, "b": 20}
     )
     
     return fig
@@ -421,6 +523,13 @@ def main():
         st.subheader("🐛 Debug")
         debug_html = st.checkbox("Show raw HTML from API", value=False, help="Enable to see raw API responses")
         st.session_state.debug_html = debug_html
+        
+        if st.button("🔄 Clear Cache & Restart Classifier", help="Force restart classifier to clear any cached results"):
+            st.session_state.classifier = None
+            st.session_state.initialization_attempted = False
+            st.session_state.classification_history = []
+            st.success("Cache cleared! Page will reload.")
+            st.rerun()
         
         st.markdown("---")
         

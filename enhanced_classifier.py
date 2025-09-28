@@ -173,6 +173,7 @@ INSTRUCTIONS:
 4. Give detailed reasoning for both category and sentiment decisions
 5. Consider South African telecommunications context
 6. If ticket doesn't clearly fit any category (confidence < 0.6), classify as OTHER
+7. **CRITICAL: Use plain text only. Do NOT use HTML tags, markdown formatting, or any special formatting in your reasoning.**
 
 RESPONSE FORMAT (JSON):
 {{
@@ -181,7 +182,7 @@ RESPONSE FORMAT (JSON):
     "reasoning": "Detailed explanation of category classification decision.",
     "sentiment_score": -0.7,
     "sentiment_label": "NEGATIVE",
-    "sentiment_reasoning": "Customer shows frustration with repeated use of words like 'terrible', 'fed up', indicating negative emotional state."
+    "sentiment_reasoning": "Customer shows frustration with repeated use of words like terrible and fed up indicating negative emotional state."
 }}
 """
         return prompt
@@ -230,6 +231,12 @@ RESPONSE FORMAT (JSON):
             
             # Clean whitespace
             sentiment_reasoning = ' '.join(sentiment_reasoning.split())
+            
+            # Validation: Check if HTML tags are still present
+            if '<' in sentiment_reasoning or '>' in sentiment_reasoning:
+                # Aggressive cleaning for persistent HTML
+                sentiment_reasoning = re.sub(r'[<>]', '', sentiment_reasoning)
+                logger.warning(f"🚨 HTML tags detected in sentiment reasoning, cleaned aggressively")
             
             # Fallback if empty
             if not sentiment_reasoning.strip():
@@ -435,6 +442,39 @@ RESPONSE FORMAT (JSON):
         all_probabilities = {k: v/total_prob for k, v in all_probabilities.items()}
         
         processing_time = (time.time() - start_time) * 1000
+        
+        # FINAL NUCLEAR HTML CLEANING - Last safety check before return
+        import re
+        import html
+        
+        # Clean the sentiment_reasoning one more time to be absolutely sure
+        original_reasoning = sentiment_reasoning
+        try:
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(sentiment_reasoning, 'html.parser')
+            sentiment_reasoning = soup.get_text()
+        except Exception:
+            # BeautifulSoup failed, continue with other cleaning methods
+            pass
+        
+        # Decode HTML entities and remove tags
+        sentiment_reasoning = html.unescape(sentiment_reasoning)
+        sentiment_reasoning = re.sub(r'<[^>]*>', '', sentiment_reasoning)
+        sentiment_reasoning = re.sub(r'&[a-zA-Z0-9#]+;', '', sentiment_reasoning)
+        
+        # Nuclear option - remove any angle brackets
+        if '<' in sentiment_reasoning or '>' in sentiment_reasoning:
+            sentiment_reasoning = ''.join(c for c in sentiment_reasoning if c not in '<>')
+            logger.warning(f"🚨🚨🚨 FINAL HTML DETECTED - Removed at return stage")
+            logger.warning(f"Original: {repr(original_reasoning[:100])}")
+            logger.warning(f"Cleaned: {repr(sentiment_reasoning[:100])}")
+        
+        # Clean whitespace
+        sentiment_reasoning = ' '.join(sentiment_reasoning.split())
+        
+        # Ensure we have content
+        if not sentiment_reasoning.strip():
+            sentiment_reasoning = 'Sentiment analysis completed successfully.'
         
         return EnhancedClassificationResult(
             predicted_category=final_pred,
