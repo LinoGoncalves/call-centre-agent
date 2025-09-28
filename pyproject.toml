@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "telkom-call-centre"
+name = "telco-call-centre"
 version = "0.1.0"
 description = "ML-based call centre ticket classification system"
 authors = [{name = "Call Centre Team"}]

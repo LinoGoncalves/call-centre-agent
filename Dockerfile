@@ -1,4 +1,4 @@
-# Dockerfile for Telkom Call Centre Ticket Classification API
+# Dockerfile for Telco Call Centre Ticket Classification API
 FROM python:3.13-slim
 
 # Set working directory

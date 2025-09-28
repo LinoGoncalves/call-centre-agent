@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🚀 Launch script for Telkom Ticket Classifier Demo
+🚀 Launch script for Telco Ticket Classifier Demo
 Quick start script for Product Owner demonstration
 """
 
@@ -12,11 +12,11 @@ from pathlib import Path
 
 def main():
     """Launch the Streamlit demo application."""
-    print("🎯 Telkom Call Centre Ticket Classifier - Demo Launcher")
+    print("🎯 Telco Call Centre Ticket Classifier - Demo Launcher")
     print("=" * 60)
     
     # Check if model exists
-    model_path = Path("models/telkom_ticket_classifier.pkl")
+    model_path = Path("models/telco_ticket_classifier.pkl")
     if not model_path.exists():
         print("❌ Trained model not found!")
         print("💡 Please run: python train_model.py")

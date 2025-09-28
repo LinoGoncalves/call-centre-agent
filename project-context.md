@@ -1,12 +1,12 @@
 # Project Context for AI Development Handover
 
 **Generated:** September 28, 2025  
-**Project:** Telkom Call Centre Agent System  
+**Project:** Telco Call Centre Agent System  
 **Location:** `c:\DEV\call-centre-agent`
 
 ## Executive Summary
 
-This is a sophisticated multi-agent call centre system for Telkom that leverages Google's Gemini AI for enhanced sentiment analysis and ticket classification. The system features a Streamlit demo interface with advanced HTML sanitization, auto-expanding panels, and comprehensive agent-based architecture.
+This is a sophisticated multi-agent call centre system for telecommunications companies that leverages Google's Gemini AI for enhanced sentiment analysis and ticket classification. The system features a Streamlit demo interface with advanced HTML sanitization, auto-expanding panels, and comprehensive agent-based architecture.
 
 ## Recent Development Session Context
 
@@ -49,7 +49,7 @@ This is a sophisticated multi-agent call centre system for Telkom that leverages
   - Sentiment-based color coding and emoji indicators
 - **Critical Code**: `display_sentiment_analysis()` function with iframe isolation and scrollbar fallback
 
-#### 3. **Multi-Agent System** (`telkom-call-centre/`)
+#### 3. **Multi-Agent System** (`telco-call-centre/`)
 - **Master Agent**: Central coordination (`master-agent.md`)
 - **Sub-Agents**: 20+ specialized agents including:
   - Business Analyst, Cloud Engineer, Data Scientist, DevOps Engineer
@@ -98,10 +98,10 @@ total_height = min(700, base_height + (estimated_lines * 28))  # 28px per line
 - `requirements.txt` - Alternative dependency specification
 
 ### Agent System
-- `telkom-call-centre/master-agent.md` - Central agent coordination
-- `telkom-call-centre/sub-agents/` - Specialized agent definitions (20+ files)
-- `telkom-call-centre/development-standards/` - Coding standards and guidelines
-- `telkom-call-centre/templates/` - Project templates and frameworks
+- `telco-call-centre/master-agent.md` - Central agent coordination
+- `telco-call-centre/sub-agents/` - Specialized agent definitions (20+ files)
+- `telco-call-centre/development-standards/` - Coding standards and guidelines
+- `telco-call-centre/templates/` - Project templates and frameworks
 
 ## Development Environment Setup
 
@@ -164,7 +164,7 @@ GOOGLE_API_KEY=your_gemini_api_key_here
 
 ## Development Standards and Guidelines
 
-The project follows comprehensive development standards located in `telkom-call-centre/development-standards/`:
+The project follows comprehensive development standards located in `telco-call-centre/development-standards/`:
 - API design patterns and reference templates
 - Architectural principles and cloud resource policies
 - Secure coding checklist and security policies
@@ -189,7 +189,7 @@ The project follows comprehensive development standards located in `telkom-call-
 - Consider microservices architecture for agent system
 - Implement message queuing for agent communication
 - Add authentication and authorization layers
-- Integrate with actual Telkom systems and databases
+- Integrate with actual telecommunications systems and databases
 
 ## Debugging and Troubleshooting
 

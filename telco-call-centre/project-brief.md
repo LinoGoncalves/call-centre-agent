@@ -1,4 +1,4 @@
-# telkom-call-centre - Project Brief
+# telco-call-centre - Project Brief
 
 ## Project Overview
 

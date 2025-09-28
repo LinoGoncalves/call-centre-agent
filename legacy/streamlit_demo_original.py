@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🎯 Telkom Call Centre Ticket Classifier - Product Demo
+🎯 Telco Call Centre Ticket Classifier - Product Demo
 Interactive Streamlit interface for ML model validation
 
 Author: Software Developer AI Assistant
@@ -29,7 +29,7 @@ except ImportError:
 
 # Page configuration
 st.set_page_config(
-    page_title="Telkom Ticket Classifier - Demo",
+    page_title="Telco Ticket Classifier - Demo",
     page_icon="🎯",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -103,7 +103,7 @@ SAMPLE_TICKETS = {
 def load_model():
     """Load the trained ML model with caching."""
     try:
-        model_path = "models/telkom_ticket_classifier.pkl"
+        model_path = "models/telco_ticket_classifier.pkl"
         if not Path(model_path).exists():
             return None, "Model file not found. Please train the model first."
         
@@ -170,7 +170,7 @@ def main():
     # Header
     st.markdown("""
     <div class="main-header">
-        <h1>🎯 Telkom Call Centre Ticket Classifier</h1>
+        <h1>🎯 Telco Call Centre Ticket Classifier</h1>
         <h3>Product Demo - Interactive ML Model Validation</h3>
         <p>Trained Model Performance: 99.15% Accuracy | 0.38ms Inference Time</p>
     </div>

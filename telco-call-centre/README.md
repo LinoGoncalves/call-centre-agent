@@ -1,4 +1,4 @@
-# telkom-call-centre
+# telco-call-centre
 
 A project created with the Agentic SDLC Framework.
 

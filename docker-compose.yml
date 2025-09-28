@@ -7,7 +7,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: telkom-ticket-classifier
+    container_name: telco-ticket-classifier
     ports:
       - "8000:8000"
     environment:
@@ -33,7 +33,7 @@ services:
   # Redis for caching (optional enhancement)
   redis-cache:
     image: redis:7-alpine
-    container_name: telkom-ticket-redis
+    container_name: telco-ticket-redis
     ports:
       - "6379:6379"
     networks:
@@ -46,7 +46,7 @@ services:
   # Monitoring with Prometheus (optional)
   prometheus:
     image: prom/prometheus:latest
-    container_name: telkom-ticket-prometheus
+    container_name: telco-ticket-prometheus
     ports:
       - "9090:9090"
     networks:
@@ -66,7 +66,7 @@ services:
   # Grafana for visualization (optional)
   grafana:
     image: grafana/grafana:latest
-    container_name: telkom-ticket-grafana
+    container_name: telco-ticket-grafana
     ports:
       - "3000:3000"
     networks:

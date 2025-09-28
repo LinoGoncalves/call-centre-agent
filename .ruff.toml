@@ -7,7 +7,7 @@ indent-width = 4
 extend-exclude = [
     "*.md", 
     "**/*.md",
-    "telkom-call-centre/**/*.md"
+    "telco-call-centre/**/*.md"
 ]
 
 [lint]
