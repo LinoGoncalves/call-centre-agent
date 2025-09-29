@@ -80,7 +80,34 @@ python launch_demo.py
                     └──────────────────┘
 ```
 
-## 🎨 Demo Interface
+## � Development Workflow
+
+### Branching Strategy
+This project uses **Git Flow** branching strategy for professional development:
+
+```
+main (production-ready)
+├── develop (integration branch)
+├── feature/* (new development)
+├── hotfix/* (emergency fixes)
+└── release/* (deployment preparation)
+```
+
+### Contributing
+1. **Start new feature**: `git checkout develop && git checkout -b feature/my-feature`
+2. **Develop & test**: Make changes in feature branch
+3. **Create PR**: Submit pull request to `develop` branch
+4. **Review & merge**: Automated tests + manual review
+5. **Deploy**: Merge `develop` → `main` for production
+
+### Branch Protection
+- **main**: Requires PR reviews, status checks, up-to-date branches
+- **develop**: Requires PR reviews and passing CI/CD tests
+- **Automated CI/CD**: Runs tests on every PR to ensure quality
+
+For detailed workflow instructions, see [Branching Implementation Guide](telco-call-centre/BRANCHING_IMPLEMENTATION_GUIDE.md).
+
+## �🎨 Demo Interface
 
 ### Features:
 - **🔑 Secure API key management** via .env file
