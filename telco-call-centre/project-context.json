@@ -11,7 +11,7 @@
     "master_agent": "./master-agent.md",
     "specialized_agents": "./sub-agents/",
     "development_standards": "./development-standards/",
-    "total_agents": 23,
+    "total_agents": 33,
     "agent_types": [
       "project_coordination",
       "software_development", 
@@ -19,7 +19,14 @@
       "quality_assurance",
       "data_science",
       "infrastructure",
-      "security"
+      "security",
+      "technical_leadership",
+      "systematic_execution",
+      "critical_analysis",
+      "knowledge_management",
+      "meta_cognitive_enhancement",
+      "autonomous_execution",
+      "quantum_thinking"
     ]
   },
   "ai_tool_compatibility": {
@@ -42,7 +49,17 @@
       "specialized_context",
       "role_based_assistance",
       "standards_compliance", 
-      "pattern_recognition"
+      "pattern_recognition",
+      "community_validated_patterns",
+      "systematic_workflow_execution",
+      "critical_thinking_integration",
+      "comprehensive_research_synthesis",
+      "meta_cognitive_enhancement",
+      "quantum_thinking_integration",
+      "autonomous_execution_excellence",
+      "cognitive_auto_escalation",
+      "intelligent_trigger_system",
+      "transparent_reasoning_enhancement"
     ]
   },
   "project_structure": {
@@ -74,7 +91,18 @@
       "debugging", 
       "testing",
       "review",
-      "documentation"
+      "documentation",
+      "research_analysis",
+      "critical_evaluation",
+      "systematic_execution",
+      "technical_leadership",
+      "autonomous_execution",
+      "meta_cognitive_enhancement",
+      "quantum_thinking",
+      "adversarial_validation",
+      "cognitive_auto_escalation",
+      "intelligent_reasoning_triggers",
+      "transparent_enhancement_disclosure"
     ],
     "specialization_domains": [
       "machine_learning",
@@ -86,9 +114,17 @@
       "devops",
       "ui_ux",
       "project_management",
-      "quality_assurance"
+      "quality_assurance",
+      "technical_leadership",
+      "research_methodology",
+      "critical_analysis",
+      "systematic_planning",
+      "meta_cognitive_frameworks",
+      "autonomous_task_execution",
+      "quantum_analysis_methods",
+      "adversarial_reasoning"
     ]
   },
-  "updated": "2025-09-29T00:00:00Z",
+  "updated": "2024-01-20T00:00:00Z",
   "version": "2.0.0"
 }
