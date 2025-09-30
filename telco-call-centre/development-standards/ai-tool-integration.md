@@ -35,13 +35,15 @@ This project implements **tool-agnostic AI agent personas** designed to work sea
   - Leverage development standards for consistent code patterns
 
 #### 🤖 **GitHub Copilot**
-- **Integration Method**: Chat references and context files
-- **Benefits**: Interactive agent persona discussions and planning
-- **Configuration**: Can reference files via relative paths in chat
+- **Integration Method**: Chat references, context files, and enhanced chat modes
+- **Benefits**: Interactive agent persona discussions, specialized chat modes, and workflow optimization
+- **Configuration**: Uses universal `telco-call-centre/` structure plus optional `.github/` enhancements
+- **Enhanced Features**: Specialized chat modes in `.github/chatmodes/` for advanced workflows
 - **Best Practices**:
-  - Use `@workspace` references to agent persona files
+  - Use `@workspace` references to agent persona files in `telco-call-centre/`
   - Leverage interaction patterns for structured conversations
-  - Reference development standards for consistency
+  - Optional: Load specialized chat modes from `.github/chatmodes/` for enhanced workflows
+  - Always maintain compatibility with other tools by referencing universal standards
 
 #### ⚡ **Cursor**
 - **Integration Method**: Context files and composer mode
@@ -197,7 +199,49 @@ All AI tools can benefit from:
 
 ---
 
-## 🎯 Usage Guidelines
+## �️ **Hybrid Architecture (Best of Both Worlds)**
+
+### **Universal + Enhanced Structure**
+
+This project implements a layered approach for maximum compatibility and tool-specific optimization:
+
+```
+📁 telco-call-centre/          # Universal (ALL TOOLS)
+├── sub-agents/                # Multi-tool agent personas
+├── development-standards/     # Tool-agnostic standards  
+└── ai-tool-integration.md     # This file
+
+📁 .github/                    # GitHub Copilot Enhanced
+├── copilot-instructions.md    # Copilot-specific optimizations
+├── chatmodes/                 # Specialized chat modes
+│   ├── agent-orchestrator.md
+│   ├── development-expert.md
+│   └── quality-assurance-expert.md
+└── README.md                  # Architecture explanation
+```
+
+### **Architecture Philosophy**
+
+- **📚 Source of Truth**: `telco-call-centre/` remains authoritative for all tools
+- **⚡ Tool Enhancement**: `.github/` provides GitHub Copilot optimizations  
+- **🔄 Vendor Independence**: Other tools use universal structure unaffected
+- **🔗 Seamless Integration**: GitHub Copilot users get enhanced workflows while maintaining compatibility
+
+### **GitHub Copilot Enhanced Workflows**
+
+**Universal Approach** (compatible with all tools):
+```bash
+@workspace Using telco-call-centre/master-agent.md orchestration, coordinate appropriate agents for this task
+```
+
+**Enhanced Chat Modes** (GitHub Copilot specific):
+- Load `.github/chatmodes/agent-orchestrator.md` for master agent coordination
+- Load `.github/chatmodes/development-expert.md` for coding and architecture  
+- Load `.github/chatmodes/quality-assurance-expert.md` for testing and QA
+
+---
+
+## �🎯 Usage Guidelines
 
 ### **Selecting Agent Personas**
 
