@@ -1,0 +1,94 @@
+{
+  "project_context": {
+    "name": "Telco Call Centre Agent",
+    "type": "ml_model_with_ui",
+    "primary_language": "python",
+    "frameworks": ["streamlit", "fastapi", "scikit-learn", "google-generative-ai"],
+    "domain": "telecommunications_customer_support",
+    "ai_integration": "enhanced_classification_with_reasoning"
+  },
+  "agent_architecture": {
+    "master_agent": "./master-agent.md",
+    "specialized_agents": "./sub-agents/",
+    "development_standards": "./development-standards/",
+    "total_agents": 23,
+    "agent_types": [
+      "project_coordination",
+      "software_development", 
+      "system_architecture",
+      "quality_assurance",
+      "data_science",
+      "infrastructure",
+      "security"
+    ]
+  },
+  "ai_tool_compatibility": {
+    "supported_tools": [
+      "tabnine",
+      "github_copilot", 
+      "cursor",
+      "codeium",
+      "jetbrains_ai",
+      "claude_dev",
+      "codewhisperer"
+    ],
+    "metadata_format": "yaml_frontmatter",
+    "context_files": [
+      "ai-tool-integration.md",
+      "project-context.json",
+      "agent-roster.json"
+    ],
+    "enhancement_features": [
+      "specialized_context",
+      "role_based_assistance",
+      "standards_compliance", 
+      "pattern_recognition"
+    ]
+  },
+  "project_structure": {
+    "root_context": "telco-call-centre/",
+    "agent_personas": "sub-agents/",
+    "standards": "development-standards/",
+    "templates": "templates/",
+    "business_rules": "Business Rules/"
+  },
+  "development_workflow": {
+    "branching_strategy": "git_flow",
+    "main_branch": "main",
+    "develop_branch": "develop", 
+    "feature_prefix": "feature/",
+    "hotfix_prefix": "hotfix/",
+    "ci_cd": "github_actions"
+  },
+  "ai_enhancement_metadata": {
+    "context_scope_levels": [
+      "project_wide",
+      "system_wide", 
+      "codebase_wide",
+      "domain_specific",
+      "component_specific"
+    ],
+    "interaction_patterns": [
+      "planning",
+      "code_generation",
+      "debugging", 
+      "testing",
+      "review",
+      "documentation"
+    ],
+    "specialization_domains": [
+      "machine_learning",
+      "web_development",
+      "api_design",
+      "database_design",
+      "cloud_architecture",
+      "security",
+      "devops",
+      "ui_ux",
+      "project_management",
+      "quality_assurance"
+    ]
+  },
+  "updated": "2025-09-29T00:00:00Z",
+  "version": "2.0.0"
+}

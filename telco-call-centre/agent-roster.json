@@ -1,0 +1,165 @@
+{
+  "agent_roster": {
+    "total_agents": 23,
+    "master_agent": {
+      "file": "master-agent.md",
+      "role": "project_orchestrator",
+      "specialization": ["project_management", "team_coordination", "workflow_orchestration"],
+      "context_scope": "project_wide"
+    },
+    "core_team": [
+      {
+        "file": "product-owner-agent.md",
+        "role": "product_owner",
+        "specialization": ["requirements_analysis", "stakeholder_management", "product_strategy"],
+        "context_scope": "project_wide"
+      },
+      {
+        "file": "business-analyst-agent.md", 
+        "role": "business_analyst",
+        "specialization": ["requirements_gathering", "user_story_creation", "process_analysis"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "solutions-architect-agent.md",
+        "role": "solutions_architect", 
+        "specialization": ["system_design", "architecture_patterns", "technical_specifications"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "software-developer-agent.md",
+        "role": "software_developer",
+        "specialization": ["code_generation", "unit_testing", "refactoring"],
+        "context_scope": "codebase_wide"
+      },
+      {
+        "file": "ui-designer-agent.md",
+        "role": "ui_designer",
+        "specialization": ["user_interface_design", "user_experience", "prototyping"],
+        "context_scope": "component_specific"
+      },
+      {
+        "file": "QA-engineer-agent.md", 
+        "role": "qa_engineer",
+        "specialization": ["test_planning", "quality_assurance", "bug_tracking"],
+        "context_scope": "system_wide"
+      }
+    ],
+    "specialist_engineering": [
+      {
+        "file": "cloud-engineer-agent.md",
+        "role": "cloud_engineer", 
+        "specialization": ["cloud_architecture", "infrastructure_as_code", "scalability"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "networks-engineer-agent.md",
+        "role": "networks_engineer",
+        "specialization": ["network_design", "connectivity", "performance"],
+        "context_scope": "domain_specific"
+      },
+      {
+        "file": "database-engineer-agent.md",
+        "role": "database_engineer", 
+        "specialization": ["database_design", "data_modeling", "performance_optimization"],
+        "context_scope": "domain_specific"
+      },
+      {
+        "file": "devops-engineer-agent.md",
+        "role": "devops_engineer",
+        "specialization": ["ci_cd_pipeline", "deployment_automation", "monitoring"],
+        "context_scope": "system_wide"
+      }
+    ],
+    "data_science_ml": [
+      {
+        "file": "data-engineer-agent.md",
+        "role": "data_engineer",
+        "specialization": ["data_pipeline", "etl_processes", "data_quality"],
+        "context_scope": "domain_specific"
+      },
+      {
+        "file": "data-scientist-agent.md", 
+        "role": "data_scientist",
+        "specialization": ["machine_learning", "statistical_analysis", "model_development"],
+        "context_scope": "domain_specific"
+      },
+      {
+        "file": "ML-engineer-agent.md",
+        "role": "ml_engineer",
+        "specialization": ["model_deployment", "mlops", "model_monitoring"],
+        "context_scope": "domain_specific"
+      }
+    ],
+    "governance_management": [
+      {
+        "file": "security-expert-agent.md",
+        "role": "security_expert",
+        "specialization": ["security_architecture", "threat_modeling", "compliance"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "project-manager-agent.md", 
+        "role": "project_manager",
+        "specialization": ["project_planning", "resource_management", "timeline_tracking"],
+        "context_scope": "project_wide"
+      },
+      {
+        "file": "test-manager-agent.md",
+        "role": "test_manager",
+        "specialization": ["test_strategy", "quality_metrics", "test_coordination"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "test-automation-expert-agent.md",
+        "role": "test_automation_expert", 
+        "specialization": ["automated_testing", "test_frameworks", "test_maintenance"],
+        "context_scope": "codebase_wide"
+      },
+      {
+        "file": "scrum-master-agent.md",
+        "role": "scrum_master",
+        "specialization": ["agile_facilitation", "process_improvement", "team_dynamics"],
+        "context_scope": "project_wide"
+      }
+    ],
+    "additional_specialists": [
+      {
+        "file": "technical-writer-agent.md",
+        "role": "technical_writer", 
+        "specialization": ["documentation", "user_guides", "api_documentation"],
+        "context_scope": "project_wide"
+      },
+      {
+        "file": "site-reliability-engineer-agent.md",
+        "role": "sre",
+        "specialization": ["system_reliability", "monitoring", "incident_response"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "UX-research-agent.md",
+        "role": "ux_researcher",
+        "specialization": ["user_research", "usability_testing", "user_feedback_analysis"],
+        "context_scope": "component_specific"
+      }
+    ]
+  },
+  "interaction_patterns": {
+    "planning": ["master-agent", "product-owner-agent", "business-analyst-agent", "project-manager-agent"],
+    "architecture": ["solutions-architect-agent", "cloud-engineer-agent", "database-engineer-agent", "security-expert-agent"],
+    "development": ["software-developer-agent", "devops-engineer-agent", "test-automation-expert-agent"],
+    "testing": ["QA-engineer-agent", "test-manager-agent", "test-automation-expert-agent"],
+    "data_science": ["data-scientist-agent", "data-engineer-agent", "ML-engineer-agent"],
+    "documentation": ["technical-writer-agent", "business-analyst-agent", "solutions-architect-agent"],
+    "deployment": ["devops-engineer-agent", "cloud-engineer-agent", "site-reliability-engineer-agent"],
+    "user_experience": ["ui-designer-agent", "UX-research-agent", "product-owner-agent"]
+  },
+  "tool_optimization": {
+    "tabnine_context_agents": ["software-developer-agent", "solutions-architect-agent", "devops-engineer-agent"],
+    "copilot_chat_agents": ["master-agent", "business-analyst-agent", "technical-writer-agent"],
+    "cursor_composer_agents": ["software-developer-agent", "QA-engineer-agent", "test-automation-expert-agent"],
+    "universal_agents": "all"
+  },
+  "updated": "2025-09-29T00:00:00Z",
+  "version": "2.0.0"
+}
