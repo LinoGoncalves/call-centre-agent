@@ -32,12 +32,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Add src to Python path
-sys.path.append(str(Path(__file__).parent / 'src'))
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
 
 try:
-    from enhanced_classifier import GeminiEnhancedClassifier, EnhancedClassificationResult
+    from src.models.enhanced_classifier import GeminiEnhancedClassifier, EnhancedClassificationResult
 except ImportError:
-    st.error("❌ Enhanced classifier not found. Please ensure enhanced_classifier.py is available.")
+    st.error("❌ Enhanced classifier not found. Please ensure src/models/enhanced_classifier.py is available.")
     st.stop()
 
 # Page configuration

@@ -3,7 +3,17 @@
 Test script for departmental routing and dispute detection
 """
 
-from enhanced_classifier import GeminiEnhancedClassifier
+#!/usr/bin/env python3
+"""Test departmental routing functionality."""
+
+import sys
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+from src.models.enhanced_classifier import GeminiEnhancedClassifier
 
 def test_departmental_routing():
     """Test the new departmental routing functionality."""

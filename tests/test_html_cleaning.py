@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 """Test script for final HTML cleaning validation."""
 
-from enhanced_classifier import GeminiEnhancedClassifier
 import sys
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+from src.models.enhanced_classifier import GeminiEnhancedClassifier
 
 def test_html_cleaning():
     """Test the nuclear HTML cleaning system."""

@@ -32,14 +32,16 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-# Add src to Python path for imports
-sys.path.append(str(Path(__file__).parent / 'src'))
+# Add project root to Python path for imports
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
 
 try:
-    from models.ticket_classifier import TicketClassificationPipeline
+    from src.models.ticket_classifier import TicketClassificationPipeline
 except ImportError:
     logging.error("Could not import base classifier. Please ensure it's available.")
-    sys.exit(1)
+    # Don't exit, allow classifier to work without traditional ML
+    TicketClassificationPipeline = None
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

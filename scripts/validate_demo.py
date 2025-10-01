@@ -8,8 +8,9 @@ import sys
 from pathlib import Path
 import pickle
 
-# Add src to Python path
-sys.path.append(str(Path(__file__).parent / 'src'))
+# Add project root to Python path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 def validate_demo_components():
     """Validate all demo components are working."""
@@ -19,7 +20,7 @@ def validate_demo_components():
     results = []
     
     # 1. Check model file exists
-    model_path = Path("models/telco_ticket_classifier.pkl")
+    model_path = project_root / "models" / "telco_ticket_classifier.pkl"
     if model_path.exists():
         print("✅ Model file found")
         results.append(True)
@@ -29,7 +30,7 @@ def validate_demo_components():
     
     # 2. Test model loading
     try:
-        from models.ticket_classifier import TicketClassificationPipeline
+        from src.models.ticket_classifier import TicketClassificationPipeline
         
         with open(model_path, 'rb') as f:
             model_data = pickle.load(f)

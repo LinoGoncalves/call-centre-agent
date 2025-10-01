@@ -14,8 +14,9 @@ import logging
 from pathlib import Path
 import time
 
-# Add src to path
-sys.path.append(str(Path(__file__).parent / 'src'))
+# Add project root to path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 def test_enhanced_classifier():
     """Test the enhanced classifier with mock API key."""
@@ -23,7 +24,7 @@ def test_enhanced_classifier():
     print("=" * 50)
     
     try:
-        from enhanced_classifier import GeminiEnhancedClassifier
+        from src.models.enhanced_classifier import GeminiEnhancedClassifier
         print("✅ Enhanced classifier module imported successfully")
     except ImportError as e:
         print(f"❌ Failed to import enhanced classifier: {e}")
