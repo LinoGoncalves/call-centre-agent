@@ -144,7 +144,7 @@ agentic-framework/
 **Design Pattern**: Master-Agent Orchestration
 - **Master Agent**: Coordinates complex multi-disciplinary tasks
 - **Sub-Agents**: Specialized expertise (BA, Architect, Developer, QA, etc.)
-- **HITL (Human-in-the-Loop)**: Human oversight at decision points
+- **HITL (Human-in-the-Loop)**: Human oversight at decision points. For full patterns and modes, see `docs/AGENTIC_FRAMEWORK_GUIDE.md` > "Human-in-the-Loop (HITL) Workflows".
 
 **Usage Example:**
 ```

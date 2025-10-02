@@ -40,15 +40,18 @@ interaction_patterns: |
 
 ---
 
-## Master Agent Orchestration Pattern
+## Master Agent Orchestration (Canonical Reference)
 
-`master-agent.md` contains the orchestration guidelines used to coordinate sub-agents for complex features. Key patterns:
+This repository centralizes orchestration guidance in a single canonical document: the agent orchestrator specification located at `.github/chatmodes/agent-orchestrator.md`.
 
-1. **Plan & Todo**: Master creates an explicit TODO list with roles and acceptance criteria
-2. **One-in-Progress Rule**: Only one todo is in-progress at a time to avoid state collisions
-3. **HITL (Human-in-the-loop)**: Tasks requiring human validation are flagged and routed accordingly
-4. **Recomposition**: Master collects outputs from sub-agents and composes an integrated artifact
+Rather than duplicating orchestration rules in multiple places, refer to that canonical file for decision patterns, coordination flows, and invocation examples. In short:
 
+- The master agent produces a scoped plan with explicit todos and acceptance criteria.
+- Exactly one todo is marked in-progress at a time to avoid conflicting state changes.
+- Human-in-the-loop (HITL) tasks are flagged and routed to reviewers.
+- The master composes sub-agent outputs into final artifacts (docs, code, tests).
+
+For full orchestration rules and example workflows, read: `.github/chatmodes/agent-orchestrator.md` (Master Orchestrator Chat Mode).
 ---
 
 ## How to Add a New Sub-Agent
@@ -71,16 +74,10 @@ interaction_patterns: |
 
 ## Best Practices
 
-- Keep agents focused (single responsibility)
-- Provide explicit input/output contracts in frontmatter
-- Include sample inputs and expected outputs for reproducibility
-- Use the `templates/` directory for standard responses (e.g., PR body templates)
 
----
+--3. **HITL (Human-in-the-loop)**: For full guidance on HITL workflows (modes, checkpoints, and examples), see `docs/AGENTIC_FRAMEWORK_GUIDE.md` -> "Human-in-the-Loop (HITL) Workflows".
 
 ## Security and Governance
-
-- Do not include secrets in agent content
 - Sub-agents that access external APIs must document required environment variables and permissions
 
 ---

@@ -799,5 +799,10 @@ By the end of this tutorial, you should be able to:
 
 ---
 
-*Tutorial created by the Agentic AI Framework - Master Orchestrator*
-*For questions or issues, refer to the project README and documentation*
+This tutorial was assembled using the repository's Agentic Framework. For orchestration patterns and workflows see:
+
+- `.github/chatmodes/agent-orchestrator.md` — Master Orchestrator (canonical)
+- `docs/AGENTIC_FRAMEWORK_GUIDE.md` — Detailed framework guide (HITL, agents, templates)
+
+For general project questions, refer to the project README and `docs/PROJECT_STRUCTURE.md`.
+
