@@ -65,11 +65,19 @@ Master: Full System
 - Traditional ML classifier
 - Estimated time: 10 hours
 
+### **Phase 1: Foundation**
+📄 [PHASE_1_FOUNDATION.md](./PHASE_1_FOUNDATION.md)
+- Reproducible Python environment, data validation, preprocessing pipelines, TF-IDF patterns
+- Estimated time: 4-6 hours
+
+### **Phase 2: Traditional ML**
+📄 [PHASE_2_TRADITIONAL_ML.md](./PHASE_2_TRADITIONAL_ML.md)
+- Model pipelines, hyperparameter tuning, calibration, explainability, persistence
+- Estimated time: 6-8 hours
+
 ### **Phase 3: LLM Integration**
-📄 [PHASE_3_GEMINI_INTEGRATION.md](./tutorial/PHASE_3_GEMINI_INTEGRATION.md)
-- Google Gemini API integration
-- Prompt engineering techniques
-- Ensemble prediction logic
+📄 [PHASE_3_GEMINI_INTEGRATION.md](./PHASE_3_GEMINI_INTEGRATION.md)
+- Deep dive into Gemini API, prompt engineering, ensemble design, error handling
 - Estimated time: 4-6 hours
 
 ### **Phase 4: User Interface**
