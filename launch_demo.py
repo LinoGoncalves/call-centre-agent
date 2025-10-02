@@ -25,7 +25,7 @@ def launch_demo():
     print("-" * 70)
     
     # Set up environment
-    demo_file = Path(__file__).parent / "streamlit_demo.py"
+    demo_file = Path(__file__).parent / "src" / "ui" / "streamlit_demo.py"
     
     if not demo_file.exists():
         print("❌ Enhanced demo file not found!")

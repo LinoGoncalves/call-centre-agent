@@ -27,7 +27,7 @@ Transform customer support with intelligent ticket routing, AI reasoning explana
 ### 1. **Environment Setup**
 ```bash
 # Interactive setup (recommended)
-python setup_env.py
+python scripts/setup_env.py
 
 # OR manual setup
 copy .env.example .env
@@ -41,7 +41,11 @@ copy .env.example .env
 
 ### 3. **Launch Demo**
 ```bash
+# Using the launcher
 python launch_demo.py
+
+# OR using the main CLI
+python main.py demo
 ```
 
 **Demo opens at:** http://localhost:8502
@@ -80,7 +84,34 @@ python launch_demo.py
                     └──────────────────┘
 ```
 
-## 🎨 Demo Interface
+## � Development Workflow
+
+### Branching Strategy
+This project uses **Git Flow** branching strategy for professional development:
+
+```
+main (production-ready)
+├── develop (integration branch)
+├── feature/* (new development)
+├── hotfix/* (emergency fixes)
+└── release/* (deployment preparation)
+```
+
+### Contributing
+1. **Start new feature**: `git checkout develop && git checkout -b feature/my-feature`
+2. **Develop & test**: Make changes in feature branch
+3. **Create PR**: Submit pull request to `develop` branch
+4. **Review & merge**: Automated tests + manual review
+5. **Deploy**: Merge `develop` → `main` for production
+
+### Branch Protection
+- **main**: Requires PR reviews, status checks, up-to-date branches
+- **develop**: Requires PR reviews and passing CI/CD tests
+- **Automated CI/CD**: Runs tests on every PR to ensure quality
+
+For detailed workflow instructions, see [Branching Implementation Guide](telco-domain/BRANCHING_IMPLEMENTATION_GUIDE.md).
+
+## �🎨 Demo Interface
 
 ### Features:
 - **🔑 Secure API key management** via .env file
@@ -98,18 +129,53 @@ python launch_demo.py
 
 ```
 call-centre-agent/
-├── 🤖 Core System
-│   ├── enhanced_classifier.py      # Gemini LLM integration
-│   ├── src/models/                 # Traditional ML pipeline
-│   └── src/data/                   # Data generation
-├── 🎨 Demo Interface  
-│   ├── streamlit_demo.py           # Professional demo UI
+├── 📂 Root Level (Entry Points)
+│   ├── main.py                     # Main CLI entry point
 │   ├── launch_demo.py              # Demo launcher
-│   └── setup_env.py               # Interactive setup
+│   ├── setup_env.py               # Environment setup
+│   └── README.md                  # This file
+│
+├── 📂 src/ (Application Code)
+│   ├── models/                    # ML models & classifiers
+│   │   ├── enhanced_classifier.py # Google Gemini LLM integration
+│   │   └── ticket_classifier.py   # Traditional ML pipeline
+│   ├── ui/                        # User interfaces
+│   │   └── streamlit_demo.py      # Professional demo UI
+│   ├── data/                      # Data generation & processing
+│   │   └── mock_data_generator.py
+│   └── api/                       # API endpoints
+│       └── main.py                # FastAPI application
+│
+├── 📂 scripts/ (Utility Scripts)
+│   ├── train_model.py             # Model training script
+│   ├── validate_demo.py           # System validation
+│   ├── fix_api_key.py            # API key troubleshooting
+│   └── fix_gemini_model.py       # Model discovery tool
+│
+├── 📂 tests/ (Test Suite)
+│   ├── test_enhanced_classifier.py
+│   ├── test_html_cleaning.py
+│   ├── test_system.py
+│   └── test_departmental_routing.py
+│
+├── 📂 agentic-framework/ (Universal AI Framework)
+│   ├── master-agent.md            # Central orchestrator
+│   ├── sub-agents/                # 22+ specialized agents
+│   ├── standards/                 # 20+ universal standards
+│   ├── scripts/                   # Agentic CLI tools
+│   └── templates/                 # Project templates
+│
+├── 📂 telco-domain/ (Telco-Specific)
+│   ├── project-brief.md           # Project requirements
+│   ├── project-context.md         # Session logs & continuity
+│   ├── business-rules/            # Telco business logic
+│   └── standards/                 # Telco-specific standards
+│
 ├── 🔧 Configuration
 │   ├── .env.example               # Environment template
-│   ├── .gitignore                 # Security protections
-│   └── SETUP_GUIDE.md            # Detailed setup guide
+│   ├── pyproject.toml             # Python project config
+│   └── .gitignore                 # Security protections
+│
 └── 📊 Data & Models
     ├── models/                    # Trained ML models
     └── data/                      # Generated datasets
@@ -118,20 +184,25 @@ call-centre-agent/
 ## 🛠️ Advanced Usage
 
 ### Model Training
+
 ```bash
 # Generate fresh training data
 python src/data/mock_data_generator.py
 
 # Train traditional ML model
-python train_model.py
+python scripts/train_model.py
+
+# OR use the main CLI
+python main.py train
 
 # Validate enhanced classifier
-python test_enhanced_classifier.py
+python tests/test_enhanced_classifier.py
 ```
 
 ### API Integration
+
 ```python
-from enhanced_classifier import GeminiEnhancedClassifier
+from src.models.enhanced_classifier import GeminiEnhancedClassifier
 
 classifier = GeminiEnhancedClassifier()
 result = classifier.classify_ticket("My internet bill is wrong")
@@ -142,7 +213,9 @@ print(f"Reasoning: {result.reasoning}")
 ```
 
 ### Configuration Options
+
 Edit `.env` file:
+
 ```bash
 # Core settings
 GOOGLE_API_KEY=your_key_here
@@ -152,6 +225,25 @@ ENSEMBLE_WEIGHT=0.7               # 70% Gemini, 30% Traditional
 # Demo settings
 DEMO_PORT=8502
 DEMO_HOST=localhost
+```
+
+### Using the Main CLI
+
+```bash
+# Launch demo
+python main.py demo
+
+# Train models
+python main.py train
+
+# Run tests
+python main.py test
+
+# Validate system
+python main.py validate
+
+# Show help
+python main.py --help
 ```
 
 ## 🔒 Security & Privacy

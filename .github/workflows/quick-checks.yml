@@ -1,0 +1,47 @@
+name: Quick Status Checks
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  quick-test:
+    name: Quick Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+        
+    - name: Install minimal dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        
+    - name: Run core tests
+      run: |
+        python test_departmental_routing.py
+        echo "✅ Core functionality tests passed"
+        
+    - name: Validate imports
+      run: |
+        python -c "
+        try:
+            from enhanced_classifier import GeminiEnhancedClassifier
+            print('✅ Core modules import successfully')
+        except ImportError as e:
+            print(f'❌ Import error: {e}')
+            exit(1)
+        "
+        
+    - name: Basic syntax check
+      run: |
+        python -m py_compile enhanced_classifier.py
+        python -m py_compile streamlit_demo.py
+        python -m py_compile launch_demo.py
+        echo "✅ Python syntax validation passed"
