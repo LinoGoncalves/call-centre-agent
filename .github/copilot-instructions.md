@@ -6,17 +6,23 @@ This is a sophisticated multi-agent call centre system with **universal AI tool 
 
 ## 📋 Universal Standards Reference
 
-**IMPORTANT**: Always reference the main project standards located in the universal structure:
+**IMPORTANT**: Always reference the framework and domain standards in their new locations:
 
-### Primary Standards Location
-- **`telco-call-centre/development-standards/`** - All coding guidelines and project standards
-- **`telco-call-centre/master-agent.md`** - Central project orchestration and coordination  
-- **`telco-call-centre/ai-tool-integration.md`** - Comprehensive multi-tool usage patterns
-- **`telco-call-centre/agent-roster.json`** - Complete agent mapping and specializations
-- **`telco-call-centre/project-context.json`** - Tool-agnostic project configuration
+### Framework Location (Universal, Reusable)
+- **`framework/standards/`** - Universal coding guidelines and best practices
+- **`framework/master-agent.md`** - Central orchestration and coordination  
+- **`framework/sub-agents/`** - 22+ specialized agent personas
+- **`framework/agent-roster.json`** - Complete agent mapping and specializations
+- **`framework/templates/`** - Reusable project templates
+
+### Domain Location (Telco-Specific)
+- **`telco-domain/project-brief.md`** - Project requirements and scope
+- **`telco-domain/project-context.md`** - Session logs and continuity tracking
+- **`telco-domain/standards/`** - Telco-specific development standards
+- **`telco-domain/business-rules/`** - Telco business logic
 
 ### Agent System Architecture
-All agent personas are located in **`telco-call-centre/sub-agents/`** with enhanced YAML frontmatter metadata for improved context awareness across all AI tools.
+All agent personas are located in **`framework/sub-agents/`** with enhanced YAML frontmatter metadata for improved context awareness across all AI tools.
 
 ## 🤖 Agent Orchestration Patterns
 
@@ -24,40 +30,40 @@ All agent personas are located in **`telco-call-centre/sub-agents/`** with enhan
 When handling complex tasks, **always start with the master agent**:
 
 ```bash
-@workspace Acting as the master orchestrator from telco-call-centre/master-agent.md, coordinate the appropriate specialized agents for this task
+@workspace Acting as the master orchestrator from framework/master-agent.md, coordinate the appropriate specialized agents for this task
 ```
 
 ### Multi-Agent Workflows
 For complex features requiring multiple disciplines:
 
 ```bash
-@workspace Using telco-call-centre/master-agent.md orchestration, coordinate these agents:
-- telco-call-centre/sub-agents/business-analyst-agent.md for requirements
-- telco-call-centre/sub-agents/solutions-architect-agent.md for system design
-- telco-call-centre/sub-agents/software-developer-agent.md for implementation
+@workspace Using framework/master-agent.md orchestration, coordinate these agents:
+- framework/sub-agents/business-analyst-agent.md for requirements
+- framework/sub-agents/solutions-architect-agent.md for system design
+- framework/sub-agents/software-developer-agent.md for implementation
 ```
 
 ### Specialized Agent References
 For domain-specific tasks, reference the appropriate specialist:
 
 ```bash
-@workspace Following telco-call-centre/sub-agents/[AGENT-NAME]-agent.md specialization, [TASK DESCRIPTION]
+@workspace Following framework/sub-agents/[AGENT-NAME]-agent.md specialization, [TASK DESCRIPTION]
 ```
 
 ## 🛠️ Development Standards Compliance
 
 ### Code Generation
 Always reference universal standards:
-- **Coding Style**: `telco-call-centre/development-standards/coding_styleguide.md`
-- **API Design**: `telco-call-centre/development-standards/api_design_patterns.md`  
-- **Testing**: `telco-call-centre/development-standards/testing_strategy.md`
-- **Security**: `telco-call-centre/development-standards/secure_coding_checklist.md`
+- **Coding Style**: `framework/standards/coding_styleguide.md`
+- **API Design**: `framework/standards/api_design_patterns.md`  
+- **Testing**: `framework/standards/testing_strategy.md`
+- **Security**: `framework/standards/secure_coding_checklist.md`
 
 ### Architecture Decisions
 For system design tasks:
-- **Architecture Principles**: `telco-call-centre/development-standards/architectural-principles.md`
-- **Cloud Standards**: `telco-call-centre/development-standards/iac_standards.md`
-- **Network Policies**: `telco-call-centre/development-standards/network_security_policy.md`
+- **Architecture Principles**: `framework/standards/architectural-principles.md`
+- **Cloud Standards**: `framework/standards/iac_standards.md`
+- **Network Policies**: `telco-domain/standards/network_security_policy.md`
 
 ## 🔧 Tool Integration Awareness
 
@@ -69,22 +75,24 @@ Remember that this project supports multiple AI tools:
 
 ### Vendor-Neutral Approach
 - Never suggest GitHub-specific solutions that would break other tools
-- Always reference the universal `telco-call-centre/` structure  
+- Always reference the universal `framework/` structure for reusable components
+- Reference `telco-domain/` for project-specific context
 - Maintain tool-agnostic recommendations
 - Support the established YAML metadata system in agent files
 
 ## 📁 Project Structure Awareness
 
 ### Core Components
-- **`enhanced_classifier.py`** - Main AI classification engine with Gemini integration
-- **`streamlit_demo.py`** - Interactive demo interface with HTML sanitization
+- **`src/models/enhanced_classifier.py`** - Main AI classification engine with Gemini integration
+- **`src/ui/streamlit_demo.py`** - Interactive demo interface with HTML sanitization
 - **`launch_demo.py`** - Demo launcher script
-- **`telco-call-centre/`** - Complete agent system with universal AI tool metadata
+- **`framework/`** - Complete agentic AI framework with universal AI tool metadata
+- **`telco-domain/`** - Telco-specific project context and business rules
 
 ### Configuration Files
 - **`.env`** - Environment variables (Google API key)
 - **`pyproject.toml`** - Python project configuration
-- **`project-context.md`** - Comprehensive project documentation
+- **`telco-domain/project-context.md`** - Comprehensive project documentation
 
 ## 🎨 Code Style and Patterns
 
@@ -92,7 +100,7 @@ Remember that this project supports multiple AI tools:
 Follow established patterns in the codebase:
 - Use type hints consistently
 - Implement comprehensive error handling
-- Follow the HTML sanitization patterns established in `streamlit_demo.py`
+- Follow the HTML sanitization patterns established in `src/ui/streamlit_demo.py`
 - Maintain the multi-layer defense approach for security
 
 ### Agent Integration
@@ -101,17 +109,20 @@ When working with agent files:
 - Maintain `agent_type`, `specialization`, `tools_compatible` fields
 - Keep `context_scope` and `interaction_patterns` consistent
 - Support the universal AI tool integration framework
+- Maintain `agent_type`, `specialization`, `tools_compatible` fields
+- Keep `context_scope` and `interaction_patterns` consistent
+- Support the universal AI tool integration framework
 
 ## ⚡ Performance and Quality
 
 ### Testing Standards
-- Reference `telco-call-centre/development-standards/testing_strategy.md`
+- Reference `framework/standards/testing_strategy.md`
 - Use appropriate test frameworks for the component type
 - Follow established test patterns in existing codebase
 
 ### Security Considerations
 - Always apply HTML sanitization for user inputs
-- Follow `telco-call-centre/development-standards/secure_coding_checklist.md`
+- Follow `framework/standards/secure_coding_checklist.md`
 - Implement proper input validation and error handling
 
 ## 🚀 Project Goals Alignment
@@ -146,11 +157,12 @@ Reference specific agents for:
 - Standards compliance in specific areas
 
 ### Universal Compatibility
-- Always reference `telco-call-centre/` structure
+- Always reference `framework/` structure for reusable components
+- Reference `telco-domain/` for project-specific context
 - Support YAML metadata enhancements in agent files
 - Maintain tool-agnostic approach
 - Preserve vendor independence
 
 ---
 
-**Remember**: This project's strength lies in its universal AI tool integration. While optimizing for GitHub Copilot, always maintain compatibility with Tabnine (primary preference), Cursor, Codeium, and JetBrains AI. The `telco-call-centre/` structure is the source of truth for all tools.
+**Remember**: This project's strength lies in its universal AI tool integration. While optimizing for GitHub Copilot, always maintain compatibility with Tabnine (primary preference), Cursor, Codeium, and JetBrains AI. The `framework/` structure is the source of truth for all tools.

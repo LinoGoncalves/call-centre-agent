@@ -109,7 +109,7 @@ main (production-ready)
 - **develop**: Requires PR reviews and passing CI/CD tests
 - **Automated CI/CD**: Runs tests on every PR to ensure quality
 
-For detailed workflow instructions, see [Branching Implementation Guide](telco-call-centre/BRANCHING_IMPLEMENTATION_GUIDE.md).
+For detailed workflow instructions, see [Branching Implementation Guide](telco-domain/BRANCHING_IMPLEMENTATION_GUIDE.md).
 
 ## �🎨 Demo Interface
 
@@ -158,11 +158,18 @@ call-centre-agent/
 │   ├── test_system.py
 │   └── test_departmental_routing.py
 │
-├── 📂 telkom-call-centre/ (Agent Framework)
+├── 📂 framework/ (Universal AI Framework)
 │   ├── master-agent.md            # Central orchestrator
-│   ├── sub-agents/                # Specialized agents
-│   ├── development-standards/     # 27+ standards files
+│   ├── sub-agents/                # 22+ specialized agents
+│   ├── standards/                 # 20+ universal standards
+│   ├── scripts/                   # Agentic CLI tools
 │   └── templates/                 # Project templates
+│
+├── 📂 telco-domain/ (Telco-Specific)
+│   ├── project-brief.md           # Project requirements
+│   ├── project-context.md         # Session logs & continuity
+│   ├── business-rules/            # Telco business logic
+│   └── standards/                 # Telco-specific standards
 │
 ├── 🔧 Configuration
 │   ├── .env.example               # Environment template
