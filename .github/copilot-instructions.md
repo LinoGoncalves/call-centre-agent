@@ -9,11 +9,11 @@ This is a sophisticated multi-agent call centre system with **universal AI tool 
 **IMPORTANT**: Always reference the framework and domain standards in their new locations:
 
 ### Framework Location (Universal, Reusable)
-- **`framework/standards/`** - Universal coding guidelines and best practices
-- **`framework/master-agent.md`** - Central orchestration and coordination  
-- **`framework/sub-agents/`** - 22+ specialized agent personas
-- **`framework/agent-roster.json`** - Complete agent mapping and specializations
-- **`framework/templates/`** - Reusable project templates
+- **`agentic-framework/standards/`** - Universal coding guidelines and best practices
+- **`agentic-framework/master-agent.md`** - Central orchestration and coordination  
+- **`agentic-framework/sub-agents/`** - 22+ specialized agent personas
+- **`agentic-framework/agent-roster.json`** - Complete agent mapping and specializations
+- **`agentic-framework/templates/`** - Reusable project templates
 
 ### Domain Location (Telco-Specific)
 - **`telco-domain/project-brief.md`** - Project requirements and scope
@@ -22,7 +22,7 @@ This is a sophisticated multi-agent call centre system with **universal AI tool 
 - **`telco-domain/business-rules/`** - Telco business logic
 
 ### Agent System Architecture
-All agent personas are located in **`framework/sub-agents/`** with enhanced YAML frontmatter metadata for improved context awareness across all AI tools.
+All agent personas are located in **`agentic-framework/sub-agents/`** with enhanced YAML frontmatter metadata for improved context awareness across all AI tools.
 
 ## 🤖 Agent Orchestration Patterns
 
@@ -30,39 +30,39 @@ All agent personas are located in **`framework/sub-agents/`** with enhanced YAML
 When handling complex tasks, **always start with the master agent**:
 
 ```bash
-@workspace Acting as the master orchestrator from framework/master-agent.md, coordinate the appropriate specialized agents for this task
+@workspace Acting as the master orchestrator from agentic-framework/master-agent.md, coordinate the appropriate specialized agents for this task
 ```
 
 ### Multi-Agent Workflows
 For complex features requiring multiple disciplines:
 
 ```bash
-@workspace Using framework/master-agent.md orchestration, coordinate these agents:
-- framework/sub-agents/business-analyst-agent.md for requirements
-- framework/sub-agents/solutions-architect-agent.md for system design
-- framework/sub-agents/software-developer-agent.md for implementation
+@workspace Using agentic-framework/master-agent.md orchestration, coordinate these agents:
+- agentic-framework/sub-agents/business-analyst-agent.md for requirements
+- agentic-framework/sub-agents/solutions-architect-agent.md for system design
+- agentic-framework/sub-agents/software-developer-agent.md for implementation
 ```
 
 ### Specialized Agent References
 For domain-specific tasks, reference the appropriate specialist:
 
 ```bash
-@workspace Following framework/sub-agents/[AGENT-NAME]-agent.md specialization, [TASK DESCRIPTION]
+@workspace Following agentic-framework/sub-agents/[AGENT-NAME]-agent.md specialization, [TASK DESCRIPTION]
 ```
 
 ## 🛠️ Development Standards Compliance
 
 ### Code Generation
 Always reference universal standards:
-- **Coding Style**: `framework/standards/coding_styleguide.md`
-- **API Design**: `framework/standards/api_design_patterns.md`  
-- **Testing**: `framework/standards/testing_strategy.md`
-- **Security**: `framework/standards/secure_coding_checklist.md`
+- **Coding Style**: `agentic-framework/standards/coding_styleguide.md`
+- **API Design**: `agentic-framework/standards/api_design_patterns.md`  
+- **Testing**: `agentic-framework/standards/testing_strategy.md`
+- **Security**: `agentic-framework/standards/secure_coding_checklist.md`
 
 ### Architecture Decisions
 For system design tasks:
-- **Architecture Principles**: `framework/standards/architectural-principles.md`
-- **Cloud Standards**: `framework/standards/iac_standards.md`
+- **Architecture Principles**: `agentic-framework/standards/architectural-principles.md`
+- **Cloud Standards**: `agentic-framework/standards/iac_standards.md`
 - **Network Policies**: `telco-domain/standards/network_security_policy.md`
 
 ## 🔧 Tool Integration Awareness
@@ -75,7 +75,7 @@ Remember that this project supports multiple AI tools:
 
 ### Vendor-Neutral Approach
 - Never suggest GitHub-specific solutions that would break other tools
-- Always reference the universal `framework/` structure for reusable components
+- Always reference the universal `agentic-framework/` structure for reusable components
 - Reference `telco-domain/` for project-specific context
 - Maintain tool-agnostic recommendations
 - Support the established YAML metadata system in agent files
@@ -86,7 +86,7 @@ Remember that this project supports multiple AI tools:
 - **`src/models/enhanced_classifier.py`** - Main AI classification engine with Gemini integration
 - **`src/ui/streamlit_demo.py`** - Interactive demo interface with HTML sanitization
 - **`launch_demo.py`** - Demo launcher script
-- **`framework/`** - Complete agentic AI framework with universal AI tool metadata
+- **`agentic-framework/`** - Complete agentic AI framework with universal AI tool metadata
 - **`telco-domain/`** - Telco-specific project context and business rules
 
 ### Configuration Files
@@ -116,13 +116,13 @@ When working with agent files:
 ## ⚡ Performance and Quality
 
 ### Testing Standards
-- Reference `framework/standards/testing_strategy.md`
+- Reference `agentic-framework/standards/testing_strategy.md`
 - Use appropriate test frameworks for the component type
 - Follow established test patterns in existing codebase
 
 ### Security Considerations
 - Always apply HTML sanitization for user inputs
-- Follow `framework/standards/secure_coding_checklist.md`
+- Follow `agentic-framework/standards/secure_coding_checklist.md`
 - Implement proper input validation and error handling
 
 ## 🚀 Project Goals Alignment
@@ -157,7 +157,7 @@ Reference specific agents for:
 - Standards compliance in specific areas
 
 ### Universal Compatibility
-- Always reference `framework/` structure for reusable components
+- Always reference `agentic-framework/` structure for reusable components
 - Reference `telco-domain/` for project-specific context
 - Support YAML metadata enhancements in agent files
 - Maintain tool-agnostic approach
@@ -165,4 +165,4 @@ Reference specific agents for:
 
 ---
 
-**Remember**: This project's strength lies in its universal AI tool integration. While optimizing for GitHub Copilot, always maintain compatibility with Tabnine (primary preference), Cursor, Codeium, and JetBrains AI. The `framework/` structure is the source of truth for all tools.
+**Remember**: This project's strength lies in its universal AI tool integration. While optimizing for GitHub Copilot, always maintain compatibility with Tabnine (primary preference), Cursor, Codeium, and JetBrains AI. The `agentic-framework/` structure is the source of truth for all tools.

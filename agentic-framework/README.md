@@ -1,6 +1,10 @@
-# Agentic AI Framework
+# 🤖 Agentic Framework
 
 **Universal Multi-Agent Orchestration System for Enterprise Software Development**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![AI Tools](https://img.shields.io/badge/AI%20Tools-Tabnine%20%7C%20Copilot%20%7C%20Cursor-blue)](https://github.com/LinoGoncalves/agentic-framework)
+[![Agents](https://img.shields.io/badge/Agents-22%2B-green)](https://github.com/LinoGoncalves/agentic-framework)
 
 ## 🎯 Overview
 
@@ -17,8 +21,8 @@ This directory contains a **reusable, tool-agnostic agentic AI framework** desig
 
 ## 📁 Framework Structure
 
-```
-framework/
+```text
+agentic-framework/
 ├── master-agent.md              # 🎯 Master orchestrator (START HERE)
 │
 ├── sub-agents/                  # 22+ specialized agent personas
@@ -105,7 +109,7 @@ The framework includes specialized agents across all SDLC disciplines:
 
 ```bash
 # In your AI tool's chat interface
-@workspace Load framework/master-agent.md to orchestrate specialized agents
+@workspace Load master-agent.md to orchestrate specialized agents
 ```
 
 ### For Human Developers
@@ -119,7 +123,7 @@ The framework includes specialized agents across all SDLC disciplines:
 
 ```bash
 # Start agentic workflow
-python framework/scripts/cli.py start
+python scripts/cli.py start
 ```
 
 ## 📚 Universal Development Standards
@@ -139,40 +143,42 @@ The framework includes comprehensive, tool-agnostic standards:
 
 ## 🔧 How to Use This Framework
 
-### Option 1: Reference in Place
+### Option 1: Clone and Reference
 
-Keep the framework in your project and reference it:
+Clone the framework into your project:
 
 ```bash
+# Clone into your project
+cd your-project/
+git clone https://github.com/LinoGoncalves/agentic-framework.git
+
 # Your project structure
 your-project/
-├── framework/              # This directory
+├── agentic-framework/      # This framework
 ├── your-domain/            # Your domain-specific content
 ├── src/                    # Your application code
 └── ...
 ```
 
-### Option 2: Extract and Reuse
+### Option 2: Git Submodule
 
-Copy the entire `framework/` directory to a new project:
+Add as a git submodule for version tracking:
+
+```bash
+git submodule add https://github.com/LinoGoncalves/agentic-framework.git
+git submodule update --init --recursive
+```
+
+### Option 3: Copy and Customize
+
+Copy the entire framework directory to customize:
 
 ```bash
 # Copy to new project
-cp -r framework/ ../new-project/framework/
+cp -r agentic-framework/ ../new-project/agentic-framework/
 
 # Update references in new project
-# Use framework/master-agent.md as the orchestration entry point
-```
-
-### Option 3: Package as Dependency
-
-Publish the framework as a separate repository and reference it:
-
-```bash
-# Clone framework separately
-git clone https://github.com/your-org/agentic-framework.git
-
-# Reference from multiple projects
+# Use master-agent.md as the orchestration entry point
 ```
 
 ## 🎯 Human Oversight Modes
@@ -198,7 +204,7 @@ Built-in meta-cognitive triggers automatically engage advanced reasoning:
 
 ### 1. Load the Master Agent
 
-Point your AI tool to `framework/master-agent.md` as the orchestration entry point.
+Point your AI tool to `master-agent.md` as the orchestration entry point.
 
 ### 2. Define Your Domain Context
 
@@ -214,7 +220,7 @@ Keep application code in `src/`, tests in `tests/`, etc.
 
 ### 4. Leverage Framework Standards
 
-Reference `framework/standards/` for universal best practices.
+Reference `standards/` for universal best practices.
 
 ## 📖 Documentation
 
@@ -231,10 +237,23 @@ To add new agents or standards to the framework:
 2. Ensure tool-agnostic approach (works with all AI coding assistants)
 3. Document cognitive triggers and interaction patterns
 4. Add to `agent-roster.json` registry
+5. Submit a pull request with clear documentation
 
 ## 📜 License
 
-This framework is designed to be reusable and shareable. Check the project root for license details.
+[MIT License](LICENSE) - Free to use, modify, and distribute.
+
+## 🌟 Example Projects
+
+This framework is successfully used in:
+- **Telco Call Centre Agent**: AI-powered ticket classification with Google Gemini LLM
+- More examples coming soon!
+
+## 📞 Support & Community
+
+- **Issues**: [GitHub Issues](https://github.com/LinoGoncalves/agentic-framework/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/LinoGoncalves/agentic-framework/discussions)
+- **Contributions**: Pull requests welcome!
 
 ## 🎉 Framework Philosophy
 
@@ -244,4 +263,12 @@ The core principle is collaboration, not replacement. Every specialized agent pr
 
 ---
 
-**Ready to orchestrate?** Start with `framework/master-agent.md` 🚀
+**Ready to orchestrate?** Start with `master-agent.md` 🚀
+
+## 📊 Stats
+
+- **22+ Specialized Agents** across all SDLC disciplines
+- **20+ Universal Standards** for enterprise development
+- **Tool-Agnostic Design** works with any AI coding assistant
+- **YAML-Enhanced Metadata** for improved AI context awareness
+- **Human-in-the-Loop** modes for flexible autonomy control

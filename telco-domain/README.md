@@ -100,11 +100,11 @@ Git workflow strategy for the project (Git Flow with feature branches).
 
 ## 🔗 Integration with Framework
 
-This domain content integrates with the universal agentic framework located in `../framework/`:
+This domain content integrates with the universal agentic framework located in `../agentic-framework/`:
 
 ```
 call-centre-agent/
-├── framework/                  # Universal agentic AI framework
+├── agentic-framework/                  # Universal agentic AI framework
 │   ├── master-agent.md        # Orchestrator
 │   ├── sub-agents/            # 22+ specialized agents
 │   └── standards/             # Universal dev standards
@@ -125,13 +125,13 @@ call-centre-agent/
 
 When working with AI coding assistants (Tabnine, GitHub Copilot, Cursor, etc.):
 
-1. **Load Framework First**: Point to `../framework/master-agent.md`
+1. **Load Framework First**: Point to `../agentic-framework/master-agent.md`
 2. **Provide Domain Context**: Reference this directory for project-specific requirements
 3. **Apply Standards**: Combine universal framework standards with telco-specific standards
 
 Example prompt:
 ```
-@workspace Using framework/master-agent.md orchestration and telco-domain/project-brief.md 
+@workspace Using agentic-framework/master-agent.md orchestration and telco-domain/project-brief.md 
 requirements, implement [feature] following both universal and telco-specific standards.
 ```
 
@@ -170,7 +170,7 @@ This project demonstrates:
 
 ## 💡 Best Practices
 
-1. **Keep Framework Independent**: Never put domain logic in `../framework/`
+1. **Keep Framework Independent**: Never put domain logic in `../agentic-framework/`
 2. **Document Domain Assumptions**: Capture telco-specific assumptions in business rules
 3. **Maintain Standard Hygiene**: Update telco standards as requirements evolve
 4. **Track Context**: Use `project-context.md` for session continuity
@@ -195,7 +195,7 @@ All standards are documented in `standards/network_security_policy.md`.
 
 ---
 
-**For Framework Documentation**: See `../framework/README.md`  
+**For Framework Documentation**: See `../agentic-framework/README.md`  
 **For Application Code**: See `../src/`  
 **For Project Requirements**: Start with `project-brief.md`
 

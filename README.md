@@ -158,7 +158,7 @@ call-centre-agent/
 │   ├── test_system.py
 │   └── test_departmental_routing.py
 │
-├── 📂 framework/ (Universal AI Framework)
+├── 📂 agentic-framework/ (Universal AI Framework)
 │   ├── master-agent.md            # Central orchestrator
 │   ├── sub-agents/                # 22+ specialized agents
 │   ├── standards/                 # 20+ universal standards

@@ -8,7 +8,7 @@
 
 The agentic AI framework has been reorganized from a monolithic `telco-call-centre/` directory into two distinct architectural layers:
 
-- **`framework/`** - Universal, reusable agentic AI framework (tool-agnostic, domain-independent)
+- **`agentic-framework/`** - Universal, reusable agentic AI framework (tool-agnostic, domain-independent)
 - **`telco-domain/`** - Telecommunications-specific domain knowledge and business context
 
 This separation enables the framework to be extracted and reused across projects while maintaining clear boundaries between universal patterns and domain-specific requirements.
@@ -44,7 +44,7 @@ telco-call-centre/
 
 ### Decision Process
 
-Used **Quantum Thinking Framework** (from `framework/sub-agents/quantum-thinking-framework-agent.md`) to evaluate three options:
+Used **Quantum Thinking Framework** (from `agentic-framework/sub-agents/quantum-thinking-framework-agent.md`) to evaluate three options:
 
 #### Option 1: Keep As-Is (Rejected)
 - **Pros:** No changes needed
@@ -63,7 +63,7 @@ Used **Quantum Thinking Framework** (from `framework/sub-agents/quantum-thinking
 
 ### Architectural Principles Applied
 
-From `framework/standards/architectural-principles.md`:
+From `agentic-framework/standards/architectural-principles.md`:
 
 - ✅ **Separation of Concerns** - Framework vs domain clearly separated
 - ✅ **Reusability** - Framework can be extracted to other projects
@@ -80,7 +80,7 @@ From `framework/standards/architectural-principles.md`:
 ```
 call-centre-agent/
 │
-├── 📂 framework/ (Universal AI Framework)
+├── 📂 agentic-framework/ (Universal AI Framework)
 │   ├── master-agent.md            # Central orchestrator
 │   ├── agent-roster.json          # Agent registry
 │   ├── README.md                  # Framework documentation
@@ -161,15 +161,15 @@ call-centre-agent/
 
 ### Files Moved
 
-#### Framework Components (to `framework/`)
+#### Framework Components (to `agentic-framework/`)
 
 | Source | Destination | Description |
 |--------|------------|-------------|
-| `telco-call-centre/master-agent.md` | `framework/master-agent.md` | Central orchestrator |
-| `telco-call-centre/sub-agents/` | `framework/sub-agents/` | 22+ specialized agents |
-| `telco-call-centre/agentic-scripts/` | `framework/scripts/` | CLI tools |
-| `telco-call-centre/templates/` | `framework/templates/` | Project scaffolding |
-| `telco-call-centre/agent-roster.json` | `framework/agent-roster.json` | Agent registry |
+| `telco-call-centre/master-agent.md` | `agentic-framework/master-agent.md` | Central orchestrator |
+| `telco-call-centre/sub-agents/` | `agentic-framework/sub-agents/` | 22+ specialized agents |
+| `telco-call-centre/agentic-scripts/` | `agentic-framework/scripts/` | CLI tools |
+| `telco-call-centre/templates/` | `agentic-framework/templates/` | Project scaffolding |
+| `telco-call-centre/agent-roster.json` | `agentic-framework/agent-roster.json` | Agent registry |
 
 #### Domain Components (to `telco-domain/`)
 
@@ -184,7 +184,7 @@ call-centre-agent/
 
 #### Standards Split
 
-**Universal Standards** (20+ files → `framework/standards/`):
+**Universal Standards** (20+ files → `agentic-framework/standards/`):
 - `architectural-principles.md`
 - `coding_styleguide.md`
 - `api_design_patterns.md`
@@ -218,7 +218,7 @@ call-centre-agent/
 **Updated Files:**
 - ✅ `.github/copilot-instructions.md` - All AI tool references updated
 - ✅ `README.md` - Project structure section updated
-- ✅ All 32 agent files in `framework/sub-agents/` - Changed `./development-standards/` → `../standards/`
+- ✅ All 32 agent files in `agentic-framework/sub-agents/` - Changed `./development-standards/` → `../standards/`
 
 **Update Script:**
 Created `scripts/update_agent_paths.py` to automate path updates across all agent files.
@@ -229,10 +229,10 @@ Created `scripts/update_agent_paths.py` to automate path updates across all agen
 
 ### Framework Accessibility Tests
 
-1. **Master Agent**: ✅ `framework/master-agent.md` accessible
-2. **Sub-Agents**: ✅ All 32 agent files accessible in `framework/sub-agents/`
-3. **Standards**: ✅ All 20+ standards accessible in `framework/standards/`
-4. **Templates**: ✅ All templates accessible in `framework/templates/`
+1. **Master Agent**: ✅ `agentic-framework/master-agent.md` accessible
+2. **Sub-Agents**: ✅ All 32 agent files accessible in `agentic-framework/sub-agents/`
+3. **Standards**: ✅ All 20+ standards accessible in `agentic-framework/standards/`
+4. **Templates**: ✅ All templates accessible in `agentic-framework/templates/`
 
 ### Domain Accessibility Tests
 
@@ -280,9 +280,9 @@ Created `scripts/update_agent_paths.py` to automate path updates across all agen
 
 **From Root Level:**
 ```markdown
-See framework/master-agent.md for orchestration patterns.
-Reference framework/standards/coding_styleguide.md for style rules.
-Use framework/sub-agents/security-expert-agent.md for security guidance.
+See agentic-framework/master-agent.md for orchestration patterns.
+Reference agentic-framework/standards/coding_styleguide.md for style rules.
+Use agentic-framework/sub-agents/security-expert-agent.md for security guidance.
 ```
 
 **From Agent Files (relative paths):**
@@ -305,8 +305,8 @@ Check telco-domain/standards/network_standards.md for telco networking.
 
 **GitHub Copilot / Tabnine / Cursor / Codeium:**
 ```bash
-@workspace Using framework/master-agent.md orchestration, coordinate agents for this task
-@workspace Following framework/sub-agents/security-expert-agent.md, review security
+@workspace Using agentic-framework/master-agent.md orchestration, coordinate agents for this task
+@workspace Following agentic-framework/sub-agents/security-expert-agent.md, review security
 @workspace Reference telco-domain/business-rules/ for domain-specific logic
 ```
 
@@ -320,7 +320,7 @@ When ready to extract framework for another project:
 
 1. **Copy Framework Directory**
    ```bash
-   cp -r framework/ /path/to/new-project/framework/
+   cp -r agentic-framework/ /path/to/new-project/agentic-framework/
    ```
 
 2. **Update AI Tool Instructions**
@@ -347,11 +347,11 @@ Planned enhancements:
 
 ## 📚 Related Documentation
 
-- **Framework Documentation**: `framework/README.md`
+- **Framework Documentation**: `agentic-framework/README.md`
 - **Domain Documentation**: `telco-domain/README.md`
 - **AI Tool Integration**: `.github/copilot-instructions.md`
 - **Python Reorganization**: `docs/PYTHON_REORGANIZATION.md`
-- **Architectural Principles**: `framework/standards/architectural-principles.md`
+- **Architectural Principles**: `agentic-framework/standards/architectural-principles.md`
 
 ---
 
