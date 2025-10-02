@@ -1,403 +1,164 @@
-# 📚 Call Centre AI Agent - Complete Tutorial Series
+# 📚 Call Centre AI Agent — Onboarding & Tutorial Index
 
-## 🎯 Tutorial Overview
+This README is the single-page onboarding and map for the tutorial series. It gets a new contributor from zero to a runnable demo, explains the architecture and the agentic framework used by the project, and points to the deeper phase tutorials.
 
-This comprehensive tutorial series teaches you how to build a production-ready AI-powered call centre ticket classification system from the ground up.
+Key goals:
+- Give a clear mental model of the system and responsibilities
+- Provide an actionable quick start that finishes with a working demo
+- Point to the canonical agentic-framework docs and contribution process
 
-**Perfect for**: IT professionals with SQL expertise transitioning to Python/ML/AI
-
----
-
-## 👤 Learner Profile
-
-**You are**:
-- ✅ IT professional with 15+ years experience
-- ✅ Very strong SQL skills
-- ✅ Working in Telco industry (billing support focus)
-- ✅ Python beginner
-- ✅ Basic ML/AI knowledge
-
-**You will become**:
-- 🎓 Confident Python developer for ML applications
-- 🎓 Capable of building and maintaining AI systems
-- 🎓 Skilled in LLM integration and prompt engineering
-- 🎓 Able to make architectural decisions for ML projects
-- 🎓 Ready to extend and customize the system
+Recommended reading order for a new engineer:
+1. `docs/tutorial/PHASE_0_AGENTIC_FRAMEWORK.md` (this project's master orchestrator + sub-agent rules)
+2. `docs/PROJECT_STRUCTURE.md` (how the repo is laid out)
+3. `COMPREHENSIVE_BUILD_TUTORIAL.md` (high-level walkthrough)
+4. Phase tutorials (1 → 6) as needed
 
 ---
 
-## 📖 Tutorial Structure
+## What this project is (one line)
+Hybrid ML + LLM ticket classifier with an agentic orchestration layer and a production-ready Streamlit demo for telco call centre routing and triage.
 
-### 🗺️ Learning Path
+## High-level architecture (quick)
 
-```
-Phase 1: Foundation (4 hrs)
-   ↓  Learn: Data handling, SQL→Python translation
-   ↓
-Phase 2: Traditional ML (6 hrs)
-   ↓  Learn: Text classification, model training
-   ↓
-Phase 3: LLM Integration (4 hrs)
-   ↓  Learn: Gemini API, prompt engineering, ensemble
-   ↓
-Phase 4: User Interface (3 hrs)
-   ↓  Learn: Streamlit, web apps, visualization
-   ↓
-Phase 5: Testing (3 hrs)
-   ↓  Learn: Unit tests, integration tests, validation
-   ↓
-Phase 6: Production (4 hrs)
-   ↓  Learn: Deployment, monitoring, maintenance
-   ↓
-Master: Full System
+Streamlit UI → Orchestrator / Enhanced Classifier → (Traditional ML | Gemini LLM)
+
+- UI: `src/ui/streamlit_demo.py` — interactive demo used in the Phase 4 tutorial
+- Orchestrator: `src/enhanced_classifier.py` (or equivalent) — fuses model outputs, applies business rules and fallbacks
+- Traditional ML: `src/models/` — scikit-learn pipelines for fast, local predictions
+- Gemini LLM integration: wrapper module around Google generative APIs
+
+Key documents:
+- `docs/tutorial/PHASE_0_AGENTIC_FRAMEWORK.md` — master orchestrator and sub-agent patterns (must-read)
+- `agentic-framework/` — sub-agent persona files, standards, templates
+- `telco-domain/` — business rules and project brief
+- `docs/PROJECT_STRUCTURE.md` — file layout and conventions
+- `COMPREHENSIVE_BUILD_TUTORIAL.md` — consolidated build tutorial and rationale
+
+---
+
+## Quick start — get a demo running (10–30 minutes)
+
+1. Clone and enter the repo:
+
+```powershell
+git clone https://github.com/LinoGoncalves/call-centre-agent.git
+cd call-centre-agent
 ```
 
-**Total Time**: 20-30 hours over 2-3 weeks
+2. Create a virtual environment and install dependencies:
 
----
-
-## 📚 Tutorial Modules
-
-### **Main Tutorial** (Start Here)
-📄 [COMPREHENSIVE_BUILD_TUTORIAL.md](./COMPREHENSIVE_BUILD_TUTORIAL.md)
-- Complete overview and Phases 1-2
-- Environment setup
-- Traditional ML classifier
-- Estimated time: 10 hours
-
-### **Phase 1: Foundation**
-📄 [PHASE_1_FOUNDATION.md](./PHASE_1_FOUNDATION.md)
-- Reproducible Python environment, data validation, preprocessing pipelines, TF-IDF patterns
-- Estimated time: 4-6 hours
-
-### **Phase 2: Traditional ML**
-📄 [PHASE_2_TRADITIONAL_ML.md](./PHASE_2_TRADITIONAL_ML.md)
-- Model pipelines, hyperparameter tuning, calibration, explainability, persistence
-- Estimated time: 6-8 hours
-
-### **Phase 3: LLM Integration**
-📄 [PHASE_3_GEMINI_INTEGRATION.md](./PHASE_3_GEMINI_INTEGRATION.md)
-- Deep dive into Gemini API, prompt engineering, ensemble design, error handling
-- Estimated time: 4-6 hours
-
-### **Phase 4: User Interface**
-📄 [PHASE_4_STREAMLIT_UI.md](./PHASE_4_STREAMLIT_UI.md)
-- Production Streamlit web application
-- Real-time classification with Gemini LLM
-- Advanced visualizations and component architecture
-- HTML sanitization and security patterns
-- Estimated time: 4-6 hours
-
-### **Phase 5: Testing & Validation** (Coming Next)
-📄 [PHASE_5_TESTING.md](./tutorial/PHASE_5_TESTING.md)
-- Unit testing strategies
-- Integration testing
-- Performance validation
-- Estimated time: 3-4 hours
-
-### **Phase 6: Production Deployment** (Coming Next)
-📄 [PHASE_6_PRODUCTION.md](./tutorial/PHASE_6_PRODUCTION.md)
-- Deployment strategies
-- Monitoring and logging
-- Maintenance and updates
-- Estimated time: 4-5 hours
-
----
-
-## 🎓 Learning Approach
-
-### **Hands-On Philosophy**
-
-Every tutorial follows this pattern:
-
-1. **Concept Explanation** - Why we're building this
-2. **SQL Analogy** - Connect to your existing knowledge
-3. **Step-by-Step Code** - Build it yourself
-4. **Checkpoint** - Verify understanding
-5. **Troubleshooting** - Common issues and solutions
-
-### **Progressive Complexity**
-
-```
-Simple → Intermediate → Advanced
-  ↓          ↓             ↓
-Basic    Traditional    Production
-Python      ML+LLM       Deployment
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 ```
 
-### **Real-World Focus**
+3. Create a `.env` file with required API keys. At minimum:
 
-- ✅ Production-ready code (not toy examples)
-- ✅ Error handling and fallbacks
-- ✅ Telco industry context
-- ✅ Maintainability and extensibility
-
----
-
-## 🛠️ Prerequisites
-
-### **Before You Start**
-
-1. **Install Required Software**:
-   - Python 3.11+
-   - Git
-   - VS Code (recommended)
-
-2. **Get API Keys**:
-   - Google Gemini API key (free tier)
-
-3. **Set Up Environment**:
-   - Follow Phase 1 setup instructions
-   - Create virtual environment
-   - Install dependencies
-
-4. **Clone Reference Project** (Optional):
-   ```powershell
-   git clone https://github.com/LinoGoncalves/call-centre-agent.git
-   cd call-centre-agent
-   ```
-
----
-
-## 📊 What You'll Build
-
-### **System Architecture**
-
-```
-┌─────────────────────────────────────────────────────────┐
-│              Streamlit Web Interface                     │
-│  • Input tickets                                         │
-│  • View classifications                                  │
-│  • See AI reasoning                                      │
-└────────────────────┬────────────────────────────────────┘
-                     ↓
-┌─────────────────────────────────────────────────────────┐
-│           Enhanced Classifier (Orchestrator)             │
-│  • Routes to appropriate model                           │
-│  • Combines predictions                                  │
-│  • Manages fallbacks                                     │
-└──────┬───────────────────────────────────────┬──────────┘
-       ↓                                       ↓
-┌──────────────────┐                 ┌─────────────────────┐
-│ Traditional ML   │                 │   Gemini LLM AI     │
-│ (Scikit-learn)   │                 │  (Google Gemini)    │
-│                  │                 │                     │
-│ • Fast (ms)      │                 │ • Intelligent       │
-│ • Offline work   │                 │ • Deep reasoning    │
-│ • Baseline       │                 │ • Explanations      │
-└──────────────────┘                 └─────────────────────┘
+```text
+GOOGLE_API_KEY=your_key_here
 ```
 
-### **Key Features**
+4. Run unit tests to verify environment:
 
-✅ **Multi-label Classification**
-- Department routing (5 categories)
-- Sentiment analysis (3 levels)
-- Urgency assessment (4 levels)
+```powershell
+pytest -q
+```
 
-✅ **Hybrid Intelligence**
-- Traditional ML for speed
-- LLM for complex cases
-- Ensemble for best results
+5. Launch the demo (Streamlit):
 
-✅ **Production Ready**
-- Error handling
-- API rate limiting
-- Offline fallbacks
-- Comprehensive logging
+```powershell
+python launch_demo.py
+# or directly
+python -m streamlit run src/ui/streamlit_demo.py --server.port=8501
+```
 
-✅ **User-Friendly Interface**
-- Real-time classification
-- AI reasoning display
-- Confidence indicators
-- Department insights
+If the Streamlit server fails to start, check the venv activation, port conflicts, and the `.env` keys.
 
 ---
 
-## 🎯 Learning Outcomes
+## Phase map (what to read and when)
 
-### **Technical Skills**
-
-By the end, you will be able to:
-
-✅ **Python Development**
-- Write clean, maintainable Python code
-- Use modern Python project structure
-- Understand object-oriented programming
-- Work with virtual environments and dependencies
-
-✅ **Machine Learning**
-- Train text classification models
-- Evaluate model performance
-- Understand ML pipelines
-- Save and load trained models
-
-✅ **LLM Integration**
-- Use Google Gemini API
-- Design effective prompts
-- Parse and validate LLM responses
-- Handle API errors and rate limits
-
-✅ **System Design**
-- Architect hybrid ML+LLM systems
-- Implement ensemble logic
-- Design fallback strategies
-- Structure modular codebases
-
-✅ **Testing & Validation**
-- Write unit tests for ML code
-- Validate model performance
-- Test API integrations
-- Debug classification issues
-
-✅ **Deployment**
-- Package Python applications
-- Deploy web applications
-- Monitor system performance
-- Maintain production ML systems
-
-### **Domain Knowledge**
-
-You will understand:
-
-✅ Telco call centre operations and routing
-✅ Customer sentiment analysis techniques
-✅ Urgency assessment criteria
-✅ AI-assisted decision making
-✅ Audit trail and explainability requirements
+- Phase 0 — Agentic Framework (15–30 min): `docs/tutorial/PHASE_0_AGENTIC_FRAMEWORK.md`
+  - Master orchestrator rules, YAML metadata conventions, prompt examples, quick snippets
+- Phase 1 — Foundation (4–6 hrs): `PHASE_1_FOUNDATION.md`
+  - Environment, data loading, pandas patterns, SQL→Python translations
+- Phase 2 — Traditional ML (6–8 hrs): `PHASE_2_TRADITIONAL_ML.md`
+  - Pipelines, TF-IDF, model evaluation, explainability
+- Phase 3 — LLM Integration (4–6 hrs): `PHASE_3_GEMINI_INTEGRATION.md`
+  - Gemini usage, prompt design, ensemble patterns
+- Phase 4 — UI (4–6 hrs): `PHASE_4_STREAMLIT_UI.md`
+  - Streamlit design, sanitization, UX decisions
+- Phase 5 — Testing & Validation: `PHASE_5_TESTING_VALIDATION.md`
+  - Unit/integration tests, mocking LLMs, property-based tests
+- Phase 6 — Production Deployment: `PHASE_6_PRODUCTION_DEPLOYMENT.md`
+  - Docker, Kubernetes, cloud deployment patterns, observability
 
 ---
 
-## 📈 Progress Tracking
+## Agentic framework: where to look and how to contribute
 
-### **Checkpoint System**
+Core locations:
+- `agentic-framework/sub-agents/` — persona markdown files with YAML frontmatter
+- `agentic-framework/standards/` — coding, security, testing standards
+- `.github/chatmodes/agent-orchestrator.md` — canonical orchestrator behavior (single source of truth)
+- `agentic-framework/agent-roster.json` — mapping between task types and agents
 
-Each phase includes checkpoints to verify your progress:
+If you need to add or change an agent:
+1. Create or edit `agentic-framework/sub-agents/<name>-agent.md` following the YAML frontmatter convention.
+2. Add the agent to `agent-roster.json` with routing rules.
+3. Update `agentic-framework/CHANGELOG.md` with a short note.
+4. Optionally add a template under `agentic-framework/templates/` for repeatable prompts.
 
-- **Phase 1**: ☐ Can load and query data with pandas
-- **Phase 2**: ☐ Can train and evaluate ML models
-- **Phase 3**: ☐ Can integrate LLM APIs successfully
-- **Phase 4**: ☐ Can build interactive web UIs
-- **Phase 5**: ☐ Can write and run automated tests
-- **Phase 6**: ☐ Can deploy to production environment
-
-### **Validation Exercises**
-
-Each phase includes exercises to test understanding:
-
-1. **Conceptual Questions** - Test your understanding
-2. **Coding Challenges** - Apply what you learned
-3. **Troubleshooting Scenarios** - Debug common issues
-4. **Extension Projects** - Go beyond the tutorial
+Security and HITL policy:
+- High-risk changes must require explicit human approval. See the HITL prompts in Phase 0.
+- Agents must never auto-merge PRs that touch security-sensitive code.
 
 ---
 
-## 🆘 Getting Help
+## Key files you should open now
 
-### **Resources**
-
-📚 **Documentation**
-- [Python Official Docs](https://docs.python.org/3/)
-- [Scikit-learn Tutorials](https://scikit-learn.org/stable/tutorial/)
-- [Gemini API Docs](https://ai.google.dev/docs)
-- [Streamlit Docs](https://docs.streamlit.io/)
-
-🔍 **SQL → Python Translation**
-- [Pandas SQL Comparison](https://pandas.pydata.org/docs/getting_started/comparison/comparison_with_sql.html)
-- Built-in SQL analogies throughout tutorial
-
-💬 **Community Support**
-- Stack Overflow (tag: python, machine-learning)
-- Reddit r/learnpython and r/MachineLearning
-- Python Discord communities
-
-### **Troubleshooting Guide**
-
-Common issues and solutions are documented in each phase. If stuck:
-
-1. Check the **Troubleshooting** section in that phase
-2. Review the **Checkpoint** - did you complete all steps?
-3. Check the **Common Issues** list
-4. Refer to the **reference implementation** in the repo
+- `src/ui/streamlit_demo.py` — Streamlit demo used for Phase 4
+- `src/enhanced_classifier.py` or `src/models/` — classifier and fusion logic
+- `docs/tutorial/PHASE_0_AGENTIC_FRAMEWORK.md` — orchestrator rules and prompt examples
+- `docs/PROJECT_STRUCTURE.md` — project layout and contribution steps
+- `telco-domain/project-brief.md` — business context and acceptance criteria
 
 ---
 
-## 🚀 Getting Started
+## Minimal contributor checklist (first PR)
 
-### **Quick Start (30 Minutes)**
-
-1. **Read**: [COMPREHENSIVE_BUILD_TUTORIAL.md](./COMPREHENSIVE_BUILD_TUTORIAL.md) - Section 1 & 2
-2. **Install**: Python, Git, VS Code
-3. **Setup**: Virtual environment and dependencies
-4. **Test**: Run `scripts/explore_data.py`
-
-### **First Milestone (Day 1)**
-
-Complete **Phase 1: Foundation**
-- Understand the project architecture
-- Set up development environment
-- Load and explore training data
-- Run your first pandas queries
-
-### **Recommended Schedule**
-
-**Week 1**: Phases 1-2 (Foundation + Traditional ML)
-- Days 1-2: Environment setup, data exploration
-- Days 3-5: Build traditional classifier
-- Weekend: Review and practice
-
-**Week 2**: Phases 3-4 (LLM + UI)
-- Days 1-3: Gemini integration
-- Days 4-5: Streamlit interface
-- Weekend: Testing and refinement
-
-**Week 3**: Phases 5-6 (Testing + Production)
-- Days 1-2: Write tests
-- Days 3-4: Deployment preparation
-- Day 5: Final review and documentation
+1. Pick a small issue or documentation task.
+2. Fork and create a branch: `feature/<short-desc>`
+3. Add tests or docs for your change.
+4. Update YAML frontmatter if changing agent behavior.
+5. Open a PR and request review from the relevant agent owner(s).
 
 ---
 
-## 🎓 Beyond the Tutorial
+## Troubleshooting tips
 
-### **Extension Projects**
-
-Once you complete the tutorial, try these:
-
-1. **Add New Features**
-   - Multi-language support
-   - Historical trend analysis
-   - Automated ticket responses
-   - Performance dashboards
-
-2. **Improve ML Models**
-   - Fine-tune Gemini with examples
-   - Try other LLMs (Claude, GPT-4)
-   - Implement active learning
-   - Add confidence calibration
-
-3. **Scale the System**
-   - Add database backend (PostgreSQL)
-   - Implement API endpoints (FastAPI)
-   - Add authentication/authorization
-   - Deploy to cloud (Azure, AWS, GCP)
-
-4. **Apply to Your Domain**
-   - Customize for your company's tickets
-   - Add domain-specific routing rules
-   - Integrate with existing systems
-   - Train on your historical data
+- Tests failing? Run `pytest -q` and read the first failing trace. Many tests expect `.env` keys to be present.
+- Streamlit not starting? Kill lingering python processes and check the port.
+- LLM errors? Check `GOOGLE_API_KEY` and quota/region restrictions.
 
 ---
 
-## 📝 Tutorial Philosophy
+## After you’re set up — suggested first tasks
 
-### **Teaching Approach**
+1. Read `PHASE_0_AGENTIC_FRAMEWORK.md` and run through the quick copy-ready prompts.
+2. Run the demo and send test tickets through the UI.
+3. Explore `src/enhanced_classifier.py` to see fusion logic and where to add experiments.
+4. Propose a small experiment in an issue and use the `data-scientist-agent` prompt recipe to scope it.
 
-This tutorial series follows the Agentic AI Framework principles:
+---
 
-1. **Human-AI Collaboration**: You're learning to work *with* AI, not be replaced by it
-2. **Progressive Enhancement**: Start simple, add complexity gradually
+If you want, I can now:
+- create `agentic-framework/templates/` files from the Phase 0 snippets, or
+- open a PR with this README change and link reviewers, or
+- run a quick markdown-lint pass and fix cosmetic warnings.
+
+Tell me which you want next.
 3. **Real-World Context**: Every example rooted in actual Telco scenarios
 4. **SQL-First Mindset**: Leverage your SQL expertise to understand Python/ML
 5. **Production Quality**: Learn best practices from day one
