@@ -32,6 +32,8 @@ tmp/
 
 # 🔧 IDE and editor files
 .vscode/
+!.vscode/settings.json.example
+!.vscode/README.md
 .idea/
 *.swp
 *.swo
