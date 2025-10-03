@@ -1,0 +1,122 @@
+# Git and version control
+.git
+.gitignore
+.gitattributes
+
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+Thumbs.db
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+notebooks/
+*.ipynb
+
+# Environment and secrets
+.env
+.env.local
+.env.production
+*.env
+
+# Documentation (not needed in container)
+docs/
+*.md
+README.md
+LICENSE
+
+# Project management
+.github/
+.gitbook/
+
+# Logs and temporary files
+*.log
+logs/
+temp/
+tmp/
+*.tmp
+
+# Data files (should be mounted or fetched separately)
+data/*.csv
+data/*.json
+data/*.parquet
+
+# Model files (should be fetched from registry or mounted)
+models/*.pkl
+models/*.h5
+models/*.joblib
+*.pth
+*.ckpt
+
+# Docker files
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# CI/CD
+.circleci/
+.travis.yml
+azure-pipelines.yml
+
+# OS-specific
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Streamlit cache
+.streamlit/
+
+# Ruff cache
+.ruff_cache/
+
+# Development tools
+scripts/
+tools/generate_diagrams.py
+telco-domain/
+agentic-framework/
