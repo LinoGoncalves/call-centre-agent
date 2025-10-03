@@ -11,27 +11,9 @@ Transform the current hybrid ML+LLM demo into a production-grade, cost-optimized
 
 ## System Architecture Overview
 
-```mermaid
-graph TB
-    A[Incoming Ticket] --> B{Rules Engine}
-    B -->|Match ≥85%| C[Route Directly]
-    B -->|No Match| D[Vector DB Search]
-    D -->|Similarity ≥92%<br/>Accuracy ≥85%| E[Cached Classification]
-    D -->|Low Confidence| F[Traditional ML]
-    F -->|Confidence ≥85%| G[Return ML Result]
-    F -->|Low Confidence| H[LLM + RAG]
-    H --> I[Generate Classification<br/>+ Explanation]
-    
-    C --> J[Update Ticketing System]
-    E --> J
-    G --> J
-    I --> J
-    
-    style B fill:#e1f5ff
-    style D fill:#fff4e1
-    style F fill:#ffe1e1
-    style H fill:#e1ffe1
-```
+![System Architecture](docs/diagrams/system_architecture.png)
+
+*High-level architecture showing the integration between Streamlit UI, Enhanced Classifier, Traditional ML models, and Gemini LLM with RAG capabilities.*
 
 ## Strategic Pillars
 
@@ -67,25 +49,9 @@ graph TB
 
 **Routing Decision Flow**:
 
-```mermaid
-flowchart TD
-    A[Incoming Ticket] --> B[Rules Engine]
-    B --> C{Confidence ≥ 85%?}
-    C -->|YES| D[Route Directly]
-    C -->|NO| E[Vector DB Search]
-    E --> F{Similarity ≥ 92%<br/>AND<br/>Accuracy ≥ 85%?}
-    F -->|YES| G[Use Cached Classification]
-    F -->|NO| H[Traditional ML]
-    H --> I{ML Confidence ≥ 85%?}
-    I -->|YES| J[Return ML Result]
-    I -->|NO| K[LLM + RAG]
-    K --> L[Generate Classification]
-    
-    D --> M[Final Result]
-    G --> M
-    J --> M
-    L --> M
-```
+![Routing Decision Tree](docs/diagrams/routing_decision_tree.png)
+
+*Intelligent routing flow: Rules Engine → Vector DB Search → Traditional ML → LLM + RAG, with confidence thresholds at each stage to minimize LLM API costs.*
 
 **Architecture**:
 
@@ -141,22 +107,9 @@ Incoming Ticket
 
 **MLOps Architecture**:
 
-```mermaid
-graph LR
-    A[Ticketing System] -->|Airflow| B[Raw Tickets DB]
-    B -->|Sanitize + Label| C[Clean Tickets DB]
-    C -->|Weekly Retrain| D[MLflow Tracking]
-    D -->|Promote if F1 > baseline| E[Model Registry]
-    E -->|Deploy| F[FastAPI Serving]
-    F -->|Scale| G[Kubernetes HPA]
-    G -->|Monitor| H[Prometheus + Grafana]
-    H -->|Alert| I[PagerDuty]
-    
-    style D fill:#e1f5ff
-    style E fill:#fff4e1
-    style F fill:#e1ffe1
-    style H fill:#ffe1e1
-```
+![MLOps Pipeline](docs/diagrams/mlops_pipeline.png)
+
+*End-to-end MLOps pipeline: Ticketing system ingestion → Airflow-based sanitization → Embedding generation → MLflow model training/registry → FastAPI + KServe serving infrastructure.*
 
 **Components**:
 
