@@ -65,7 +65,13 @@ Customer Ticket → Text Preprocessing → ML Classification Model → Category 
 - **Environment Management**: uv
 - **Testing**: pytest, pytest-cov (80% coverage minimum)
 - **Code Quality**: ruff (formatting/linting), mypy (type checking)
-- **Version Control**: git with proper branching strategy
+- **Version Control**: Git Flow branching strategy (MANDATORY)
+  - **Strategy Guide**: `telco-domain/BRANCHING_IMPLEMENTATION_GUIDE.md`
+  - **Universal Standards**: `agentic-framework/standards/git_workflow_standards.md`
+  - **Protected Branches**: `main` (production), `develop` (integration)
+  - **Workflow**: All changes via feature branches with PR review
+  - **Commit Format**: Conventional Commits (`feat/fix/docs/refactor`)
+  - **AI Compliance**: AI assistants must validate branch before commits
 - **Documentation**: Markdown, Sphinx
 
 ### Mock Data Generation
