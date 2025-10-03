@@ -106,6 +106,7 @@ If you run into issues:
 
 If you'd like, I can also open GitHub Issues for the top-priority backlog items, or create architecture diagrams under `docs/diagrams/`.
 
-***
+---
 
-Updated to reflect Phase 0, roadmap/backlog, and contributor onboarding. 
+Updated to reflect Phase 0, roadmap/backlog, and contributor onboarding.
+

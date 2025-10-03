@@ -17,11 +17,11 @@
 3. [Phase 1: Foundation - Understanding the Data](#phase-1-foundation---understanding-the-data)
 4. [Phase 2: Core ML Model - Traditional Classifier](#phase-2-core-ml-model---traditional-classifier)
 5. [Phase 3: AI Enhancement - Gemini LLM Integration](#phase-3-ai-enhancement---gemini-llm-integration)
-6. [Phase 4: User Interface - Streamlit Demo](#phase-4-user-interface---streamlit-demo)
-7. [Phase 5: Testing & Validation](#phase-5-testing--validation)
-8. [Phase 6: Deployment & Production](#phase-6-deployment--production)
-9. [Troubleshooting Guide](#troubleshooting-guide)
-10. [Next Steps & Extensions](#next-steps--extensions)
+6. Phase 4: User Interface - Streamlit Demo → See [PHASE_4_STREAMLIT_UI.md](tutorial/PHASE_4_STREAMLIT_UI.md)
+7. Phase 5: Testing & Validation → See [PHASE_5_TESTING_VALIDATION.md](tutorial/PHASE_5_TESTING_VALIDATION.md)
+8. Phase 6: Deployment & Production → See [PHASE_6_PRODUCTION_DEPLOYMENT.md](tutorial/PHASE_6_PRODUCTION_DEPLOYMENT.md)
+9. Troubleshooting Guide → See individual phase tutorials
+10. Next Steps & Extensions → See [ROADMAP.md](../ROADMAP.md) and [BACKLOG.md](../BACKLOG.md)
 
 ---
 
@@ -474,7 +474,7 @@ python scripts\explore_data.py
 
 #### What is Classification?
 
-**SQL Analogy**: 
+**SQL Analogy**:
 ```sql
 -- Classification is like creating rules:
 CASE 
