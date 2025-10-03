@@ -9,6 +9,30 @@ Transform the current hybrid ML+LLM demo into a production-grade, cost-optimized
 - Scales horizontally to handle 10,000+ tickets/hour
 - Integrates seamlessly with existing ticketing systems (ServiceNow, Zendesk, Jira Service Desk)
 
+## System Architecture Overview
+
+```mermaid
+graph TB
+    A[Incoming Ticket] --> B{Rules Engine}
+    B -->|Match ≥85%| C[Route Directly]
+    B -->|No Match| D[Vector DB Search]
+    D -->|Similarity ≥92%<br/>Accuracy ≥85%| E[Cached Classification]
+    D -->|Low Confidence| F[Traditional ML]
+    F -->|Confidence ≥85%| G[Return ML Result]
+    F -->|Low Confidence| H[LLM + RAG]
+    H --> I[Generate Classification<br/>+ Explanation]
+    
+    C --> J[Update Ticketing System]
+    E --> J
+    G --> J
+    I --> J
+    
+    style B fill:#e1f5ff
+    style D fill:#fff4e1
+    style F fill:#ffe1e1
+    style H fill:#e1ffe1
+```
+
 ## Strategic Pillars
 
 ### 1. Cost Optimization via Vector DB + RAG (Q1 2026)
@@ -40,6 +64,28 @@ Transform the current hybrid ML+LLM demo into a production-grade, cost-optimized
 ### 2. Rules Engine + Hybrid Routing (Q1 2026)
 
 **Goal**: Implement deterministic routing for high-confidence scenarios, reserving LLM for ambiguous cases.
+
+**Routing Decision Flow**:
+
+```mermaid
+flowchart TD
+    A[Incoming Ticket] --> B[Rules Engine]
+    B --> C{Confidence ≥ 85%?}
+    C -->|YES| D[Route Directly]
+    C -->|NO| E[Vector DB Search]
+    E --> F{Similarity ≥ 92%<br/>AND<br/>Accuracy ≥ 85%?}
+    F -->|YES| G[Use Cached Classification]
+    F -->|NO| H[Traditional ML]
+    H --> I{ML Confidence ≥ 85%?}
+    I -->|YES| J[Return ML Result]
+    I -->|NO| K[LLM + RAG]
+    K --> L[Generate Classification]
+    
+    D --> M[Final Result]
+    G --> M
+    J --> M
+    L --> M
+```
 
 **Architecture**:
 
@@ -93,6 +139,25 @@ Incoming Ticket
 
 **Goal**: Automate model training, evaluation, deployment, and monitoring with CI/CD integration.
 
+**MLOps Architecture**:
+
+```mermaid
+graph LR
+    A[Ticketing System] -->|Airflow| B[Raw Tickets DB]
+    B -->|Sanitize + Label| C[Clean Tickets DB]
+    C -->|Weekly Retrain| D[MLflow Tracking]
+    D -->|Promote if F1 > baseline| E[Model Registry]
+    E -->|Deploy| F[FastAPI Serving]
+    F -->|Scale| G[Kubernetes HPA]
+    G -->|Monitor| H[Prometheus + Grafana]
+    H -->|Alert| I[PagerDuty]
+    
+    style D fill:#e1f5ff
+    style E fill:#fff4e1
+    style F fill:#e1ffe1
+    style H fill:#ffe1e1
+```
+
 **Components**:
 
 #### 3.1 Data Pipeline (Airflow / Prefect)
@@ -126,6 +191,26 @@ Incoming Ticket
 ### 4. Data Engineering & Vector DB Population (Q2 2026)
 
 **Goal**: Build scalable data pipelines for historical ticket ingestion, embedding generation, and vector DB indexing.
+
+**Data Pipeline Architecture**:
+
+```mermaid
+sequenceDiagram
+    participant T as Ticketing System
+    participant A as Airflow
+    participant P as PostgreSQL
+    participant S as Sanitization
+    participant E as Embedding Gen
+    participant V as Vector DB
+    
+    T->>A: Hourly Sync (Webhook)
+    A->>P: Upsert Raw Tickets
+    P->>S: Trigger Sanitization
+    S->>P: Store Clean Tickets
+    P->>E: Batch Embed (1000/min)
+    E->>V: Upsert Embeddings
+    V-->>A: Index Complete
+```
 
 **Architecture**:
 
@@ -193,6 +278,39 @@ Classification Service
 ### 6. Cloud Strategy & Infrastructure (Q3 2026)
 
 **Goal**: Deploy on Azure (preferred) or AWS with multi-region availability and disaster recovery.
+
+**Azure Cloud Architecture**:
+
+```mermaid
+graph TB
+    subgraph "Global Layer"
+        AFD[Azure Front Door<br/>Global LB + CDN]
+    end
+    
+    subgraph "Region 1: Primary"
+        AKS1[AKS Cluster<br/>Multi-Zone]
+        PG1[PostgreSQL HA<br/>+ Read Replicas]
+        Redis1[Azure Cache<br/>Redis Premium]
+        Blob1[Blob Storage<br/>Model Artifacts]
+    end
+    
+    subgraph "Region 2: DR"
+        AKS2[AKS Cluster<br/>Standby]
+        PG2[PostgreSQL<br/>Geo-Replica]
+    end
+    
+    AFD --> AKS1
+    AFD -.failover.-> AKS2
+    AKS1 --> PG1
+    AKS1 --> Redis1
+    AKS1 --> Blob1
+    PG1 -.replicate.-> PG2
+    
+    style AFD fill:#0078d4,color:#fff
+    style AKS1 fill:#e1f5ff
+    style PG1 fill:#fff4e1
+    style Redis1 fill:#ffe1e1
+```
 
 **Azure Architecture** (Recommended):
 ```
@@ -266,6 +384,59 @@ Classification Service
 ### 8. Monitoring, Observability & SRE (Ongoing)
 
 **Goal**: Achieve 99.9% uptime with proactive incident detection and automated remediation.
+
+**Observability Stack Architecture**:
+
+```mermaid
+graph TB
+    subgraph "Application Layer"
+        API[FastAPI Service]
+        ML[ML Service]
+        LLM[LLM Client]
+    end
+    
+    subgraph "Metrics"
+        Prom[Prometheus]
+        Graf[Grafana<br/>Dashboards]
+    end
+    
+    subgraph "Logs"
+        App[Application Logs]
+        ELK[ELK Stack /<br/>Loki]
+    end
+    
+    subgraph "Tracing"
+        OTel[OpenTelemetry]
+        Jaeger[Jaeger UI]
+    end
+    
+    subgraph "Alerting"
+        Alert[Alert Manager]
+        PD[PagerDuty]
+    end
+    
+    API --> Prom
+    ML --> Prom
+    LLM --> Prom
+    Prom --> Graf
+    Prom --> Alert
+    Alert --> PD
+    
+    API --> App
+    ML --> App
+    LLM --> App
+    App --> ELK
+    
+    API --> OTel
+    ML --> OTel
+    LLM --> OTel
+    OTel --> Jaeger
+    
+    style Prom fill:#e1f5ff
+    style ELK fill:#fff4e1
+    style OTel fill:#e1ffe1
+    style PD fill:#ffe1e1
+```
 
 **Observability Stack**:
 
