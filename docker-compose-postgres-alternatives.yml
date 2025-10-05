@@ -1,0 +1,65 @@
+# BACKUP: Alternative PostgreSQL Docker Compose Configuration
+# Use this if postgres:15-alpine fails to download
+
+# Copy this section to replace the postgres-secure service in docker-compose.secure.yml
+
+# OPTION 1: PostgreSQL 15 (non-alpine)
+  postgres-secure:
+    image: postgres:15  # Changed from postgres:15-alpine
+    container_name: call-centre-postgres-secure
+    # Security: No external port exposure
+    expose:
+      - "5432"
+    environment:
+      # Security: Strong database credentials (should be in secrets)
+      - POSTGRES_DB=call_centre_secure
+      - POSTGRES_USER=secure_db_user
+      - POSTGRES_PASSWORD=secure_db_password_change_me
+      # Security: Additional PostgreSQL security settings
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256 --auth-local=scram-sha-256
+    volumes:
+      - call_centre_postgres:/var/lib/postgresql/data:Z
+      - ./sql/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - call-centre-secure-net
+    restart: unless-stopped
+    # Security: Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+    # Security: Additional PostgreSQL security configuration
+    command: >
+      postgres
+      -c ssl=on
+      -c log_statement=all
+      -c log_connections=on
+      -c log_disconnections=on
+      -c log_checkpoints=on
+      -c shared_preload_libraries=pg_stat_statements
+    # Security: Health check with authentication
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U secure_db_user -d call_centre_secure"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Security: Drop capabilities
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+    security_opt:
+      - no-new-privileges:true
+
+# OPTION 2: PostgreSQL 14 Alpine (if version 15 is completely unavailable)
+# postgres-secure:
+#   image: postgres:14-alpine
+#   # ... rest of configuration same as above
+
+# OPTION 3: PostgreSQL 13 Alpine (older but very stable)
+# postgres-secure:
+#   image: postgres:13-alpine  
+#   # ... rest of configuration same as above
