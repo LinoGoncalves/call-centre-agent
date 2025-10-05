@@ -1,0 +1,237 @@
+# SECURITY-HARDENED Dockerfile for Call Centre Agent Development Environment
+# Enterprise-grade security for production environments
+
+# =============================================================================
+# Stage 1: Security-Hardened Base
+# =============================================================================
+FROM python:3.13.1-slim-bookworm AS base
+
+# Security metadata and labels
+LABEL org.opencontainers.image.title="Call Centre Agent - Secure Development Environment"
+LABEL org.opencontainers.image.description="Security-hardened development environment with offline AI models"
+LABEL org.opencontainers.image.version="1.0.0-secure"
+LABEL org.opencontainers.image.source="https://github.com/yourusername/call-centre-agent"
+LABEL security.scan-policy="required"
+LABEL security.tls="required"
+
+# Create non-root user FIRST for security
+RUN groupadd --gid 10001 --system appgroup && \
+    useradd --uid 10001 --system --gid appgroup --shell /bin/bash --create-home --home-dir /home/appuser appuser
+
+# Security-focused environment variables
+ENV TRANSFORMERS_CACHE=/opt/models/huggingface/transformers
+ENV HF_HOME=/opt/models/huggingface
+ENV SENTENCE_TRANSFORMERS_HOME=/opt/models/huggingface/sentence_transformers
+ENV NLTK_DATA=/opt/models/nltk
+ENV SPACY_DATA=/opt/models/spacy
+ENV PYTHONPATH=/app:$PYTHONPATH
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+# Security: Disable pip root warnings and ensure secure installs
+ENV PIP_ROOT_USER_ACTION=ignore
+ENV PIP_NO_CACHE_DIR=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies with security patches
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    ca-certificates \
+    gnupg \
+    && apt-get upgrade -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Security: Create directories with proper permissions
+RUN mkdir -p /opt/models/{huggingface/transformers,huggingface/sentence_transformers,nltk,spacy} \
+    && mkdir -p /app \
+    && mkdir -p /data \
+    && chmod 755 /opt/models /app /data \
+    && chown -R appuser:appgroup /opt/models /app /data
+
+# =============================================================================
+# Stage 2: Secure Python Dependencies
+# =============================================================================
+FROM base AS python-deps
+
+# Set working directory and switch to non-root user
+WORKDIR /app
+USER appuser
+
+# Copy and install Python dependencies securely
+COPY --chown=appuser:appgroup pyproject.toml ./
+USER root
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -e ".[dev,production,offline]" && \
+    pip check
+
+# =============================================================================
+# Stage 3: Secure Model Downloader
+# =============================================================================
+FROM python-deps AS model-downloader
+
+# Switch back to root temporarily for model downloads (required for write permissions)
+USER root
+
+# Pre-download spaCy models for offline use
+RUN python -m spacy download en_core_web_sm && \
+    python -m spacy download en_core_web_md && \
+    python -m spacy download en_core_web_lg
+
+# Pre-download HuggingFace models for offline use (with error handling)
+RUN python -c "\
+import os; \
+import sys; \
+try: \
+    from transformers import AutoTokenizer, AutoModel; \
+    from sentence_transformers import SentenceTransformer; \
+    os.makedirs('/opt/models/huggingface/transformers', exist_ok=True); \
+    os.makedirs('/opt/models/huggingface/sentence_transformers', exist_ok=True); \
+    print('Downloading sentence transformers...'); \
+    SentenceTransformer('all-MiniLM-L6-v2').save('/opt/models/huggingface/sentence_transformers/all-MiniLM-L6-v2'); \
+    SentenceTransformer('all-mpnet-base-v2').save('/opt/models/huggingface/sentence_transformers/all-mpnet-base-v2'); \
+    print('Downloading classification models...'); \
+    tokenizer = AutoTokenizer.from_pretrained('distilbert-base-uncased'); \
+    model = AutoModel.from_pretrained('distilbert-base-uncased'); \
+    tokenizer.save_pretrained('/opt/models/huggingface/transformers/distilbert-base-uncased'); \
+    model.save_pretrained('/opt/models/huggingface/transformers/distilbert-base-uncased'); \
+    print('Model downloads complete!'); \
+except Exception as e: \
+    print(f'Model download error: {e}'); \
+    sys.exit(1)"
+
+# Pre-download NLTK data (with error handling)
+RUN python -c "\
+import nltk; \
+import os; \
+import sys; \
+try: \
+    nltk_data_dir = '/opt/models/nltk'; \
+    os.makedirs(nltk_data_dir, exist_ok=True); \
+    nltk.data.path.append(nltk_data_dir); \
+    nltk.download('punkt', download_dir=nltk_data_dir); \
+    nltk.download('stopwords', download_dir=nltk_data_dir); \
+    nltk.download('wordnet', download_dir=nltk_data_dir); \
+    nltk.download('vader_lexicon', download_dir=nltk_data_dir); \
+except Exception as e: \
+    print(f'NLTK download error: {e}'); \
+    sys.exit(1)"
+
+# Security: Set proper ownership after downloads
+RUN chown -R appuser:appgroup /opt/models
+
+# =============================================================================
+# Stage 4: Secure Development Environment Setup
+# =============================================================================
+FROM model-downloader AS development
+
+# Install Jupyter and development tools securely
+RUN pip install --no-cache-dir \
+    jupyter \
+    jupyterlab \
+    ipython \
+    notebook \
+    jupyter-server-proxy
+
+# Security: Generate secure Jupyter configuration
+USER appuser
+RUN mkdir -p /home/appuser/.jupyter
+
+# Generate secure token for Jupyter
+RUN python -c "\
+import secrets; \
+token = secrets.token_urlsafe(32); \
+with open('/home/appuser/.jupyter/jupyter_token', 'w') as f: \
+    f.write(token); \
+print(f'Jupyter token: {token}')"
+
+# Create secure Jupyter configuration
+RUN python -c "\
+import secrets; \
+with open('/home/appuser/.jupyter/jupyter_token', 'r') as f: \
+    token = f.read().strip(); \
+config_content = 'c.ServerApp.ip = \"127.0.0.1\"\\n'; \
+config_content += 'c.ServerApp.port = 8888\\n'; \
+config_content += 'c.ServerApp.open_browser = False\\n'; \
+config_content += 'c.ServerApp.allow_root = False\\n'; \
+config_content += 'c.ServerApp.token = \"' + token + '\"\\n'; \
+config_content += 'c.ServerApp.password = \"\"\\n'; \
+config_content += 'c.ServerApp.notebook_dir = \"/app\"\\n'; \
+config_content += 'c.ServerApp.allow_remote_access = False\\n'; \
+config_content += 'c.ServerApp.disable_check_xsrf = False\\n'; \
+config_content += 'c.ServerApp.use_redirect_file = False\\n'; \
+config_content += 'c.ServerApp.quit_button = False\\n'; \
+with open('/home/appuser/.jupyter/jupyter_notebook_config.py', 'w') as f: \
+    f.write(config_content)"
+
+USER root
+
+# =============================================================================
+# Stage 5: Secure Services Setup
+# =============================================================================
+FROM development AS services
+
+# Create secure startup script with proper error handling
+RUN echo '#!/bin/bash' > /app/start-dev-services.sh && \
+    echo 'set -euo pipefail' >> /app/start-dev-services.sh && \
+    echo 'echo "Starting Secure Call Centre Agent Development Environment..."' >> /app/start-dev-services.sh && \
+    echo 'echo "Security Mode: ENABLED"' >> /app/start-dev-services.sh && \
+    echo 'echo "Starting MLflow tracking server (localhost only)..."' >> /app/start-dev-services.sh && \
+    echo 'mlflow server --backend-store-uri sqlite:///data/mlflow.db --default-artifact-root /data/mlruns --host 127.0.0.1 --port 5000 --serve-artifacts &' >> /app/start-dev-services.sh && \
+    echo 'echo "Starting Prefect server (localhost only)..."' >> /app/start-dev-services.sh && \
+    echo 'prefect server start --host 127.0.0.1 --port 4200 &' >> /app/start-dev-services.sh && \
+    echo 'echo "Starting JupyterLab (secure mode)..."' >> /app/start-dev-services.sh && \
+    echo 'su - appuser -c "cd /app && jupyter lab --config=/home/appuser/.jupyter/jupyter_notebook_config.py" &' >> /app/start-dev-services.sh && \
+    echo 'sleep 10' >> /app/start-dev-services.sh && \
+    echo 'echo "🔒 All services started in SECURE mode!"' >> /app/start-dev-services.sh && \
+    echo 'echo "📋 Access Information:"' >> /app/start-dev-services.sh && \
+    echo 'echo "  JupyterLab: http://localhost:8888 (token required)"' >> /app/start-dev-services.sh && \
+    echo 'echo "  MLflow: http://localhost:5000 (localhost only)"' >> /app/start-dev-services.sh && \
+    echo 'echo "  Prefect: http://localhost:4200 (localhost only)"' >> /app/start-dev-services.sh && \
+    echo 'echo "🔐 Security Features: Authentication, localhost-only, non-root"' >> /app/start-dev-services.sh && \
+    echo 'if [ -f /home/appuser/.jupyter/jupyter_token ]; then echo "🔑 Jupyter Token:"; cat /home/appuser/.jupyter/jupyter_token; fi' >> /app/start-dev-services.sh && \
+    echo 'tail -f /dev/null' >> /app/start-dev-services.sh && \
+    chmod 750 /app/start-dev-services.sh
+
+# Security: Set proper ownership and permissions
+RUN chown appuser:appgroup /app/start-dev-services.sh
+
+# =============================================================================
+# Stage 6: Final Secure Development Image
+# =============================================================================
+FROM services AS final
+
+# Copy application code with proper ownership
+COPY --chown=appuser:appgroup . /app/
+
+# Security: Ensure all files have proper permissions
+RUN chmod -R 755 /app && \
+    chmod -R 644 /app/*.md /app/*.toml /app/*.py 2>/dev/null || true && \
+    chown -R appuser:appgroup /app /data /opt/models /home/appuser
+
+# Security: Remove unnecessary packages and clean up
+RUN apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Security: Only expose localhost ports (no external binding)
+# These are documented but not exposed externally by default
+# JupyterLab (localhost only)
+EXPOSE 8888
+# MLflow (localhost only)  
+EXPOSE 5000
+# Prefect (localhost only)
+EXPOSE 4200
+
+# Security: Set secure working directory
+WORKDIR /app
+
+# Security: Switch to non-root user for execution
+USER appuser
+
+# Security: Use secure startup script
+CMD ["/bin/bash", "/app/start-dev-services.sh"]
+
+# Security: Enhanced health check with authentication
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://127.0.0.1:8888/ || exit 1

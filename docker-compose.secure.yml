@@ -1,0 +1,216 @@
+# SECURITY-HARDENED Docker Compose for Call Centre Agent
+# Enterprise-grade security configuration for production environments
+
+version: '3.8'
+
+services:
+  # Main development environment with security hardening
+  call-centre-secure:
+    build:
+      context: .
+      dockerfile: Dockerfile.secure
+    container_name: call-centre-secure
+    # Security: Restrict port exposure to localhost only
+    ports:
+      - "127.0.0.1:8888:8888"  # JupyterLab (localhost only)
+      - "127.0.0.1:5000:5000"  # MLflow (localhost only)
+      - "127.0.0.1:4200:4200"  # Prefect (localhost only)
+    volumes:
+      # Security: Read-only source code mounting
+      - .:/app:ro
+      # Persistent data with security constraints
+      - call_centre_data:/data:Z
+      - call_centre_models:/opt/models:Z
+      # Development files (read-write for notebooks only)
+      - ./notebooks:/app/notebooks:Z
+      - ./experiments:/app/experiments:Z
+    environment:
+      # Offline-first environment variables
+      - TRANSFORMERS_CACHE=/opt/models/huggingface/transformers
+      - HF_HOME=/opt/models/huggingface
+      - SENTENCE_TRANSFORMERS_HOME=/opt/models/huggingface/sentence_transformers
+      - NLTK_DATA=/opt/models/nltk
+      - SPACY_DATA=/opt/models/spacy
+      - PYTHONPATH=/app
+      # Security environment settings
+      - ENV=development
+      - DEBUG=false  # Security: Disable debug in production
+      - LOG_LEVEL=INFO
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN_FILE=/home/appuser/.jupyter/jupyter_token
+    networks:
+      - call-centre-secure-net
+    # Security: Resource limits to prevent DoS
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+    # Security: Restart policy
+    restart: unless-stopped
+    # Security: Enhanced health check with proper endpoint
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8888/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    # Security: Read-only root filesystem (with exceptions)
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+      - /var/tmp:noexec,nosuid,size=50m
+    # Security: Drop all capabilities and add only what's needed
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID  # Required for su command in startup script
+      - SETGID  # Required for user switching
+    # Security: No new privileges
+    security_opt:
+      - no-new-privileges:true
+    # Security: Use non-root user
+    user: "10001:10001"  # appuser:appgroup
+
+  # Secure Redis with authentication
+  redis-secure:
+    image: redis:7-alpine
+    container_name: call-centre-redis-secure
+    # Security: No external port exposure
+    expose:
+      - "6379"
+    volumes:
+      - call_centre_redis:/data:Z
+    networks:
+      - call-centre-secure-net
+    environment:
+      # Security: Require authentication
+      - REDIS_PASSWORD=secure_redis_password_change_me
+    # Security: Redis configuration with authentication and security
+    command: >
+      redis-server
+      --requirepass secure_redis_password_change_me
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --bind 127.0.0.1
+      --protected-mode yes
+      --port 6379
+      --tcp-keepalive 300
+      --timeout 0
+    restart: unless-stopped
+    # Security: Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    # Security: Read-only filesystem
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=50m
+    # Security: Drop capabilities
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    # Security: Health check
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "secure_redis_password_change_me", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Secure PostgreSQL with proper authentication
+  postgres-secure:
+    image: postgres:15-alpine
+    container_name: call-centre-postgres-secure
+    # Security: No external port exposure
+    expose:
+      - "5432"
+    environment:
+      # Security: Strong database credentials (should be in secrets)
+      - POSTGRES_DB=call_centre_secure
+      - POSTGRES_USER=secure_db_user
+      - POSTGRES_PASSWORD=secure_db_password_change_me
+      # Security: Additional PostgreSQL security settings
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256 --auth-local=scram-sha-256
+    volumes:
+      - call_centre_postgres:/var/lib/postgresql/data:Z
+      - ./sql/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - call-centre-secure-net
+    restart: unless-stopped
+    # Security: Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+    # Security: Additional PostgreSQL security configuration
+    command: >
+      postgres
+      -c ssl=on
+      -c log_statement=all
+      -c log_connections=on
+      -c log_disconnections=on
+      -c log_checkpoints=on
+      -c shared_preload_libraries=pg_stat_statements
+    # Security: Health check with authentication
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U secure_db_user -d call_centre_secure"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Security: Drop capabilities
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+    security_opt:
+      - no-new-privileges:true
+
+# Security: Isolated network with no external access
+networks:
+  call-centre-secure-net:
+    driver: bridge
+    # Security: Disable external connectivity
+    internal: true
+    # Security: Custom subnet for isolation
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+volumes:
+  # Security: Persistent storage with proper ownership
+  call_centre_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data
+  call_centre_models:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./models
+  call_centre_redis:
+    driver: local
+  call_centre_postgres:
+    driver: local
+
+# Security: Secrets management (requires Docker Swarm mode)
+# Uncomment for production deployment with secrets
+# secrets:
+#   jupyter_token:
+#     file: ./secrets/jupyter_token.txt
+#   redis_password:
+#     file: ./secrets/redis_password.txt
+#   postgres_password:
+#     file: ./secrets/postgres_password.txt

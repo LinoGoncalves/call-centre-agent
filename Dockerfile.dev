@@ -1,0 +1,181 @@
+# Multi-stage Dockerfile for Call Centre Agent Development Environment
+# Optimized for network-restricted environments with offline capabilities
+
+# =============================================================================
+# Stage 1: Base Dependencies
+# =============================================================================
+FROM python:3.13.1-slim-bookworm AS base
+
+# Metadata and labels
+LABEL org.opencontainers.image.title="Call Centre Agent - Development Environment"
+LABEL org.opencontainers.image.description="Comprehensive development environment with offline AI models"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.source="https://github.com/yourusername/call-centre-agent"
+
+# Set environment variables for offline operation
+ENV TRANSFORMERS_CACHE=/opt/models/huggingface/transformers
+ENV HF_HOME=/opt/models/huggingface
+ENV SENTENCE_TRANSFORMERS_HOME=/opt/models/huggingface/sentence_transformers
+ENV NLTK_DATA=/opt/models/nltk
+ENV SPACY_DATA=/opt/models/spacy
+ENV PYTHONPATH=/app:$PYTHONPATH
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    git \
+    wget \
+    vim \
+    nano \
+    htop \
+    postgresql-client \
+    redis-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create directories for models and app
+RUN mkdir -p /opt/models/{huggingface/transformers,huggingface/sentence_transformers,nltk,spacy} \
+    && mkdir -p /app \
+    && mkdir -p /data
+
+# =============================================================================
+# Stage 2: Python Dependencies
+# =============================================================================
+FROM base AS python-deps
+
+# Set working directory
+WORKDIR /app
+
+# Copy and install Python dependencies
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -e ".[dev,production,offline]"
+
+# =============================================================================
+# Stage 3: Model Downloader (Offline Preparation)
+# =============================================================================
+FROM python-deps AS model-downloader
+
+# Pre-download spaCy models for offline use
+RUN python -m spacy download en_core_web_sm && \
+    python -m spacy download en_core_web_md && \
+    python -m spacy download en_core_web_lg
+
+# Pre-download HuggingFace models for offline use
+RUN python -c "\
+import os; \
+from transformers import AutoTokenizer, AutoModel; \
+from sentence_transformers import SentenceTransformer; \
+os.makedirs('/opt/models/huggingface/transformers', exist_ok=True); \
+os.makedirs('/opt/models/huggingface/sentence_transformers', exist_ok=True); \
+print('Downloading sentence transformers...'); \
+SentenceTransformer('all-MiniLM-L6-v2').save('/opt/models/huggingface/sentence_transformers/all-MiniLM-L6-v2'); \
+SentenceTransformer('all-mpnet-base-v2').save('/opt/models/huggingface/sentence_transformers/all-mpnet-base-v2'); \
+print('Downloading classification models...'); \
+tokenizer = AutoTokenizer.from_pretrained('distilbert-base-uncased'); \
+model = AutoModel.from_pretrained('distilbert-base-uncased'); \
+tokenizer.save_pretrained('/opt/models/huggingface/transformers/distilbert-base-uncased'); \
+model.save_pretrained('/opt/models/huggingface/transformers/distilbert-base-uncased'); \
+print('Model downloads complete!')"
+
+# Pre-download NLTK data
+RUN python -c "\
+import nltk; \
+import os; \
+nltk_data_dir = '/opt/models/nltk'; \
+os.makedirs(nltk_data_dir, exist_ok=True); \
+nltk.data.path.append(nltk_data_dir); \
+nltk.download('punkt', download_dir=nltk_data_dir); \
+nltk.download('stopwords', download_dir=nltk_data_dir); \
+nltk.download('wordnet', download_dir=nltk_data_dir); \
+nltk.download('vader_lexicon', download_dir=nltk_data_dir)"
+
+# =============================================================================
+# Stage 4: Development Environment Setup
+# =============================================================================
+FROM model-downloader AS development
+
+# Create non-root user for development
+RUN groupadd --gid 1000 devuser && \
+    useradd --uid 1000 --gid devuser --shell /bin/bash --create-home devuser
+
+# Install Jupyter and development tools
+RUN pip install --no-cache-dir \
+    jupyter \
+    jupyterlab \
+    ipython \
+    notebook
+
+# Set up Jupyter configuration
+USER devuser
+RUN mkdir -p /home/devuser/.jupyter
+USER root
+
+# =============================================================================
+# Stage 5: Services Setup
+# =============================================================================
+FROM development AS services
+
+# Create startup script for development services
+RUN echo '#!/bin/bash' > /app/start-dev-services.sh && \
+    echo 'set -e' >> /app/start-dev-services.sh && \
+    echo 'echo "Starting Call Centre Agent Development Environment..."' >> /app/start-dev-services.sh && \
+    echo 'echo "Starting MLflow tracking server..."' >> /app/start-dev-services.sh && \
+    echo 'mlflow server --backend-store-uri sqlite:///data/mlflow.db --default-artifact-root /data/mlruns --host 0.0.0.0 --port 5000 --serve-artifacts &' >> /app/start-dev-services.sh && \
+    echo 'echo "Starting Prefect server..."' >> /app/start-dev-services.sh && \
+    echo 'prefect server start --host 0.0.0.0 &' >> /app/start-dev-services.sh && \
+    echo 'echo "Starting JupyterLab..."' >> /app/start-dev-services.sh && \
+    echo 'jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --notebook-dir=/app --ServerApp.token="" --ServerApp.password="" &' >> /app/start-dev-services.sh && \
+    echo 'echo "All services started!"' >> /app/start-dev-services.sh && \
+    echo 'echo "JupyterLab: http://localhost:8888"' >> /app/start-dev-services.sh && \
+    echo 'echo "MLflow: http://localhost:5000"' >> /app/start-dev-services.sh && \
+    echo 'echo "Prefect: http://localhost:4200"' >> /app/start-dev-services.sh && \
+    echo 'tail -f /dev/null' >> /app/start-dev-services.sh
+
+RUN chmod +x /app/start-dev-services.sh
+
+# =============================================================================
+# Stage 6: Final Development Image
+# =============================================================================
+FROM services AS final
+
+# Copy application code
+COPY . /app/
+RUN chown -R devuser:devuser /app /data /opt/models
+
+# Create Jupyter configuration
+RUN echo "c.ServerApp.ip = '0.0.0.0'" > /home/devuser/.jupyter/jupyter_notebook_config.py && \
+    echo "c.ServerApp.port = 8888" >> /home/devuser/.jupyter/jupyter_notebook_config.py && \
+    echo "c.ServerApp.open_browser = False" >> /home/devuser/.jupyter/jupyter_notebook_config.py && \
+    echo "c.ServerApp.allow_root = True" >> /home/devuser/.jupyter/jupyter_notebook_config.py && \
+    echo "c.ServerApp.token = ''" >> /home/devuser/.jupyter/jupyter_notebook_config.py && \
+    echo "c.ServerApp.password = ''" >> /home/devuser/.jupyter/jupyter_notebook_config.py && \
+    echo "c.ServerApp.notebook_dir = '/app'" >> /home/devuser/.jupyter/jupyter_notebook_config.py && \
+    echo "c.ServerApp.allow_remote_access = True" >> /home/devuser/.jupyter/jupyter_notebook_config.py
+
+# Set correct permissions
+RUN chown -R devuser:devuser /home/devuser/.jupyter
+
+# Expose ports for development services
+# JupyterLab
+EXPOSE 8888
+# MLflow
+EXPOSE 5000
+# Prefect
+EXPOSE 4200
+# Redis (if running externally)
+EXPOSE 6379
+# PostgreSQL (if running externally)
+EXPOSE 5432
+
+# Set working directory
+WORKDIR /app
+
+# Default command starts all development services
+CMD ["/app/start-dev-services.sh"]
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8888/lab || exit 1

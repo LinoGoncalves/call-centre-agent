@@ -1,91 +1,123 @@
-# Docker Compose for Local Development and Testing
+# Docker Compose for Call Centre Agent Development Environment
+# Optimized for network-restricted environments with offline capabilities
 version: '3.8'
 
 services:
-  # Main API service
-  ticket-classifier-api:
+  # Main development environment with pre-downloaded models
+  call-centre-dev:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: telco-ticket-classifier
+      dockerfile: Dockerfile.dev
+    container_name: call-centre-dev
     ports:
-      - "8000:8000"
-    environment:
-      - PYTHONPATH=/app
-      - LOG_LEVEL=info
-      - MODEL_PATH=/app/models/ticket_classifier_model.pkl
+      - "8888:8888"  # JupyterLab
+      - "5000:5000"  # MLflow
+      - "4200:4200"  # Prefect
     volumes:
-      # Mount models directory for development
-      - ./models:/app/models:ro
-      - ./data:/app/data:ro
-      # Mount logs directory
-      - ./logs:/app/logs
+      # Mount source code for live development
+      - .:/app
+      # Persist data and models between container restarts
+      - call_centre_data:/data
+      - call_centre_models:/opt/models
+      # Mount local development files
+      - ./notebooks:/app/notebooks
+      - ./experiments:/app/experiments
+    environment:
+      # Offline-first environment variables
+      - TRANSFORMERS_CACHE=/opt/models/huggingface/transformers
+      - HF_HOME=/opt/models/huggingface
+      - SENTENCE_TRANSFORMERS_HOME=/opt/models/huggingface/sentence_transformers
+      - NLTK_DATA=/opt/models/nltk
+      - SPACY_DATA=/opt/models/spacy
+      - PYTHONPATH=/app
+      # Development environment settings
+      - ENV=development
+      - DEBUG=true
+      - LOG_LEVEL=INFO
     networks:
-      - ticket-classifier-network
+      - call-centre-net
+    # Restart policy for development
+    restart: unless-stopped
+    # Add health check
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8888/lab"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
-    restart: unless-stopped
+      start_period: 60s
 
-  # Redis for caching (optional enhancement)
-  redis-cache:
+  # Redis for caching (can run without internet)
+  redis:
     image: redis:7-alpine
-    container_name: telco-ticket-redis
+    container_name: call-centre-redis
     ports:
       - "6379:6379"
-    networks:
-      - ticket-classifier-network
-    restart: unless-stopped
-    command: redis-server --appendonly yes
     volumes:
-      - redis-data:/data
-
-  # Monitoring with Prometheus (optional)
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: telco-ticket-prometheus
-    ports:
-      - "9090:9090"
+      - call_centre_redis:/data
     networks:
-      - ticket-classifier-network
-    volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus-data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
+      - call-centre-net
+    # Basic Redis configuration for development
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     restart: unless-stopped
 
-  # Grafana for visualization (optional)
-  grafana:
-    image: grafana/grafana:latest
-    container_name: telco-ticket-grafana
+  # PostgreSQL for advanced data storage
+  postgres:
+    image: postgres:15-alpine
+    container_name: call-centre-postgres
     ports:
-      - "3000:3000"
-    networks:
-      - ticket-classifier-network
+      - "5432:5432"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - POSTGRES_DB=call_centre_dev
+      - POSTGRES_USER=dev_user
+      - POSTGRES_PASSWORD=dev_password
     volumes:
-      - grafana-data:/var/lib/grafana
-      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - call_centre_postgres:/var/lib/postgresql/data
+      - ./sql/init:/docker-entrypoint-initdb.d
+    networks:
+      - call-centre-net
     restart: unless-stopped
+    # Health check for PostgreSQL
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev_user -d call_centre_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Ollama for local LLM serving
+  ollama:
+    image: ollama/ollama:latest
+    container_name: call-centre-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - call_centre_ollama:/root/.ollama
+    networks:
+      - call-centre-net
+    restart: unless-stopped
+    # Pull models for offline use
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    # Note: You'll need to manually pull models after startup:
+    # docker exec -it call-centre-ollama ollama pull llama2
+    # docker exec -it call-centre-ollama ollama pull codellama
 
 networks:
-  ticket-classifier-network:
+  call-centre-net:
     driver: bridge
 
 volumes:
-  redis-data:
+  # Persistent storage for development data
+  call_centre_data:
     driver: local
-  prometheus-data:
+  # Persistent model storage
+  call_centre_models:
     driver: local
-  grafana-data:
+  # Redis data persistence
+  call_centre_redis:
+    driver: local
+  # PostgreSQL data persistence
+  call_centre_postgres:
+    driver: local
+  # Ollama model storage
+  call_centre_ollama:
     driver: local
