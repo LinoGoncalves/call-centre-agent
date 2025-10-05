@@ -31,10 +31,19 @@ Before starting, ensure you have:
 
 ## 🔽 Step 1: Clone the Repository (2 minutes)
 
+### **📁 Choose Your Installation Location**
+You can install this project **anywhere** on your system. Popular choices:
+- **Windows**: `C:\Users\YourName\Documents`, `D:\Projects`, `C:\Development`
+- **Mac**: `~/Documents`, `~/Projects`, `~/Development`  
+- **Linux**: `~/projects`, `/opt/projects`, `~/development`
+
 ```bash
 # Open Command Prompt, PowerShell, or Terminal
-# Navigate to where you want the project
-cd C:\DEV  # (Windows) or cd ~/Projects (Mac/Linux)
+# Navigate to where you want the project (choose any location you prefer)
+cd C:\Users\%USERNAME%\Documents  # (Windows example)
+# OR cd D:\Projects                # (Windows - different drive)  
+# OR cd ~/Documents                # (Mac/Linux example)
+# OR any folder of your choice - NO restrictions!
 
 # Clone the repository
 git clone https://github.com/LinoGoncalves/call-centre-agent.git
@@ -250,6 +259,13 @@ docker exec -it call-centre-secure streamlit run /app/src/ui/streamlit_demo.py -
 ---
 
 ## 🚨 Troubleshooting
+
+### **Problem: Can I install this anywhere on my computer?**
+**✅ YES! Absolutely no restrictions on installation location.**
+- Install in any folder: Documents, Desktop, D: drive, etc.
+- No administrator rights needed for the project folder
+- Docker handles all internal paths automatically
+- All examples in this guide work from any location
 
 ### **Problem: Docker build fails**
 **Solution:**
