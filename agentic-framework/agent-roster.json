@@ -1,0 +1,255 @@
+{
+  "agent_roster": {
+    "total_agents": 34,
+    "master_agent": {
+      "file": "master-agent.md",
+      "role": "project_orchestrator",
+      "specialization": ["project_management", "team_coordination", "workflow_orchestration"],
+      "context_scope": "project_wide"
+    },
+    "core_team": [
+      {
+        "file": "product-owner-agent.md",
+        "role": "product_owner",
+        "specialization": ["requirements_analysis", "stakeholder_management", "product_strategy"],
+        "context_scope": "project_wide"
+      },
+      {
+        "file": "business-analyst-agent.md", 
+        "role": "business_analyst",
+        "specialization": ["requirements_gathering", "user_story_creation", "process_analysis"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "solutions-architect-agent.md",
+        "role": "solutions_architect", 
+        "specialization": ["system_design", "architecture_patterns", "technical_specifications"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "software-developer-agent.md",
+        "role": "software_developer",
+        "specialization": ["code_generation", "unit_testing", "refactoring"],
+        "context_scope": "codebase_wide"
+      },
+      {
+        "file": "ui-designer-agent.md",
+        "role": "ui_designer",
+        "specialization": ["user_interface_design", "user_experience", "prototyping"],
+        "context_scope": "component_specific"
+      },
+      {
+        "file": "QA-engineer-agent.md", 
+        "role": "qa_engineer",
+        "specialization": ["test_planning", "quality_assurance", "bug_tracking"],
+        "context_scope": "system_wide"
+      }
+    ],
+    "specialist_engineering": [
+      {
+        "file": "principal-engineer-agent.md",
+        "role": "principal_engineer",
+        "specialization": ["technical_leadership", "architectural_decisions", "engineering_excellence", "team_mentoring"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "cloud-engineer-agent.md",
+        "role": "cloud_engineer", 
+        "specialization": ["cloud_architecture", "infrastructure_as_code", "scalability"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "networks-engineer-agent.md",
+        "role": "networks_engineer",
+        "specialization": ["network_design", "connectivity", "performance"],
+        "context_scope": "domain_specific"
+      },
+      {
+        "file": "database-engineer-agent.md",
+        "role": "database_engineer", 
+        "specialization": ["database_design", "data_modeling", "performance_optimization"],
+        "context_scope": "domain_specific"
+      },
+      {
+        "file": "devops-engineer-agent.md",
+        "role": "devops_engineer",
+        "specialization": ["ci_cd_pipeline", "deployment_automation", "monitoring"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "scm-workflow-agent.md",
+        "role": "scm_workflow_specialist",
+        "specialization": ["version_control_workflow", "git_flow_enforcement", "branch_strategy_validation", "commit_standards_compliance", "pr_workflow_automation"],
+        "context_scope": "repository_wide"
+      },
+      {
+        "file": "azure-principal-architect-agent.md",
+        "role": "azure_principal_architect",
+        "specialization": ["azure_architecture", "enterprise_cloud_strategy", "solution_architecture", "technical_leadership"],
+        "context_scope": "enterprise_wide"
+      },
+      {
+        "file": "expert-react-frontend-engineer-agent.md",
+        "role": "expert_react_frontend_engineer",
+        "specialization": ["react_development", "frontend_architecture", "typescript_expertise", "modern_web_development"],
+        "context_scope": "frontend_system"
+      },
+      {
+        "file": "expert-dotnet-software-engineer-agent.md",
+        "role": "expert_dotnet_software_engineer",
+        "specialization": ["dotnet_development", "csharp_expertise", "enterprise_architecture", "cloud_native_development"],
+        "context_scope": "backend_system"
+      }
+    ],
+    "data_science_ml": [
+      {
+        "file": "data-engineer-agent.md",
+        "role": "data_engineer",
+        "specialization": ["data_pipeline", "etl_processes", "data_quality"],
+        "context_scope": "domain_specific"
+      },
+      {
+        "file": "data-scientist-agent.md", 
+        "role": "data_scientist",
+        "specialization": ["machine_learning", "statistical_analysis", "model_development"],
+        "context_scope": "domain_specific"
+      },
+      {
+        "file": "ML-engineer-agent.md",
+        "role": "ml_engineer",
+        "specialization": ["model_deployment", "mlops", "model_monitoring"],
+        "context_scope": "domain_specific"
+      }
+    ],
+    "governance_management": [
+      {
+        "file": "security-expert-agent.md",
+        "role": "security_expert",
+        "specialization": ["security_architecture", "threat_modeling", "compliance"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "project-manager-agent.md", 
+        "role": "project_manager",
+        "specialization": ["project_planning", "resource_management", "timeline_tracking"],
+        "context_scope": "project_wide"
+      },
+      {
+        "file": "test-manager-agent.md",
+        "role": "test_manager",
+        "specialization": ["test_strategy", "quality_metrics", "test_coordination"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "test-automation-expert-agent.md",
+        "role": "test_automation_expert", 
+        "specialization": ["automated_testing", "test_frameworks", "test_maintenance"],
+        "context_scope": "codebase_wide"
+      },
+      {
+        "file": "critical-analyst-agent.md",
+        "role": "critical_analyst",
+        "specialization": ["assumption_validation", "critical_thinking", "risk_assessment", "solution_analysis"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "blueprint-executor-agent.md",
+        "role": "blueprint_executor",
+        "specialization": ["workflow_execution", "systematic_methodology", "correctness_validation", "process_optimization"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "scrum-master-agent.md",
+        "role": "scrum_master",
+        "specialization": ["agile_facilitation", "process_improvement", "team_dynamics"],
+        "context_scope": "project_wide"
+      },
+      {
+        "file": "task-planner-agent.md",
+        "role": "task_planner",
+        "specialization": ["task_decomposition", "project_planning", "workflow_coordination", "dependency_mapping"],
+        "context_scope": "project_wide"
+      }
+    ],
+    "knowledge_management": [
+      {
+        "file": "research-specialist-agent.md",
+        "role": "research_specialist",
+        "specialization": ["information_research", "source_validation", "knowledge_synthesis", "competitive_analysis"],
+        "context_scope": "domain_wide"
+      }
+    ],
+    "meta_cognitive": [
+      {
+        "file": "beast-mode-executor-agent.md",
+        "role": "beast_mode_executor",
+        "specialization": ["autonomous_execution", "iterative_problem_solving", "comprehensive_validation", "research_driven_development"],
+        "context_scope": "task_completion"
+      },
+      {
+        "file": "quantum-thinking-framework-agent.md",
+        "role": "quantum_thinking_framework",
+        "specialization": ["quantum_thinking", "multi_dimensional_analysis", "adversarial_reasoning", "constitutional_framework"],
+        "context_scope": "cognitive_enhancement"
+      }
+    ],
+    "additional_specialists": [
+      {
+        "file": "technical-writer-agent.md",
+        "role": "technical_writer", 
+        "specialization": ["documentation", "user_guides", "api_documentation"],
+        "context_scope": "project_wide"
+      },
+      {
+        "file": "site-reliability-engineer-agent.md",
+        "role": "sre",
+        "specialization": ["system_reliability", "monitoring", "incident_response"],
+        "context_scope": "system_wide"
+      },
+      {
+        "file": "UX-research-agent.md",
+        "role": "ux_researcher",
+        "specialization": ["user_research", "usability_testing", "user_feedback_analysis"],
+        "context_scope": "component_specific"
+      }
+    ]
+  },
+  "interaction_patterns": {
+    "planning": ["master-agent", "product-owner-agent", "business-analyst-agent", "project-manager-agent", "task-planner-agent"],
+    "architecture": ["solutions-architect-agent", "cloud-engineer-agent", "database-engineer-agent", "security-expert-agent", "azure-principal-architect-agent"],
+    "development": ["software-developer-agent", "devops-engineer-agent", "test-automation-expert-agent", "expert-react-frontend-engineer-agent", "expert-dotnet-software-engineer-agent"],
+    "testing": ["QA-engineer-agent", "test-manager-agent", "test-automation-expert-agent"],
+    "data_science": ["data-scientist-agent", "data-engineer-agent", "ML-engineer-agent"],
+    "documentation": ["technical-writer-agent", "business-analyst-agent", "solutions-architect-agent", "research-specialist-agent"],
+    "deployment": ["devops-engineer-agent", "cloud-engineer-agent", "site-reliability-engineer-agent"],
+    "version_control": ["scm-workflow-agent", "devops-engineer-agent", "master-agent"],
+    "user_experience": ["ui-designer-agent", "UX-research-agent", "product-owner-agent"],
+    "research_analysis": ["research-specialist-agent", "critical-analyst-agent", "business-analyst-agent", "principal-engineer-agent"],
+    "autonomous_execution": ["beast-mode-executor-agent", "task-planner-agent", "blueprint-executor-agent"],
+    "meta_cognitive": ["quantum-thinking-framework-agent", "critical-analyst-agent", "principal-engineer-agent"],
+    "auto_escalation_triggers": {
+      "complexity_triggers": ["task_complexity >= HIGH", "multiple_dependencies >= 5", "cross_functional >= 3_teams"],
+      "risk_triggers": ["security_implications == TRUE", "data_privacy_risk == TRUE", "compliance_required == TRUE"],
+      "quality_triggers": ["production_deployment == TRUE", "customer_facing == TRUE", "mission_critical == TRUE"],
+      "innovation_triggers": ["new_technology == TRUE", "architectural_change == TRUE", "research_required == TRUE"]
+    },
+    "cognitive_escalation_matrix": {
+      "tier_1_complexity": ["quantum-thinking-framework-agent"],
+      "tier_2_risk": ["critical-analyst-agent", "quantum-thinking-framework-agent"],
+      "tier_3_quality": ["beast-mode-executor-agent", "critical-analyst-agent"],
+      "tier_4_innovation": ["quantum-thinking-framework-agent", "research-specialist-agent", "principal-engineer-agent"]
+    },
+    "autonomous_patterns": {
+      "beast_mode_auto": ["deadline_critical", "production_issues", "complex_problem_solving", "quality_gates"],
+      "quantum_thinking_auto": ["strategic_decisions", "multi_stakeholder", "risk_assessment", "innovation_initiatives"]
+    }
+  },
+  "tool_optimization": {
+    "tabnine_context_agents": ["software-developer-agent", "solutions-architect-agent", "devops-engineer-agent", "scm-workflow-agent"],
+    "copilot_chat_agents": ["master-agent", "business-analyst-agent", "technical-writer-agent", "scm-workflow-agent"],
+    "cursor_composer_agents": ["software-developer-agent", "QA-engineer-agent", "test-automation-expert-agent"],
+    "universal_agents": "all"
+  },
+  "updated": "2025-10-03T00:00:00Z",
+  "version": "2.1.0"
+}
