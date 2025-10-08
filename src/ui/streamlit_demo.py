@@ -21,10 +21,8 @@ import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
 import plotly.graph_objects as go
-import plotly.express as px
 from pathlib import Path
 import time
-import logging
 import json
 from dotenv import load_dotenv
 
@@ -37,8 +35,13 @@ sys.path.insert(0, str(project_root))
 
 try:
     from src.models.enhanced_classifier import GeminiEnhancedClassifier, EnhancedClassificationResult
-except ImportError:
-    st.error("❌ Enhanced classifier not found. Please ensure src/models/enhanced_classifier.py is available.")
+    from src.ui.pipeline_visualization import (
+        display_pipeline_visualization,
+        create_real_pipeline_visualization
+    )
+except ImportError as e:
+    st.error(f"❌ Import error: {e}")
+    st.error("Please ensure all required modules are available.")
     st.stop()
 
 # Page configuration
@@ -624,11 +627,42 @@ def main():
     </div>
     """, unsafe_allow_html=True)
     
-    # Sidebar for configuration
+        # Sidebar for configuration
     with st.sidebar:
         st.header("🔧 Configuration")
         
-        # Automatic initialization status
+        # Pipeline visualization toggle
+        show_pipeline_viz = st.checkbox(
+            "🔍 Show Routing Pipeline",
+            value=True,
+            help="Display step-by-step routing decision process"
+        )
+        
+        # Sample tickets guide
+        st.markdown("---")
+        st.subheader("🎯 Sample Ticket Guide")
+        st.markdown("""
+        **Test Different Routing Paths:**
+        
+        🔧 **[RULES]** - High-confidence pattern matches
+        - Instant routing (<1ms) 
+        - 85-99% confidence
+        - Bypasses Vector DB & LLM
+        
+        🔍 **[VECTOR]** - Similarity search scenarios  
+        - Historical pattern matching (~45ms)
+        - Medium confidence (70-84%)
+        - Uses cached routing intelligence
+        
+        🤖 **[RAG]** - Complex LLM reasoning
+        - Multi-intent or ambiguous tickets
+        - Full AI analysis (~850ms)
+        - Detailed reasoning provided
+        
+        ⚡ **[FAST]** vs 🧠 **[COMPLEX]** - Speed comparison
+        """)
+        
+        st.info("💡 Enable pipeline visualization above to see the complete routing flow!")        # Automatic initialization status
         env_api_key = os.getenv('GOOGLE_API_KEY')
         if env_api_key:
             st.success("✅ API key loaded from .env file")
@@ -833,26 +867,37 @@ def main():
         
         sample_tickets = [
             "Select a sample ticket...",
-            # CREDIT MANAGEMENT - Disputes
-            "� I dispute this R500 charge on my bill - I never authorized this premium service",
-            "� I was double charged for my data bundle last week - please refund one charge",
-            "� These international call charges are wrong - I was told they were included in my plan",
-            # BILLING - General Inquiries  
-            "🧾 Can you please explain why my bill is R200 higher than usual this month?",
-            "🧾 What are the different fees listed on my account statement?",
-            "🧾 When is my next payment due date and what payment methods do you accept?",
-            # ORDER MANAGEMENT - Service Requests
-            "📋 I want to upgrade my internet package to fiber and schedule installation",
-            "📋 Please activate the new mobile line I ordered and send me the SIM card", 
-            "📋 I need to change my current plan to include more data and international calling",
-            # CRM - Customer Relations
-            "🤝 Your customer service has been terrible and I'm thinking of cancelling my account",
-            "🤝 I'm very dissatisfied with the service quality and want to speak to a manager",
-            "🤝 The technician was rude during installation - this is unacceptable service",
-            # Mixed sentiment examples
-            "😊 Thank you for resolving my previous issue - now I'd like to upgrade my service",
-            "😠 Internet has been down for 3 days - this is affecting my business operations!",
-            "😐 Hello, I need information about your new data packages and pricing"
+            
+            # 🔧 RULES ENGINE MATCHES (High-Confidence, Sub-millisecond Routing)
+            "🔧 [RULES] I dispute this R500 charge - I never authorized this premium service subscription",
+            "🔧 [RULES] My account is locked and I cannot login to the customer portal to pay my bill",
+            "🔧 [RULES] The internet service is down in my area - no connection for the past 3 hours",
+            "🔧 [RULES] I was charged twice for my monthly data package - please investigate this duplicate charge",
+            "🔧 [RULES] My payment failed when trying to pay online - card was declined but should work fine",
+            "🔧 [RULES] I forgot my password and need to reset it to access my online account",
+            "🔧 [RULES] URGENT: I think there's been unauthorized access to my account - possible security breach",
+            "🔧 [RULES] I'm thinking of leaving your service - the quality has been poor lately",
+            "� [RULES] I want to setup a new internet service at my home - please schedule installation",
+            "� [RULES] My internet connection is extremely slow - speed test shows only 2 Mbps instead of 50 Mbps",
+            
+            # 🔍 VECTOR DB SCENARIOS (Similarity Search with Historical Patterns)
+            "🔍 [VECTOR] My WiFi router keeps disconnecting every few minutes during work calls",
+            "� [VECTOR] I'm getting weird charges on my bill that I don't recognize from last month",
+            "🔍 [VECTOR] The mobile signal strength is very weak in my office building",
+            "🔍 [VECTOR] I need help setting up parental controls on my internet connection",
+            "🔍 [VECTOR] My data usage seems much higher than normal this month",
+            
+            # 🤖 RAG/LLM COMPLEX SCENARIOS (Requiring AI Reasoning)
+            "� [RAG] Hi, I have several issues: my bill seems wrong, I want to upgrade my service, and the internet has been slow. Can you help with all of these? Also, I'm not happy with the customer service I received last week.",
+            "� [RAG] There's something strange going on with my account. The numbers don't seem right and I'm concerned about what I'm seeing. Could you look into this please?",
+            "� [RAG] Our business depends on reliable internet for video conferences with clients. The connection keeps dropping during important meetings, which is affecting our revenue. We need a technical solution and possibly compensation for lost business.",
+            "🤖 [RAG] I AM EXTREMELY FRUSTRATED!!! This is the THIRD TIME I'm calling about this issue and nobody seems to understand what I need. The billing department told me one thing, technical support said something else, and now I don't know what to believe.",
+            "🤖 [RAG] I love my current internet service and I'm wondering what other products you offer. My neighbor mentioned something about mobile plans and TV packages. Could you tell me about bundle deals that might save me money?",
+            
+            # � PERFORMANCE COMPARISON EXAMPLES
+            "⚡ [FAST] Thank you for the excellent customer service - your technician was very helpful",
+            "⚡ [FAST] Can you please explain my bill - I don't understand some of the charges listed",
+            "🧠 [COMPLEX] The latency on my fiber connection is terrible - I'm getting 150ms ping times to local servers when it should be under 20ms. My VPN keeps timing out and my remote work is being impacted."
         ]
         
         selected_ticket = st.selectbox(
@@ -919,6 +964,11 @@ def main():
                 
                 # NEW: Departmental Routing Display
                 display_departmental_routing(result)
+                
+                # Pipeline visualization
+                if show_pipeline_viz:
+                    pipeline_viz = create_real_pipeline_visualization(ticket_text, result)
+                    display_pipeline_visualization(pipeline_viz)
                 
                 # Model comparison
                 st.subheader("🔍 Model Comparison")

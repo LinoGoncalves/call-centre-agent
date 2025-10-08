@@ -1,0 +1,361 @@
+{
+  "timestamp": 1759960881.6578467,
+  "rules_engine_results": {
+    "total_tests": 19,
+    "successful_matches": 18,
+    "failed_matches": 0,
+    "incorrect_rules": 1,
+    "confidence_errors": 0,
+    "department_errors": 0,
+    "processing_times": [
+      3.606700000091223,
+      0.1654999996389961,
+      0.3529999994498212,
+      0.2038000002357876,
+      0.25860000096145086,
+      0.20219999896653462,
+      0.30779999906371813,
+      0.20289999883971177,
+      0.3584000005503185,
+      0.31429999944521114,
+      0.30420000075537246,
+      0.4728999992948957,
+      0.2676999993127538,
+      0.19379999866941944,
+      0.15460000031453092,
+      0.21640000159095507,
+      0.18679999993764795,
+      1.0407999998278683,
+      0.16789999972388614
+    ],
+    "detailed_results": [
+      {
+        "ticket_id": "TICKET_01001",
+        "ticket_text": "I dispute this R500 charge on my bill - I never authorized this premium service subscription",
+        "expected_rule": "R001_DISPUTE_EXPLICIT",
+        "expected_department": "credit_management",
+        "expected_confidence": 0.98,
+        "processing_time_ms": 3.606700000091223,
+        "result": "SUCCESS",
+        "actual_rule": "R001_DISPUTE_EXPLICIT",
+        "actual_department": "credit_management",
+        "actual_confidence": 0.98
+      },
+      {
+        "ticket_id": "TICKET_01002",
+        "ticket_text": "This billing is incorrect - I disagree with the international charges on my statement",
+        "expected_rule": "R001_DISPUTE_EXPLICIT",
+        "expected_department": "credit_management",
+        "expected_confidence": 0.98,
+        "processing_time_ms": 0.1654999996389961,
+        "result": "SUCCESS",
+        "actual_rule": "R001_DISPUTE_EXPLICIT",
+        "actual_department": "credit_management",
+        "actual_confidence": 0.98
+      },
+      {
+        "ticket_id": "TICKET_01003",
+        "ticket_text": "Please refund the duplicate charge on my account from last week's payment",
+        "expected_rule": "R002_REFUND_REQUEST",
+        "expected_department": "credit_management",
+        "expected_confidence": 0.95,
+        "processing_time_ms": 0.3529999994498212,
+        "result": "WRONG_RULE",
+        "actual_rule": "R003_DOUBLE_BILLING",
+        "actual_department": "credit_management",
+        "actual_confidence": 0.97
+      },
+      {
+        "ticket_id": "TICKET_01004",
+        "ticket_text": "There's a billing error on my statement - please credit my account for the overcharge",
+        "expected_rule": "R002_REFUND_REQUEST",
+        "expected_department": "credit_management",
+        "expected_confidence": 0.95,
+        "processing_time_ms": 0.2038000002357876,
+        "result": "SUCCESS",
+        "actual_rule": "R002_REFUND_REQUEST",
+        "actual_department": "credit_management",
+        "actual_confidence": 0.95
+      },
+      {
+        "ticket_id": "TICKET_01005",
+        "ticket_text": "I was charged twice for my monthly data package - please investigate this duplicate charge",
+        "expected_rule": "R003_DOUBLE_BILLING",
+        "expected_department": "credit_management",
+        "expected_confidence": 0.97,
+        "processing_time_ms": 0.25860000096145086,
+        "result": "SUCCESS",
+        "actual_rule": "R003_DOUBLE_BILLING",
+        "actual_department": "credit_management",
+        "actual_confidence": 0.97
+      },
+      {
+        "ticket_id": "TICKET_01006",
+        "ticket_text": "My account is locked and I cannot login to the customer portal to pay my bill",
+        "expected_rule": "R004_ACCOUNT_LOCKED",
+        "expected_department": "technical_support_l2",
+        "expected_confidence": 0.99,
+        "processing_time_ms": 0.20219999896653462,
+        "result": "SUCCESS",
+        "actual_rule": "R004_ACCOUNT_LOCKED",
+        "actual_department": "technical_support_l2",
+        "actual_confidence": 0.99
+      },
+      {
+        "ticket_id": "TICKET_01007",
+        "ticket_text": "Access denied when trying to login - says account locked for security reasons",
+        "expected_rule": "R004_ACCOUNT_LOCKED",
+        "expected_department": "technical_support_l2",
+        "expected_confidence": 0.99,
+        "processing_time_ms": 0.30779999906371813,
+        "result": "SUCCESS",
+        "actual_rule": "R004_ACCOUNT_LOCKED",
+        "actual_department": "technical_support_l2",
+        "actual_confidence": 0.99
+      },
+      {
+        "ticket_id": "TICKET_01008",
+        "ticket_text": "I forgot my password and need to reset it to access my online account",
+        "expected_rule": "R005_PASSWORD_RESET",
+        "expected_department": "technical_support_l1",
+        "expected_confidence": 0.92,
+        "processing_time_ms": 0.20289999883971177,
+        "result": "SUCCESS",
+        "actual_rule": "R005_PASSWORD_RESET",
+        "actual_department": "technical_support_l1",
+        "actual_confidence": 0.92
+      },
+      {
+        "ticket_id": "TICKET_01009",
+        "ticket_text": "URGENT: I think there's been unauthorized access to my account - possible security breach",
+        "expected_rule": "R006_SECURITY_BREACH",
+        "expected_department": "security_team",
+        "expected_confidence": 0.98,
+        "processing_time_ms": 0.3584000005503185,
+        "result": "SUCCESS",
+        "actual_rule": "R006_SECURITY_BREACH",
+        "actual_department": "security_team",
+        "actual_confidence": 0.98
+      },
+      {
+        "ticket_id": "TICKET_01010",
+        "ticket_text": "The internet service is down in my area - no connection for the past 3 hours",
+        "expected_rule": "R007_SERVICE_OUTAGE",
+        "expected_department": "technical_support_l2",
+        "expected_confidence": 0.94,
+        "processing_time_ms": 0.31429999944521114,
+        "result": "SUCCESS",
+        "actual_rule": "R007_SERVICE_OUTAGE",
+        "actual_department": "technical_support_l2",
+        "actual_confidence": 0.94
+      },
+      {
+        "ticket_id": "TICKET_01011",
+        "ticket_text": "Complete network outage - cannot connect to internet or make calls",
+        "expected_rule": "R007_SERVICE_OUTAGE",
+        "expected_department": "technical_support_l2",
+        "expected_confidence": 0.94,
+        "processing_time_ms": 0.30420000075537246,
+        "result": "SUCCESS",
+        "actual_rule": "R007_SERVICE_OUTAGE",
+        "actual_department": "technical_support_l2",
+        "actual_confidence": 0.94
+      },
+      {
+        "ticket_id": "TICKET_01012",
+        "ticket_text": "My internet connection is extremely slow - speed test shows only 2 Mbps instead of 50 Mbps",
+        "expected_rule": "R008_SLOW_INTERNET",
+        "expected_department": "technical_support_l1",
+        "expected_confidence": 0.89,
+        "processing_time_ms": 0.4728999992948957,
+        "result": "SUCCESS",
+        "actual_rule": "R008_SLOW_INTERNET",
+        "actual_department": "technical_support_l1",
+        "actual_confidence": 0.89
+      },
+      {
+        "ticket_id": "TICKET_01013",
+        "ticket_text": "Can you please explain my bill - I don't understand some of the charges listed",
+        "expected_rule": "R009_BILLING_INQUIRY",
+        "expected_department": "billing_team",
+        "expected_confidence": 0.87,
+        "processing_time_ms": 0.2676999993127538,
+        "result": "SUCCESS",
+        "actual_rule": "R009_BILLING_INQUIRY",
+        "actual_department": "billing_team",
+        "actual_confidence": 0.87
+      },
+      {
+        "ticket_id": "TICKET_01014",
+        "ticket_text": "My payment failed when trying to pay online - card was declined but should work fine",
+        "expected_rule": "R010_PAYMENT_ISSUES",
+        "expected_department": "billing_team",
+        "expected_confidence": 0.91,
+        "processing_time_ms": 0.19379999866941944,
+        "result": "SUCCESS",
+        "actual_rule": "R010_PAYMENT_ISSUES",
+        "actual_department": "billing_team",
+        "actual_confidence": 0.91
+      },
+      {
+        "ticket_id": "TICKET_01015",
+        "ticket_text": "I want to setup a new internet service at my home - please schedule installation",
+        "expected_rule": "R011_NEW_SERVICE",
+        "expected_department": "order_management",
+        "expected_confidence": 0.93,
+        "processing_time_ms": 0.15460000031453092,
+        "result": "SUCCESS",
+        "actual_rule": "R011_NEW_SERVICE",
+        "actual_department": "order_management",
+        "actual_confidence": 0.93
+      },
+      {
+        "ticket_id": "TICKET_01016",
+        "ticket_text": "I need to upgrade my plan to get faster internet - current speed is not enough",
+        "expected_rule": "R012_UPGRADE_PLAN",
+        "expected_department": "order_management",
+        "expected_confidence": 0.88,
+        "processing_time_ms": 0.21640000159095507,
+        "result": "SUCCESS",
+        "actual_rule": "R012_UPGRADE_PLAN",
+        "actual_department": "order_management",
+        "actual_confidence": 0.88
+      },
+      {
+        "ticket_id": "TICKET_01017",
+        "ticket_text": "I'm thinking of leaving your service - the quality has been poor lately",
+        "expected_rule": "R013_RETENTION_RISK",
+        "expected_department": "crm_team",
+        "expected_confidence": 0.91,
+        "processing_time_ms": 0.18679999993764795,
+        "result": "SUCCESS",
+        "actual_rule": "R013_RETENTION_RISK",
+        "actual_department": "crm_team",
+        "actual_confidence": 0.91
+      },
+      {
+        "ticket_id": "TICKET_01018",
+        "ticket_text": "Considering switching to another provider due to poor service and high costs",
+        "expected_rule": "R013_RETENTION_RISK",
+        "expected_department": "crm_team",
+        "expected_confidence": 0.91,
+        "processing_time_ms": 1.0407999998278683,
+        "result": "SUCCESS",
+        "actual_rule": "R013_RETENTION_RISK",
+        "actual_department": "crm_team",
+        "actual_confidence": 0.91
+      },
+      {
+        "ticket_id": "TICKET_01019",
+        "ticket_text": "Thank you for the excellent customer service - your technician was very helpful",
+        "expected_rule": "R014_POSITIVE_FEEDBACK",
+        "expected_department": "crm_team",
+        "expected_confidence": 0.85,
+        "processing_time_ms": 0.16789999972388614,
+        "result": "SUCCESS",
+        "actual_rule": "R014_POSITIVE_FEEDBACK",
+        "actual_department": "crm_team",
+        "actual_confidence": 0.85
+      }
+    ]
+  },
+  "rag_system_results": {
+    "total_tests": 10,
+    "successful_classifications": 8,
+    "failed_classifications": 0,
+    "processing_times": [
+      17560.184240341187,
+      10912.885665893555,
+      8985.413789749146,
+      15771.782159805298,
+      13383.711576461792,
+      11847.968339920044,
+      14026.783227920532,
+      8490.164756774902
+    ],
+    "confidence_scores": [
+      0.85,
+      0.9,
+      0.98,
+      0.98,
+      0.98,
+      0.98,
+      0.85,
+      0.98
+    ],
+    "detailed_results": [
+      {
+        "ticket_id": "TICKET_01020",
+        "expected_category": "COMPLEX_MULTI_ISSUE",
+        "actual_category": "BILLING",
+        "confidence": 0.85,
+        "processing_time_ms": 17560.184240341187,
+        "reasoning": "The customer explicitly states 'my bill seems wrong,' which is a direct concern related to charges and account balance. While other issues like an upgrade request and slow internet exist, the billing discrepancy, especially if it's a dispute, often forms the core of customer dissatisfaction and dictates the highest priority routing.",
+        "result": "SUCCESS"
+      },
+      {
+        "ticket_id": "TICKET_01021",
+        "expected_category": "AMBIGUOUS_CONCERN",
+        "actual_category": "BILLING",
+        "confidence": 0.9,
+        "processing_time_ms": 10912.885665893555,
+        "reasoning": "The customer's statement 'The numbers don't seem right' on 'my account' strongly indicates an issue related to financial figures, charges, payments, or account balance, which falls under the BILLING category.",
+        "result": "SUCCESS"
+      },
+      {
+        "ticket_id": "TICKET_01022",
+        "expected_category": "BUSINESS_CRITICAL_TECHNICAL",
+        "actual_category": "TECHNICAL",
+        "confidence": 0.98,
+        "processing_time_ms": 8985.413789749146,
+        "reasoning": "The core issue described is 'The connection keeps dropping during important meetings'. This directly points to an internet connectivity or service performance problem, which is a technical issue related to the reliability of the internet service provided.",
+        "result": "SUCCESS"
+      },
+      {
+        "ticket_id": "TICKET_01024",
+        "expected_category": "TECHNICAL_EXPERT_CUSTOMER",
+        "actual_category": "TECHNICAL",
+        "confidence": 0.98,
+        "processing_time_ms": 15771.782159805298,
+        "reasoning": "The ticket explicitly details issues with internet connectivity, specifically 'latency on my fiber connection', '150ms ping times', 'VPN keeps timing out'. It also requests 'level 2 technical support to check the routing tables and QoS settings', which are all specific technical aspects of internet service performance and troubleshooting.",
+        "result": "SUCCESS"
+      },
+      {
+        "ticket_id": "TICKET_01026",
+        "expected_category": "REGULATORY_COMPLAINT",
+        "actual_category": "COMPLAINTS",
+        "confidence": 0.98,
+        "processing_time_ms": 13383.711576461792,
+        "reasoning": "The customer explicitly states 'I need to file a formal complaint' and refers to 'service issues' and 'failures to meet SLA commitments', which are direct indicators of dissatisfaction with service delivery rather than technical problems, billing inquiries, or sales. The request for 'complaint handling process and escalation procedures' further solidifies this classification.",
+        "result": "SUCCESS"
+      },
+      {
+        "ticket_id": "TICKET_01027",
+        "expected_category": "SALES_OPPORTUNITY",
+        "actual_category": "SALES",
+        "confidence": 0.98,
+        "processing_time_ms": 11847.968339920044,
+        "reasoning": "The customer is explicitly inquiring about 'other products,' 'mobile plans,' 'TV packages,' and 'bundle deals' with the aim of 'saving money' and getting 'more services.' This directly aligns with a sales-related inquiry about new offerings and upgrades.",
+        "result": "SUCCESS"
+      },
+      {
+        "ticket_id": "TICKET_01028",
+        "expected_category": "FAMILY_ACCOUNT_ISSUE",
+        "actual_category": "ACCOUNT",
+        "confidence": 0.85,
+        "processing_time_ms": 14026.783227920532,
+        "reasoning": "The customer's primary concern revolves around managing their account settings, specifically mentioning 'changed some settings on our family account', 'can't access certain features', 'reset the account to proper settings', and 'understand parental controls'. These issues directly relate to account configuration and management, which falls under the ACCOUNT category. While there is a billing issue mentioned, it appears to be a consequence of the account setting changes, and the core request is about regaining control and understanding the account settings.",
+        "result": "SUCCESS"
+      },
+      {
+        "ticket_id": "TICKET_01029",
+        "expected_category": "ROAMING_DISPUTE",
+        "actual_category": "BILLING",
+        "confidence": 0.98,
+        "processing_time_ms": 8490.164756774902,
+        "reasoning": "The customer's primary concern revolves around 'roaming charges of R3000 on my bill'. This directly pertains to charges, account balances, and billing inquiries, fitting perfectly within the BILLING category. The mention of 'data usage tracking' is also related to how these charges were incurred and appear on the bill.",
+        "result": "SUCCESS"
+      }
+    ]
+  }
+}

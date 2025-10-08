@@ -1,0 +1,441 @@
+{
+  "metadata": {
+    "generated_at": "2025-10-08T23:58:34.627442",
+    "total_tickets": 50,
+    "rules_engine_expected": 30,
+    "rag_system_expected": 20,
+    "description": "Comprehensive test data for Rules Engine and RAG validation"
+  },
+  "rules_engine_tests": [
+    {
+      "ticket_id": "TICKET_01001",
+      "text": "I dispute this R500 charge on my bill - I never authorized this premium service subscription",
+      "expected_rule": "R001_DISPUTE_EXPLICIT",
+      "expected_department": "credit_management",
+      "expected_confidence": 0.98,
+      "expected_urgency": "High",
+      "customer_tier": "Gold",
+      "category": "DISPUTE_EXPLICIT"
+    },
+    {
+      "ticket_id": "TICKET_01002",
+      "text": "This billing is incorrect - I disagree with the international charges on my statement",
+      "expected_rule": "R001_DISPUTE_EXPLICIT",
+      "expected_department": "credit_management",
+      "expected_confidence": 0.98,
+      "expected_urgency": "High",
+      "customer_tier": "Silver",
+      "category": "DISPUTE_BILLING"
+    },
+    {
+      "ticket_id": "TICKET_01003",
+      "text": "Please refund the duplicate charge on my account from last week's payment",
+      "expected_rule": "R002_REFUND_REQUEST",
+      "expected_department": "credit_management",
+      "expected_confidence": 0.95,
+      "expected_urgency": "High",
+      "customer_tier": "Platinum",
+      "category": "REFUND_REQUEST"
+    },
+    {
+      "ticket_id": "TICKET_01004",
+      "text": "There's a billing error on my statement - please credit my account for the overcharge",
+      "expected_rule": "R002_REFUND_REQUEST",
+      "expected_department": "credit_management",
+      "expected_confidence": 0.95,
+      "expected_urgency": "High",
+      "customer_tier": "Bronze",
+      "category": "BILLING_ERROR"
+    },
+    {
+      "ticket_id": "TICKET_01005",
+      "text": "I was charged twice for my monthly data package - please investigate this duplicate charge",
+      "expected_rule": "R003_DOUBLE_BILLING",
+      "expected_department": "credit_management",
+      "expected_confidence": 0.97,
+      "expected_urgency": "High",
+      "customer_tier": "Gold",
+      "category": "DUPLICATE_BILLING"
+    },
+    {
+      "ticket_id": "TICKET_01006",
+      "text": "My account is locked and I cannot login to the customer portal to pay my bill",
+      "expected_rule": "R004_ACCOUNT_LOCKED",
+      "expected_department": "technical_support_l2",
+      "expected_confidence": 0.99,
+      "expected_urgency": "High",
+      "customer_tier": "Silver",
+      "category": "ACCOUNT_ACCESS"
+    },
+    {
+      "ticket_id": "TICKET_01007",
+      "text": "Access denied when trying to login - says account locked for security reasons",
+      "expected_rule": "R004_ACCOUNT_LOCKED",
+      "expected_department": "technical_support_l2",
+      "expected_confidence": 0.99,
+      "expected_urgency": "High",
+      "customer_tier": "Gold",
+      "category": "LOGIN_BLOCKED"
+    },
+    {
+      "ticket_id": "TICKET_01008",
+      "text": "I forgot my password and need to reset it to access my online account",
+      "expected_rule": "R005_PASSWORD_RESET",
+      "expected_department": "technical_support_l1",
+      "expected_confidence": 0.92,
+      "expected_urgency": "Medium",
+      "customer_tier": "Bronze",
+      "category": "PASSWORD_ISSUE"
+    },
+    {
+      "ticket_id": "TICKET_01009",
+      "text": "URGENT: I think there's been unauthorized access to my account - possible security breach",
+      "expected_rule": "R006_SECURITY_BREACH",
+      "expected_department": "security_team",
+      "expected_confidence": 0.98,
+      "expected_urgency": "Critical",
+      "customer_tier": "Platinum",
+      "category": "SECURITY_INCIDENT"
+    },
+    {
+      "ticket_id": "TICKET_01010",
+      "text": "The internet service is down in my area - no connection for the past 3 hours",
+      "expected_rule": "R007_SERVICE_OUTAGE",
+      "expected_department": "technical_support_l2",
+      "expected_confidence": 0.94,
+      "expected_urgency": "High",
+      "customer_tier": "Gold",
+      "category": "SERVICE_DOWN"
+    },
+    {
+      "ticket_id": "TICKET_01011",
+      "text": "Complete network outage - cannot connect to internet or make calls",
+      "expected_rule": "R007_SERVICE_OUTAGE",
+      "expected_department": "technical_support_l2",
+      "expected_confidence": 0.94,
+      "expected_urgency": "High",
+      "customer_tier": "Silver",
+      "category": "NETWORK_OUTAGE"
+    },
+    {
+      "ticket_id": "TICKET_01012",
+      "text": "My internet connection is extremely slow - speed test shows only 2 Mbps instead of 50 Mbps",
+      "expected_rule": "R008_SLOW_INTERNET",
+      "expected_department": "technical_support_l1",
+      "expected_confidence": 0.89,
+      "expected_urgency": "Medium",
+      "customer_tier": "Bronze",
+      "category": "SPEED_ISSUE"
+    },
+    {
+      "ticket_id": "TICKET_01013",
+      "text": "Can you please explain my bill - I don't understand some of the charges listed",
+      "expected_rule": "R009_BILLING_INQUIRY",
+      "expected_department": "billing_team",
+      "expected_confidence": 0.87,
+      "expected_urgency": "Medium",
+      "customer_tier": "Silver",
+      "category": "BILL_EXPLANATION"
+    },
+    {
+      "ticket_id": "TICKET_01014",
+      "text": "My payment failed when trying to pay online - card was declined but should work fine",
+      "expected_rule": "R010_PAYMENT_ISSUES",
+      "expected_department": "billing_team",
+      "expected_confidence": 0.91,
+      "expected_urgency": "Medium",
+      "customer_tier": "Gold",
+      "category": "PAYMENT_FAILED"
+    },
+    {
+      "ticket_id": "TICKET_01015",
+      "text": "I want to setup a new internet service at my home - please schedule installation",
+      "expected_rule": "R011_NEW_SERVICE",
+      "expected_department": "order_management",
+      "expected_confidence": 0.93,
+      "expected_urgency": "Medium",
+      "customer_tier": "Bronze",
+      "category": "NEW_INSTALLATION"
+    },
+    {
+      "ticket_id": "TICKET_01016",
+      "text": "I need to upgrade my plan to get faster internet - current speed is not enough",
+      "expected_rule": "R012_UPGRADE_PLAN",
+      "expected_department": "order_management",
+      "expected_confidence": 0.88,
+      "expected_urgency": "Low",
+      "customer_tier": "Silver",
+      "category": "PLAN_UPGRADE"
+    },
+    {
+      "ticket_id": "TICKET_01017",
+      "text": "I'm thinking of leaving your service - the quality has been poor lately",
+      "expected_rule": "R013_RETENTION_RISK",
+      "expected_department": "crm_team",
+      "expected_confidence": 0.91,
+      "expected_urgency": "High",
+      "customer_tier": "Platinum",
+      "category": "CHURN_RISK"
+    },
+    {
+      "ticket_id": "TICKET_01018",
+      "text": "Considering switching to another provider due to poor service and high costs",
+      "expected_rule": "R013_RETENTION_RISK",
+      "expected_department": "crm_team",
+      "expected_confidence": 0.91,
+      "expected_urgency": "High",
+      "customer_tier": "Gold",
+      "category": "COMPETITOR_CONSIDERATION"
+    },
+    {
+      "ticket_id": "TICKET_01019",
+      "text": "Thank you for the excellent customer service - your technician was very helpful",
+      "expected_rule": "R014_POSITIVE_FEEDBACK",
+      "expected_department": "crm_team",
+      "expected_confidence": 0.85,
+      "expected_urgency": "Low",
+      "customer_tier": "Gold",
+      "category": "POSITIVE_FEEDBACK"
+    }
+  ],
+  "rag_system_tests": [
+    {
+      "ticket_id": "TICKET_01020",
+      "text": "Hi, I have several issues: my bill seems wrong, I want to upgrade my service, and also the internet has been slow. Can you help with all of these? Also, I'm not happy with the customer service I received last week.",
+      "expected_category": "COMPLEX_MULTI_ISSUE",
+      "expected_departments": [
+        "billing_team",
+        "order_management",
+        "technical_support_l1",
+        "crm_team"
+      ],
+      "complexity": "High",
+      "requires_reasoning": true,
+      "customer_tier": "Platinum",
+      "category": "MULTI_INTENT"
+    },
+    {
+      "ticket_id": "TICKET_01021",
+      "text": "There's something strange going on with my account. The numbers don't seem right and I'm concerned about what I'm seeing. Could you look into this please?",
+      "expected_category": "AMBIGUOUS_CONCERN",
+      "expected_departments": [
+        "billing_team",
+        "security_team"
+      ],
+      "complexity": "High",
+      "requires_reasoning": true,
+      "customer_tier": "Silver",
+      "category": "VAGUE_ISSUE"
+    },
+    {
+      "ticket_id": "TICKET_01022",
+      "text": "Our business depends on reliable internet for video conferences with clients. The connection keeps dropping during important meetings, which is affecting our revenue. We need a technical solution and possibly compensation for lost business.",
+      "expected_category": "BUSINESS_CRITICAL_TECHNICAL",
+      "expected_departments": [
+        "technical_support_l2",
+        "crm_team",
+        "credit_management"
+      ],
+      "complexity": "High",
+      "requires_reasoning": true,
+      "customer_tier": "Enterprise",
+      "category": "BUSINESS_IMPACT"
+    },
+    {
+      "ticket_id": "TICKET_01023",
+      "text": "I AM EXTREMELY FRUSTRATED!!! This is the THIRD TIME I'm calling about this issue and nobody seems to understand what I need. The billing department told me one thing, technical support said something else, and now I don't know what to believe. I just want my internet to work and my bill to be correct. Is that too much to ask???",
+      "expected_category": "ESCALATED_EMOTIONAL_CUSTOMER",
+      "expected_departments": [
+        "crm_team",
+        "billing_team",
+        "technical_support_l2"
+      ],
+      "complexity": "High",
+      "requires_reasoning": true,
+      "customer_tier": "Gold",
+      "category": "EMOTIONAL_ESCALATION"
+    },
+    {
+      "ticket_id": "TICKET_01024",
+      "text": "The latency on my fiber connection is terrible - I'm getting 150ms ping times to local servers when it should be under 20ms. My VPN keeps timing out and my remote work is being impacted. I need level 2 technical support to check the routing tables and QoS settings.",
+      "expected_category": "TECHNICAL_EXPERT_CUSTOMER",
+      "expected_departments": [
+        "technical_support_l2"
+      ],
+      "complexity": "Medium",
+      "requires_reasoning": true,
+      "customer_tier": "Platinum",
+      "category": "TECHNICAL_SOPHISTICATED"
+    },
+    {
+      "ticket_id": "TICKET_01025",
+      "text": "Thank you for finally fixing my internet issue after 2 weeks of problems. Your technician Sarah was very professional. However, I'm still concerned about the reliability going forward and would like to understand what caused the initial problem so it doesn't happen again.",
+      "expected_category": "POSITIVE_WITH_FOLLOWUP",
+      "expected_departments": [
+        "crm_team",
+        "technical_support_l2"
+      ],
+      "complexity": "Medium",
+      "requires_reasoning": true,
+      "customer_tier": "Silver",
+      "category": "GRATEFUL_BUT_CONCERNED"
+    },
+    {
+      "ticket_id": "TICKET_01026",
+      "text": "I need to file a formal complaint with ICASA about your company's handling of my service issues. I've documented multiple failures to meet SLA commitments and want to understand my rights as a consumer. Can you provide me with your complaint handling process and escalation procedures?",
+      "expected_category": "REGULATORY_COMPLAINT",
+      "expected_departments": [
+        "crm_team",
+        "legal_team",
+        "executive_escalation"
+      ],
+      "complexity": "Critical",
+      "requires_reasoning": true,
+      "customer_tier": "Gold",
+      "category": "LEGAL_REGULATORY"
+    },
+    {
+      "ticket_id": "TICKET_01027",
+      "text": "I love my current internet service and I'm wondering what other products you offer. My neighbor mentioned something about mobile plans and TV packages. Could you tell me about bundle deals that might save me money while giving me more services?",
+      "expected_category": "SALES_OPPORTUNITY",
+      "expected_departments": [
+        "sales_team",
+        "crm_team"
+      ],
+      "complexity": "Low",
+      "requires_reasoning": true,
+      "customer_tier": "Bronze",
+      "category": "UPSELL_INQUIRY"
+    },
+    {
+      "ticket_id": "TICKET_01028",
+      "text": "My teenage son might have changed some settings on our family account and now I can't access certain features. I also noticed some charges for premium content that we didn't authorize. I need to reset the account to proper settings and understand parental controls.",
+      "expected_category": "FAMILY_ACCOUNT_ISSUE",
+      "expected_departments": [
+        "technical_support_l1",
+        "billing_team",
+        "crm_team"
+      ],
+      "complexity": "Medium",
+      "requires_reasoning": true,
+      "customer_tier": "Silver",
+      "category": "FAMILY_MANAGEMENT"
+    },
+    {
+      "ticket_id": "TICKET_01029",
+      "text": "I traveled to Europe last month and was shocked by roaming charges of R3000 on my bill. Your website said roaming was 'affordable' but didn't clearly explain the rates. I feel misled by your marketing and want these charges reviewed. I'm also concerned about data usage tracking while abroad.",
+      "expected_category": "ROAMING_DISPUTE",
+      "expected_departments": [
+        "billing_team",
+        "credit_management",
+        "crm_team"
+      ],
+      "complexity": "High",
+      "requires_reasoning": true,
+      "customer_tier": "Platinum",
+      "category": "INTERNATIONAL_BILLING"
+    }
+  ],
+  "edge_cases": [
+    {
+      "ticket_id": "TICKET_01030",
+      "text": "I have a question about some charges on my account",
+      "expected_routing": "ml_llm_pipeline",
+      "confidence_expected": 0.75,
+      "category": "BELOW_RULES_THRESHOLD"
+    },
+    {
+      "ticket_id": "TICKET_01031",
+      "text": "I'm not sure if this charge is right - could you check it?",
+      "expected_routing": "ml_llm_pipeline",
+      "confidence_expected": 0.7,
+      "category": "UNCERTAIN_DISPUTE"
+    },
+    {
+      "ticket_id": "TICKET_01032",
+      "text": "Something is wrong with my internet connection",
+      "expected_routing": "ml_llm_pipeline",
+      "confidence_expected": 0.65,
+      "category": "VAGUE_TECHNICAL"
+    },
+    {
+      "ticket_id": "TICKET_01033",
+      "text": "I have concerns about my service quality and billing accuracy",
+      "expected_routing": "ml_llm_pipeline",
+      "confidence_expected": 0.72,
+      "category": "MULTIPLE_WEAK_SIGNALS"
+    }
+  ],
+  "performance_tests": [
+    {
+      "ticket_id": "TICKET_01034",
+      "text": "I disagree with these unauthorized fees",
+      "expected_rule": "R001_DISPUTE_EXPLICIT",
+      "test_type": "performance",
+      "batch": "performance_batch_1"
+    },
+    {
+      "ticket_id": "TICKET_01035",
+      "text": "This is an unauthorized billing error",
+      "expected_rule": "R001_DISPUTE_EXPLICIT",
+      "test_type": "performance",
+      "batch": "performance_batch_1"
+    },
+    {
+      "ticket_id": "TICKET_01036",
+      "text": "This billing is totally wrong",
+      "expected_rule": "R001_DISPUTE_EXPLICIT",
+      "test_type": "performance",
+      "batch": "performance_batch_1"
+    },
+    {
+      "ticket_id": "TICKET_01037",
+      "text": "I disagree with these unauthorized fees",
+      "expected_rule": "R001_DISPUTE_EXPLICIT",
+      "test_type": "performance",
+      "batch": "performance_batch_1"
+    },
+    {
+      "ticket_id": "TICKET_01038",
+      "text": "Incorrect charges on my statement",
+      "expected_rule": "R001_DISPUTE_EXPLICIT",
+      "test_type": "performance",
+      "batch": "performance_batch_1"
+    },
+    {
+      "ticket_id": "TICKET_01039",
+      "text": "This is an unauthorized billing error",
+      "expected_rule": "R001_DISPUTE_EXPLICIT",
+      "test_type": "performance",
+      "batch": "performance_batch_2"
+    },
+    {
+      "ticket_id": "TICKET_01040",
+      "text": "I dispute this charge completely",
+      "expected_rule": "R001_DISPUTE_EXPLICIT",
+      "test_type": "performance",
+      "batch": "performance_batch_2"
+    },
+    {
+      "ticket_id": "TICKET_01041",
+      "text": "This billing is totally wrong",
+      "expected_rule": "R001_DISPUTE_EXPLICIT",
+      "test_type": "performance",
+      "batch": "performance_batch_2"
+    },
+    {
+      "ticket_id": "TICKET_01042",
+      "text": "This billing is totally wrong",
+      "expected_rule": "R001_DISPUTE_EXPLICIT",
+      "test_type": "performance",
+      "batch": "performance_batch_2"
+    },
+    {
+      "ticket_id": "TICKET_01043",
+      "text": "I dispute this charge completely",
+      "expected_rule": "R001_DISPUTE_EXPLICIT",
+      "test_type": "performance",
+      "batch": "performance_batch_2"
+    }
+  ]
+}
