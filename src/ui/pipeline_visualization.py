@@ -116,19 +116,31 @@ def create_pipeline_step_card(step: PipelineStep, is_active: bool = False) -> st
                     details_items.append(f"<li><strong>{key.replace('_', ' ').title()}:</strong> {value:.1f}ms</li>")
                 else:
                     details_items.append(f"<li><strong>{key.replace('_', ' ').title()}:</strong> {value}</li>")
-            elif isinstance(value, list) and len(value) > 0:
-                details_items.append(f"<li><strong>{key.replace('_', ' ').title()}:</strong> {len(value)} items</li>")
-            else:
+            elif isinstance(value, list):
+                if len(value) > 0:
+                    details_items.append(f"<li><strong>{key.replace('_', ' ').title()}:</strong> {len(value)} items</li>")
+                # Skip empty lists - don't display "Keywords Matched: []"
+            elif value and str(value).strip():  # Only display non-empty values
                 details_items.append(f"<li><strong>{key.replace('_', ' ').title()}:</strong> {str(value)[:50]}</li>")
         
         if details_items:
+            # Show up to 5 items, and count what we're actually displaying
+            displayed_items = details_items[:5]
+            total_items = len(details_items)
+            
+            # Create appropriate label
+            if total_items <= 5:
+                items_label = f"({total_items} items)"
+            else:
+                items_label = f"({len(displayed_items)} of {total_items} items)"
+            
             details_html = f"""
             <details style="margin-top: 10px;">
                 <summary style="cursor: pointer; font-size: 12px; color: {color};">
-                    📋 View Details ({len(details_items)} items)
+                    📋 View Details {items_label}
                 </summary>
                 <ul style="font-size: 11px; margin: 5px 0; padding-left: 15px; color: #666;">
-                    {''.join(details_items[:5])}  
+                    {''.join(displayed_items)}  
                 </ul>
             </details>
             """
@@ -273,17 +285,25 @@ def display_pipeline_visualization(pipeline_viz: PipelineVisualization):
         
         with col1:
             llm_provider = provider_info.get('llm_provider', 'Unknown')
-            if "Local" in llm_provider:
+            
+            if "Fallback" in llm_provider:
+                st.warning(f"🧠 **LLM**: {llm_provider}")
+                st.caption("⚠️ Automatic fallback activated")
+            elif "Local" in llm_provider:
                 st.success(f"🧠 **LLM**: {llm_provider}")
+                st.caption("🏠 Local inference")
             else:
                 st.info(f"🧠 **LLM**: {llm_provider}")
+                st.caption("☁️ Cloud API")
         
         with col2:
             vector_provider = provider_info.get('vector_provider', 'Unknown')
             if "Local" in vector_provider:
                 st.success(f"🗃️ **Vector DB**: {vector_provider}")
+                st.caption("🏠 Local storage")
             else:
                 st.info(f"🗃️ **Vector DB**: {vector_provider}")
+                st.caption("☁️ Cloud service")
         
         with col3:
             cost_level = provider_info.get('cost_level', 'UNKNOWN')

@@ -179,6 +179,7 @@ class TelcoRulesEngine:
             RoutingRule(
                 id="R010_PAYMENT_ISSUES",
                 pattern=r"payment.*failed|card.*declined|payment.*problem|cannot.*pay",
+                keywords=["payment", "failed", "card", "declined", "pay"],
                 department="billing_team",
                 urgency="Medium",
                 confidence=0.91,
@@ -430,17 +431,17 @@ if __name__ == "__main__":
     stats = engine.get_rule_statistics()
     coverage = engine.get_rule_coverage()
     
-    print(f"\n📊 RULES ENGINE STATISTICS")
+    print("\n📊 RULES ENGINE STATISTICS")
     print("=" * 50)
     print(f"Total Evaluations: {stats['total_evaluations']}")
     print(f"Total Matches: {stats['total_matches']}")
     print(f"Match Rate: {stats['match_rate']:.1%}")
     print(f"Rules Loaded: {stats['rules_loaded']}")
     
-    print(f"\n🏢 DEPARTMENT COVERAGE:")
+    print("\n🏢 DEPARTMENT COVERAGE:")
     for dept, count in coverage['departments'].items():
         print(f"   {dept}: {count} rules")
     
-    print(f"\n🚨 URGENCY DISTRIBUTION:")
+    print("\n🚨 URGENCY DISTRIBUTION:")
     for urgency, count in coverage['urgency_levels'].items():
         print(f"   {urgency}: {count} rules")

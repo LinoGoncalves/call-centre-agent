@@ -37,10 +37,27 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 try:
+    # Handle Python 3.13 sklearn threading compatibility issue
+    import atexit
+    
+    # Prevent sklearn threading issues in Python 3.13+
+    original_register = atexit.register
+    def safe_register(*args, **kwargs):
+        try:
+            return original_register(*args, **kwargs)
+        except RuntimeError:
+            # Silently handle atexit registration after shutdown
+            pass
+    atexit.register = safe_register
+    
     from src.models.ticket_classifier import TicketClassificationPipeline
-except ImportError:
-    logging.error("Could not import base classifier. Please ensure it's available.")
+except ImportError as e:
+    logging.error(f"Could not import base classifier: {e}")
     # Don't exit, allow classifier to work without traditional ML
+    TicketClassificationPipeline = None
+except RuntimeError as e:
+    logging.warning(f"Threading compatibility issue with sklearn: {e}")
+    # Try without traditional ML support
     TicketClassificationPipeline = None
 
 # Setup logging

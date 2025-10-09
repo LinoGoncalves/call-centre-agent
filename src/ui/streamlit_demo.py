@@ -33,8 +33,17 @@ load_dotenv()
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
+# Import core classifier (always required)
 try:
     from src.models.enhanced_classifier import GeminiEnhancedClassifier, EnhancedClassificationResult
+except ImportError as e:
+    st.error(f"❌ Core classifier import error: {e}")
+    st.error("Please ensure the enhanced classifier module is available.")
+    st.stop()
+
+# Import optional multi-provider components (graceful degradation)
+MULTI_PROVIDER_AVAILABLE = False
+try:
     from src.models.opensource_llm import OpenSourceLLM
     from src.models.multi_provider_manager import MultiProviderManager, ClassificationResult
     from src.models.config_manager import load_user_config, save_user_config, get_cost_info
@@ -42,10 +51,16 @@ try:
         display_pipeline_visualization,
         create_real_pipeline_visualization
     )
-except ImportError as e:
-    st.error(f"❌ Import error: {e}")
-    st.error("Please ensure all required modules are available.")
-    st.stop()
+    MULTI_PROVIDER_AVAILABLE = True
+except ImportError:
+    # Multi-provider features not available - run in simple mode
+    MultiProviderManager = None
+    OpenSourceLLM = None
+    load_user_config = None
+    save_user_config = None
+    get_cost_info = None
+    display_pipeline_visualization = None
+    create_real_pipeline_visualization = None
 
 # Page configuration
 st.set_page_config(
@@ -582,7 +597,16 @@ def display_departmental_routing(result: EnhancedClassificationResult):
 def initialize_classifier():
     """Initialize the enhanced classifier automatically."""
     try:
+        import time
+        start_time = time.time()
+        
+        # Initialize with progress feedback
         st.session_state.classifier = GeminiEnhancedClassifier()
+        
+        init_time = time.time() - start_time
+        if init_time > 5:
+            st.info(f"✅ Initialization completed in {init_time:.1f}s")
+        
         return True
     except Exception as e:
         st.error(f"❌ Failed to initialize classifier: {e}")
@@ -614,10 +638,11 @@ def initialize_multi_provider_system(llm_provider: str, vector_provider: str):
             vector_config = "pinecone"
             
         # Initialize multi-provider manager
-        manager = MultiProviderManager(
-            llm_provider=llm_config,
-            vector_provider=vector_config
-        )
+        manager = MultiProviderManager()
+        
+        # Configure the providers
+        if not manager.set_providers(llm_config, vector_config):
+            st.warning(f"⚠️ Could not set preferred providers: {llm_config} + {vector_config}")
         
         st.session_state.multi_provider_manager = manager
         st.session_state.provider_config = {
@@ -952,8 +977,18 @@ def main():
             else:
                 # Update classifier settings for current instance
                 if st.session_state.classifier:
-                    st.session_state.classifier.other_threshold = other_threshold
-                    st.session_state.classifier.ensemble_weight = ensemble_weight
+                    # Check if it's a direct GeminiEnhancedClassifier or MultiProviderManager
+                    if hasattr(st.session_state.classifier, 'other_threshold'):
+                        st.session_state.classifier.other_threshold = other_threshold
+                    if hasattr(st.session_state.classifier, 'ensemble_weight'):
+                        st.session_state.classifier.ensemble_weight = ensemble_weight
+                    
+                    # If it's MultiProviderManager, try to update the underlying Gemini classifier
+                    if hasattr(st.session_state.classifier, 'providers') and 'llm' in st.session_state.classifier.providers:
+                        gemini_classifier = st.session_state.classifier.providers['llm'].get('gemini')
+                        if gemini_classifier and hasattr(gemini_classifier, 'other_threshold'):
+                            gemini_classifier.other_threshold = other_threshold
+                            gemini_classifier.ensemble_weight = ensemble_weight
             
             st.markdown("---")
             
@@ -976,15 +1011,21 @@ def main():
             
         # Debug info to show current settings and mode
         if st.session_state.classifier:
-            weight = st.session_state.classifier.ensemble_weight
-            if weight == 0.0:
-                mode_info = "🔥 **PURE TRADITIONAL ML** - Using only classic ML models"
-            elif weight == 1.0:
-                mode_info = "🤖 **PURE GEMINI LLM** - Using only Google Gemini AI"
+            if hasattr(st.session_state.classifier, 'ensemble_weight'):
+                weight = st.session_state.classifier.ensemble_weight
+                if weight == 0.0:
+                    mode_info = "🔥 **PURE TRADITIONAL ML** - Using only classic ML models"
+                elif weight == 1.0:
+                    mode_info = "🤖 **PURE GEMINI LLM** - Using only Google Gemini AI"
+                else:
+                    mode_info = f"⚖️ **ENSEMBLE MODE** - {weight:.0%} Gemini | {(1-weight):.0%} Traditional ML"
             else:
-                mode_info = f"⚖️ **ENSEMBLE MODE** - {weight:.0%} Gemini | {(1-weight):.0%} Traditional ML"
+                mode_info = "🎯 **MULTI-PROVIDER MODE** - Advanced routing with multiple LLM and Vector DB options"
             
-            st.info(f"🔧 Current Mode: {mode_info} | OTHER threshold: {st.session_state.classifier.other_threshold:.0%}")
+            if hasattr(st.session_state.classifier, 'other_threshold'):
+                st.info(f"🔧 Current Mode: {mode_info} | OTHER threshold: {st.session_state.classifier.other_threshold:.0%}")
+            else:
+                st.info(f"🔧 Current Mode: {mode_info}")
         
         st.markdown("---")
         
@@ -1011,7 +1052,23 @@ def main():
         if not os.getenv('GOOGLE_API_KEY'):
             st.warning("⚠️ Please set up your Google Gemini API key in the .env file to get started.")
         else:
-            st.info("🤖 Initializing enhanced classifier... Please wait.")
+            # Auto-initialize if not done yet and API key is available
+            if not st.session_state.initialization_attempted:
+                with st.spinner("🤖 Initializing enhanced classifier..."):
+                    if MULTI_PROVIDER_AVAILABLE and st.session_state.get('multi_provider_manager'):
+                        # Use multi-provider system if available
+                        st.session_state.classifier = st.session_state.multi_provider_manager
+                        st.session_state.initialization_attempted = True
+                        st.success("🚀 Enhanced multi-provider classifier ready!")
+                        st.rerun()
+                    elif initialize_classifier():
+                        st.session_state.initialization_attempted = True
+                        st.success("🚀 Enhanced classifier ready!")
+                        st.rerun()
+                    else:
+                        st.session_state.initialization_attempted = True
+            else:
+                st.info("🤖 Initializing enhanced classifier... Please wait.")
         
         st.markdown("### 📋 Setup Instructions:")
         st.markdown("""
@@ -1122,11 +1179,43 @@ def main():
                 # Use multi-provider system if available, fallback to traditional
                 if st.session_state.get('multi_provider_manager'):
                     manager = st.session_state.multi_provider_manager
-                    result = manager.classify_ticket(ticket_text)
                     
-                    # Convert to compatible format if needed
-                    if hasattr(result, 'to_enhanced_result'):
-                        result = result.to_enhanced_result()
+                    # Use manager's classify method to get full provider info
+                    manager_result = manager.classify_ticket(ticket_text)
+                    
+                    # Check if we can get the underlying classifier for enhanced features
+                    if ('llm' in manager.providers and 'gemini' in manager.providers['llm'] and 
+                        hasattr(manager.providers['llm']['gemini'], 'classify_ticket')):
+                        
+                        # Get enhanced result from Gemini classifier
+                        gemini_classifier = manager.providers['llm']['gemini']
+                        enhanced_result = gemini_classifier.classify_ticket(ticket_text)
+                        
+                        # Enhance the result with provider information from manager
+                        enhanced_result.providers_used = manager_result.providers_used
+                        enhanced_result.fallback_used = manager_result.fallback_used
+                        enhanced_result.cost_estimate = manager_result.cost_estimate
+                        
+                        result = enhanced_result
+                    else:
+                        # Create compatible result from manager result
+                        from src.models.enhanced_classifier import EnhancedClassificationResult
+                        result = EnhancedClassificationResult(
+                            predicted_category=manager_result.department,
+                            confidence=manager_result.confidence,
+                            reasoning=manager_result.reasoning,
+                            traditional_prediction=manager_result.department,
+                            traditional_confidence=manager_result.confidence,
+                            gemini_prediction=manager_result.department,
+                            gemini_confidence=manager_result.confidence,
+                            all_probabilities={manager_result.department: manager_result.confidence},
+                            processing_time_ms=manager_result.processing_time_ms,
+                            is_other_category=False
+                        )
+                        # Add provider information
+                        result.providers_used = manager_result.providers_used
+                        result.fallback_used = manager_result.fallback_used
+                        result.cost_estimate = manager_result.cost_estimate
                 else:
                     result = st.session_state.classifier.classify_ticket(ticket_text)
                 
@@ -1137,12 +1226,25 @@ def main():
                     'timestamp': time.time()
                 })
                 
-                # Display results with provider info
-                provider_info = st.session_state.get('provider_config', {})
-                if provider_info:
-                    st.success(f"✅ Classification Complete via {provider_info.get('llm_display', 'AI')}!")
+                # Display results with ACTUAL provider info used
+                if hasattr(result, 'providers_used') and result.providers_used:
+                    actual_llm_used = result.providers_used.get('llm', 'Unknown')
+                    if actual_llm_used == 'fallback':
+                        st.success("✅ Classification Complete via Gemini Pro (Automatic Fallback)!")
+                        st.info("💡 Ollama was not available, automatically switched to Gemini")
+                    elif actual_llm_used == 'gemini':
+                        st.success("✅ Classification Complete via Gemini Pro!")
+                    elif actual_llm_used == 'ollama':
+                        st.success("✅ Classification Complete via Ollama (Local)!")
+                    else:
+                        st.success(f"✅ Classification Complete via {actual_llm_used}!")
                 else:
-                    st.success("✅ Classification Complete!")
+                    # Fallback to original logic
+                    provider_info = st.session_state.get('provider_config', {})
+                    if provider_info:
+                        st.success(f"✅ Classification Complete via {provider_info.get('llm_display', 'AI')}!")
+                    else:
+                        st.success("✅ Classification Complete!")
                 
                 # Main prediction
                 if result.is_other_category:
@@ -1179,15 +1281,53 @@ def main():
                 display_departmental_routing(result)
                 
                 # Enhanced Pipeline visualization with provider info
-                if show_pipeline_viz:
-                    # Get current provider configuration
+                if show_pipeline_viz and MULTI_PROVIDER_AVAILABLE:
+                    # Get ACTUAL provider information from classification result
+                    actual_llm_provider = llm_provider  # Default to selection
+                    actual_vector_provider = vector_provider  # Default to selection
+                    
+                    # Check if we have multi-provider result with actual provider info
+                    if hasattr(result, 'providers_used'):
+                        if 'llm' in result.providers_used:
+                            actual_llm_used = result.providers_used['llm']
+                            if actual_llm_used == 'fallback':
+                                actual_llm_provider = "Gemini Pro (Fallback from Ollama)"
+                            elif actual_llm_used == 'gemini':
+                                actual_llm_provider = "Gemini Pro (Cloud)"
+                            elif actual_llm_used == 'ollama':
+                                actual_llm_provider = "Ollama (Local)"
+                        
+                        if 'vector_db' in result.providers_used:
+                            actual_vector_used = result.providers_used['vector_db']
+                            if actual_vector_used == 'chromadb':
+                                actual_vector_provider = "ChromaDB (Local)"
+                            elif actual_vector_used == 'pinecone':
+                                actual_vector_provider = "Pinecone (Cloud)"
+                    
+                    # Get cost info based on ACTUAL providers used
+                    cost_level = 'UNKNOWN'
+                    if get_cost_info:
+                        try:
+                            cost_info = get_cost_info(actual_llm_provider, actual_vector_provider)
+                            cost_level = cost_info.get('cost_level', 'UNKNOWN') if cost_info else 'UNKNOWN'
+                        except Exception:
+                            cost_level = 'UNKNOWN'
+                    
                     current_providers = {
-                        'llm': llm_provider,
-                        'vector_db': vector_provider,
-                        'cost_level': get_cost_info(llm_provider, vector_provider).get('cost_level', 'UNKNOWN')
+                        'llm': actual_llm_provider,
+                        'vector_db': actual_vector_provider,
+                        'cost_level': cost_level,
+                        'fallback_used': getattr(result, 'fallback_used', False)
                     }
-                    pipeline_viz = create_real_pipeline_visualization(ticket_text, result, provider_info=current_providers)
-                    display_pipeline_visualization(pipeline_viz)
+                    
+                    if create_real_pipeline_visualization and display_pipeline_visualization:
+                        try:
+                            pipeline_viz = create_real_pipeline_visualization(ticket_text, result, provider_info=current_providers)
+                            display_pipeline_visualization(pipeline_viz)
+                        except Exception as e:
+                            st.info(f"Pipeline visualization not available: {e}")
+                elif show_pipeline_viz:
+                    st.info("💡 Pipeline visualization requires multi-provider features to be available")
                 
                 # Model comparison
                 st.subheader("🔍 Model Comparison")
@@ -1216,10 +1356,19 @@ def main():
                     
                     metrics = [
                         ("Processing Time", f"{result.processing_time_ms:.0f}ms"),
-                        ("Ensemble Weight", f"{st.session_state.classifier.ensemble_weight:.1%} Gemini"),
-                        ("OTHER Threshold", f"{st.session_state.classifier.other_threshold:.1%}"),
-                        ("Categories", f"{len(st.session_state.classifier.categories)} total")
                     ]
+                    
+                    # Add classifier-specific metrics if available
+                    if hasattr(st.session_state.classifier, 'ensemble_weight'):
+                        metrics.append(("Ensemble Weight", f"{st.session_state.classifier.ensemble_weight:.1%} Gemini"))
+                    
+                    if hasattr(st.session_state.classifier, 'other_threshold'):
+                        metrics.append(("OTHER Threshold", f"{st.session_state.classifier.other_threshold:.1%}"))
+                    
+                    if hasattr(st.session_state.classifier, 'categories'):
+                        metrics.append(("Categories", f"{len(st.session_state.classifier.categories)} total"))
+                    else:
+                        metrics.append(("System", "Multi-Provider"))
                     
                     for metric, value in metrics:
                         st.metric(metric, value)

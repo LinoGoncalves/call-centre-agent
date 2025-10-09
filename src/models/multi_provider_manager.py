@@ -22,7 +22,7 @@ from dataclasses import dataclass
 
 # Import existing components
 try:
-    from src.models.enhanced_classifier import EnhancedTicketClassifier
+    from src.models.enhanced_classifier import GeminiEnhancedClassifier, EnhancedClassificationResult
     from src.models.opensource_llm import OpenSourceLLM
     from src.models.chromadb_client import ChromaVectorDB
     from src.models.multi_provider_config import MultiProviderConfig, MultiProviderResult
@@ -70,7 +70,7 @@ class MultiProviderManager:
         
         # Gemini LLM (existing)
         try:
-            gemini_classifier = EnhancedTicketClassifier()
+            gemini_classifier = GeminiEnhancedClassifier()
             if gemini_classifier and hasattr(gemini_classifier, 'classify_ticket'):
                 self.providers['llm']['gemini'] = gemini_classifier
                 logger.info("✅ Initialized Gemini LLM provider")
