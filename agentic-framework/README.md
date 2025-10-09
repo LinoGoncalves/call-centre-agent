@@ -3,8 +3,8 @@
 **Universal Multi-Agent Orchestration System for Enterprise Software Development**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![AI Tools](https://img.shields.io/badge/AI%20Tools-Tabnine%20%7C%20Copilot%20%7C%20Cursor-blue)](https://github.com/LinoGoncalves/agentic-framework)
-[![Agents](https://img.shields.io/badge/Agents-22%2B-green)](https://github.com/LinoGoncalves/agentic-framework)
+[![AI Tools](https://img.shields.io/badge/AI%20Tools-Tabnine%20%7C%20Copilot%20%7C%20Cursor-blue)](#)
+[![Agents](https://img.shields.io/badge/Agents-27%2B-green)](#)
 
 ## 🎯 Overview
 
@@ -150,7 +150,8 @@ Clone the framework into your project:
 ```bash
 # Clone into your project
 cd your-project/
-git clone https://github.com/LinoGoncalves/agentic-framework.git
+git clone https://github.com/<org>/agentic-framework.git
+# Or: git clone <your-framework-repo-url>
 
 # Your project structure
 your-project/
@@ -165,7 +166,8 @@ your-project/
 Add as a git submodule for version tracking:
 
 ```bash
-git submodule add https://github.com/LinoGoncalves/agentic-framework.git
+git submodule add https://github.com/<org>/agentic-framework.git
+# Or: git submodule add <your-framework-repo-url>
 git submodule update --init --recursive
 ```
 
@@ -246,13 +248,15 @@ To add new agents or standards to the framework:
 ## 🌟 Example Projects
 
 This framework is successfully used in:
+
 - **Telco Call Centre Agent**: AI-powered ticket classification with Google Gemini LLM
+- **Superbru EPL Prediction System**: Multi-agent strategic sports prediction platform
 - More examples coming soon!
 
 ## 📞 Support & Community
 
-- **Issues**: [GitHub Issues](https://github.com/LinoGoncalves/agentic-framework/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/LinoGoncalves/agentic-framework/discussions)
+- **Issues**: Project-specific issue tracker (GitHub Issues, GitLab Issues, etc.)
+- **Discussions**: Community forums or discussions board
 - **Contributions**: Pull requests welcome!
 
 ## 🎉 Framework Philosophy

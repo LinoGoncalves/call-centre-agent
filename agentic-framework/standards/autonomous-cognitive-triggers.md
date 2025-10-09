@@ -272,7 +272,7 @@ meta_cognitive_disclosure:
 
 ## Configuration Management
 
-**File Location**: `telco-call-centre/development-standards/autonomous-cognitive-triggers.md`
+**File Location**: `agentic-framework/standards/autonomous-cognitive-triggers.md`
 
 **Version Control**: All trigger modifications require:
 - Documentation of change rationale

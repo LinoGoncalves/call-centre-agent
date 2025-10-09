@@ -37,12 +37,12 @@ Then <expected outcome>
 
 ## 5. Example
 ```
-As a call centre agent,
+As a customer support agent,
 I want to see similar legacy tickets for a new customer query,
 So that I can resolve issues faster and ensure compliance.
 
 Acceptance Criteria:
 Given a new customer query,
-When the system retrieves similar tickets using the LLM and vector DB,
+When the system retrieves similar tickets using the vector search,
 Then the agent sees the top 5 most relevant tickets with compliance tags.
 ```

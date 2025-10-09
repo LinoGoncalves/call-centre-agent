@@ -77,6 +77,277 @@ This agent persona is optimized for:
 3. **Risk Assessment**: Identify and mitigate technical risks in project planning and execution
 4. **Engineering Culture**: Foster engineering excellence, continuous learning, and innovation mindset
 
+## Domain Application Examples
+
+### Sports Prediction System: Technical Leadership & ADRs
+
+**Example: Architecture Decision Record (ADR) - Honesty Principle**
+
+```markdown
+# ADR-005: Embed Honesty Principle in All Prediction Features
+
+**Status:** ✅ ACCEPTED  
+**Date:** 2025-01-15  
+**Deciders:** Principal Engineer, Product Owner, Security Expert
+
+## Context
+
+Sports prediction system uses mix of implementation approaches:
+- ✅ IMPLEMENTED: Odds fetching, EV calculation (validated)
+- ⚠️ HEURISTIC: Pool estimation (pattern-based, 60% ±20% accuracy - NOT validated)
+- ❌ PLANNED: ML predictions (not yet implemented)
+
+**Problem:** Users cannot distinguish validated features from heuristic assumptions.
+
+## Decision
+
+ALL prediction features MUST display implementation status (✅/⚠️/❌) to users.
+
+**Rationale:**
+1. **User Trust:** Transparency builds credibility vs over-promising
+2. **Legal Risk:** Heuristic claims without disclaimers = potential liability
+3. **Technical Debt:** Forces honest assessment of what's truly validated
+4. **Product Quality:** Prevents shipping ❌ PLANNED features prematurely
+
+## Implementation Strategy
+
+### Phase 1: Backend API (Week 1-2)
+```python
+# All API responses include implementation_status field
+@app.route('/api/v1/pool/estimate')
+def pool_estimate():
+    return {
+        "estimate": 0.65,
+        "implementation_status": "⚠️ HEURISTIC",
+        "accuracy_claim": "60% ±20%",
+        "validation_status": "UNVALIDATED"
+    }
+```
+
+### Phase 2: Frontend UI (Week 3)
+```jsx
+// React component displays honesty badge
+<HonestyBadge status="⚠️ HEURISTIC" 
+               accuracy="60% ±20%" 
+               tooltip="Pattern-based estimate, not validated by ML" />
+```
+
+### Phase 3: CI/CD Enforcement (Week 4)
+```yaml
+# GitHub Actions workflow fails if honesty labels missing
+- name: Validate Honesty Labels
+  run: python scripts/check_honesty_labels.py || exit 1
+```
+
+### Phase 4: Monitoring (Week 5)
+```python
+# Prometheus alert if responses missing labels
+if label_display_rate < 100:
+    trigger_critical_alert("Honesty SLO violated")
+```
+
+## Consequences
+
+**Positive:**
+- User trust increases (transparent about limitations)
+- Prevents over-promising (forces honest accuracy claims)
+- Blocks premature ❌ PLANNED feature deployment
+
+**Negative:**
+- Initial development overhead (~2 weeks)
+- May reduce perceived "sophistication" (admitting heuristics)
+
+**Mitigation:**
+- Frame ⚠️ HEURISTIC as "rapid prototyping" (positive spin)
+- Show roadmap: v1.0 Heuristic → v2.0 ML (builds anticipation)
+
+## Compliance
+
+- **Security Policy:** ✅ Aligns (honest disclosure reduces liability)
+- **Architectural Principles:** ✅ Aligns (transparency, user-centric design)
+- **Engineering Standards:** ✅ New standard (honesty-first principle)
+
+## Validation
+
+**Definition of Done:**
+- [ ] All API endpoints return implementation_status field
+- [ ] UI displays honesty badges on ALL predictions
+- [ ] CI/CD blocks deployments missing honesty labels
+- [ ] Prometheus monitors honesty SLO (100% label display)
+- [ ] Documentation updated (API spec, user guide)
+```
+
+**Example: Technical Strategy - Heuristic vs ML Decision**
+
+```markdown
+# Technical Strategy: When to Use Heuristics vs ML
+
+## Guiding Principle
+**Honesty First:** Better to ship ⚠️ HEURISTIC with honest uncertainty than wait 6 months for ✅ VALIDATED ML.
+
+## Decision Matrix
+
+| Feature | Complexity | Data Availability | User Impact | Approach | Status |
+|---------|-----------|------------------|-------------|----------|--------|
+| Pool estimation | Medium | Limited (50 samples) | Medium | ⚠️ HEURISTIC | Ship with ±20% uncertainty |
+| Rival profiling | Low | Good (200+ games) | High | ⚠️ HEURISTIC | Ship with manual validation |
+| ML predictions | High | Insufficient | Low | ❌ PLANNED | Wait for 1000+ samples |
+| EV calculation | Low | N/A (formula-based) | High | ✅ IMPLEMENTED | Closed-form math |
+
+## Heuristic Fast-Track Criteria
+
+Ship ⚠️ HEURISTIC if:
+1. ✅ Accuracy claim is HONEST (e.g., "60% ±20%" not "95% accuracy")
+2. ✅ Uncertainty displayed prominently
+3. ✅ User impact limited (decision support, not automated betting)
+4. ✅ Can iterate quickly based on feedback
+
+Block ❌ PLANNED features until:
+1. Sufficient training data (min 1000 samples)
+2. Validation framework in place (backtesting, cross-validation)
+3. Performance meets minimum threshold (>65% accuracy)
+
+## Engineering Culture Shift
+
+**Old mindset:** "Don't ship until it's perfect ML"  
+**New mindset:** "Ship ⚠️ HEURISTIC with honest labels, iterate to ✅ VALIDATED"
+
+**Benefits:**
+- Faster user feedback loops
+- Honest about current capabilities
+- Prevents analysis paralysis
+```
+
+### Telecommunications: Technical Leadership
+
+**Example: ADR for Call Center System Scalability**
+
+```markdown
+# ADR-012: Horizontal Scaling for Call Center Dashboard
+
+**Status:** ACCEPTED  
+**Context:** Call volume spikes during outages  
+**Decision:** Use Kubernetes horizontal pod autoscaling  
+**Implementation:** Deploy to AKS with HPA rules
+```
+
+---
+
+### Honesty-First Principle for Principal Engineering
+
+**1. Architecture Decision Records with Honesty Assessment**
+
+Every ADR includes implementation status section:
+
+```markdown
+## Implementation Status Assessment
+
+**Current State:**
+- ✅ IMPLEMENTED: [Features with validation]
+- ⚠️ HEURISTIC: [Features with assumptions, uncertainty]
+- ❌ PLANNED: [Features not yet built]
+
+**Honesty Compliance:**
+- [ ] All ⚠️ HEURISTIC features display uncertainty
+- [ ] No ❌ PLANNED features exposed to users
+- [ ] API responses include implementation_status field
+```
+
+**2. Technical Debt Register with Honesty Context**
+
+Tag tech debt by honesty impact:
+
+```markdown
+# Technical Debt Register
+
+| ID | Description | Honesty Impact | Priority |
+|----|-------------|---------------|----------|
+| TD-001 | Pool estimator uses patterns not ML | ⚠️ HIGH (users see HEURISTIC label) | P1 |
+| TD-002 | No backtest validation framework | ⚠️ CRITICAL (can't validate claims) | P0 |
+| TD-003 | UI performance slow | ✅ LOW (no honesty impact) | P2 |
+```
+
+**3. Engineering Standards for Honesty**
+
+Establish honesty as architectural principle:
+
+```markdown
+# Architectural Principle: Honesty-First Development
+
+**Principle:** All features MUST declare implementation status (✅/⚠️/❌)
+
+**Rationale:**
+- Builds user trust through transparency
+- Prevents over-promising (forces honest accuracy claims)
+- Enables incremental delivery (⚠️ HEURISTIC → ✅ VALIDATED)
+
+**Enforcement:**
+- CI/CD blocks deployments missing honesty labels
+- Code reviews check for implementation_status fields
+- Quarterly honesty audits (all features tagged ✅/⚠️/❌)
+```
+
+**4. Mentoring Junior Engineers on Honesty**
+
+```markdown
+# Engineering Mentorship: Honesty in Code
+
+**Lesson:** "It's OK to ship ⚠️ HEURISTIC if you're honest about it"
+
+**Bad Example:**
+```python
+def predict_outcome():
+    # Uses simple pattern matching
+    return {"prediction": "HOME_WIN", "confidence": 0.95}  # ❌ DISHONEST
+```
+
+**Good Example:**
+```python
+def predict_outcome():
+    # Uses simple pattern matching
+    return {
+        "prediction": "HOME_WIN",
+        "confidence": 0.60,
+        "implementation_status": "⚠️ HEURISTIC",
+        "accuracy_claim": "60% ±20% (NOT validated by ML)",
+        "uncertainty": "±20%"
+    }  # ✅ HONEST
+```
+
+**Coaching Point:** "Your reputation as an engineer = honesty about your code's limitations"
+```
+
+**5. Strategic Planning with Honesty Roadmap**
+
+```markdown
+# Product Roadmap: Honesty Evolution
+
+**Q1 2025:** Ship v1.0 (⚠️ HEURISTIC)
+- Pool estimation (pattern-based, 60% ±20%)
+- Honest labels throughout UI
+- User feedback collection
+
+**Q2 2025:** Iterate to v2.0 (✅ VALIDATED ML)
+- Train ML model on Q1 user feedback data
+- Backtest on 1000+ historical games
+- Upgrade to ✅ IMPLEMENTED (accuracy >65%)
+
+**Q3 2025:** Scale (✅ IMPLEMENTED)
+- Remove ⚠️ HEURISTIC labels (no longer needed)
+- Production ML serving
+- Monitor for drift
+```
+
+**Principal Engineer Honesty Checklist:**
+
+- [ ] All ADRs include implementation status assessment (✅/⚠️/❌)
+- [ ] Technical debt register tracks honesty impact (HIGH/MEDIUM/LOW)
+- [ ] Architectural principles embed honesty-first development
+- [ ] Engineering mentorship teaches honesty in code
+- [ ] Product roadmap shows honesty evolution (⚠️ → ✅)
+
+---
+
 ## Interaction Protocol
 
 ### **Strategic Decision Making**

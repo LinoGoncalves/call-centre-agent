@@ -269,6 +269,218 @@ static async Task<Results<Created<OrderDto>, ValidationProblem, BadRequest<Probl
 }
 ```
 
+## Domain Application Examples
+
+### Sports Prediction System: .NET API with Honesty Attributes
+
+**Example: ASP.NET Core API with Implementation Status**
+
+```csharp
+// Controllers/PredictionController.cs
+using Microsoft.AspNetCore.Mvc;
+
+[ApiController]
+[Route("api/v1/[controller]")]
+public class PredictionController : ControllerBase
+{
+    private readonly IPoolEstimator _poolEstimator;
+    private readonly ILogger<PredictionController> _logger;
+    
+    [HttpPost("pool/estimate")]
+    [Heuristic("60% ±20% accuracy - pattern-based, NOT ML validated")]
+    public async Task<ActionResult<PoolEstimateResponse>> EstimatePool(
+        [FromBody] PoolEstimateRequest request)
+    {
+        var estimate = await _poolEstimator.EstimateAsync(request.FixtureId);
+        
+        return Ok(new PoolEstimateResponse
+        {
+            Estimate = estimate.Percentage,
+            Uncertainty = "±20%",
+            ImplementationStatus = "⚠️ HEURISTIC",
+            AccuracyClaim = "60% ±20% (UNVALIDATED)",
+            ValidationStatus = "NONE - pattern-based algorithm"
+        });
+    }
+    
+    [HttpPost("ml/predict")]
+    [Planned("Requires trained ML model - NOT IMPLEMENTED")]
+    public ActionResult<MlPredictionResponse> MlPredict(
+        [FromBody] MlPredictionRequest request)
+    {
+        // ❌ PLANNED feature - return 501 Not Implemented
+        return StatusCode(501, new
+        {
+            Message = "ML prediction not implemented. Use /pool/estimate (⚠️ HEURISTIC)",
+            ImplementationStatus = "❌ PLANNED",
+            Blocker = "Requires trained ML model"
+        });
+    }
+}
+
+// Custom attributes for honesty metadata
+[AttributeUsage(AttributeTargets.Method)]
+public class HeuristicAttribute : Attribute
+{
+    public string Disclaimer { get; }
+    public HeuristicAttribute(string disclaimer) => Disclaimer = disclaimer;
+}
+
+[AttributeUsage(AttributeTargets.Method)]
+public class PlannedAttribute : Attribute
+{
+    public string Blocker { get; }
+    public PlannedAttribute(string blocker) => Blocker = blocker;
+}
+```
+
+**Entity Framework Model with Data Quality Tracking**
+
+```csharp
+// Models/PoolEstimate.cs
+public class PoolEstimate
+{
+    public int Id { get; set; }
+    public int FixtureId { get; set; }
+    public decimal EstimatedPercentage { get; set; }
+    public decimal UncertaintyRange { get; set; }
+    
+    [Required]
+    [RegularExpression("^(✅ IMPLEMENTED|⚠️ HEURISTIC|❌ PLANNED)$")]
+    public string ImplementationStatus { get; set; } = "⚠️ HEURISTIC";
+    
+    [Required]
+    public string AccuracyClaim { get; set; } = "60% ±20% (UNVALIDATED)";
+    
+    public string ValidationMethod { get; set; } = "NONE - pattern-based";
+    
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    
+    // EF Core configuration
+    public class Configuration : IEntityTypeConfiguration<PoolEstimate>
+    {
+        public void Configure(EntityTypeBuilder<PoolEstimate> builder)
+        {
+            // Enforce honesty constraint at database level
+            builder.HasCheckConstraint(
+                "CK_PoolEstimate_HeuristicHasUncertainty",
+                "([ImplementationStatus] != '⚠️ HEURISTIC' OR [UncertaintyRange] IS NOT NULL)"
+            );
+        }
+    }
+}
+```
+
+**Middleware for Honesty Header Injection**
+
+```csharp
+// Middleware/HonestyHeaderMiddleware.cs
+public class HonestyHeaderMiddleware
+{
+    private readonly RequestDelegate _next;
+    
+    public async Task InvokeAsync(HttpContext context)
+    {
+        // Intercept response
+        var originalBodyStream = context.Response.Body;
+        using var memoryStream = new MemoryStream();
+        context.Response.Body = memoryStream;
+        
+        await _next(context);
+        
+        // Add honesty headers to all API responses
+        var endpoint = context.GetEndpoint();
+        var heuristicAttr = endpoint?.Metadata.GetMetadata<HeuristicAttribute>();
+        var plannedAttr = endpoint?.Metadata.GetMetadata<PlannedAttribute>();
+        
+        if (heuristicAttr != null)
+        {
+            context.Response.Headers["X-Implementation-Status"] = "⚠️ HEURISTIC";
+            context.Response.Headers["X-Accuracy-Claim"] = heuristicAttr.Disclaimer;
+        }
+        else if (plannedAttr != null)
+        {
+            context.Response.Headers["X-Implementation-Status"] = "❌ PLANNED";
+            context.Response.Headers["X-Blocker"] = plannedAttr.Blocker;
+        }
+        else
+        {
+            context.Response.Headers["X-Implementation-Status"] = "✅ IMPLEMENTED";
+        }
+        
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        await memoryStream.CopyToAsync(originalBodyStream);
+    }
+}
+```
+
+### Telecommunications: Call Center .NET API
+
+```csharp
+// Example: ASP.NET Core API for call volume tracking
+[ApiController]
+[Route("api/callcenter")]
+public class CallCenterController : ControllerBase
+{
+    [HttpGet("volume/{queueName}")]
+    public ActionResult<CallVolumeStats> GetVolume(string queueName)
+    {
+        // Implementation...
+    }
+}
+```
+
+---
+
+### Honesty-First Principle for .NET Development
+
+**1. Custom Attributes for Implementation Status**
+
+```csharp
+[Heuristic("60% ±20% accuracy")]  // ⚠️ HEURISTIC endpoint
+[Implemented]                     // ✅ IMPLEMENTED endpoint
+[Planned("Requires ML model")]    // ❌ PLANNED endpoint
+```
+
+**2. Entity Framework Constraints**
+
+```csharp
+builder.HasCheckConstraint(
+    "CK_HonestyCompliance",
+    "([ImplementationStatus] IN ('✅ IMPLEMENTED', '⚠️ HEURISTIC', '❌ PLANNED'))"
+);
+```
+
+**3. Middleware Auto-Injection**
+
+Automatically add X-Implementation-Status headers to all responses.
+
+**4. Integration Tests for Honesty**
+
+```csharp
+[Fact]
+public async Task PoolEstimate_ShouldIncludeHonestyMetadata()
+{
+    var response = await _client.PostAsync("/api/v1/prediction/pool/estimate", content);
+    
+    Assert.Equal("⚠️ HEURISTIC", response.Headers.GetValues("X-Implementation-Status").First());
+    
+    var body = await response.Content.ReadAsAsync<PoolEstimateResponse>();
+    Assert.NotNull(body.ImplementationStatus);
+    Assert.Equal("⚠️ HEURISTIC", body.ImplementationStatus);
+}
+```
+
+**.NET Engineer Honesty Checklist:**
+
+- [ ] Custom attributes tag endpoints ([Heuristic], [Implemented], [Planned])
+- [ ] EF Core constraints enforce implementation_status values
+- [ ] Middleware injects X-Implementation-Status headers
+- [ ] Integration tests verify honesty metadata presence
+- [ ] API responses include ImplementationStatus property
+
+---
+
 ## Universal Tool Integration Patterns
 
 ### Multi-Tool .NET Development

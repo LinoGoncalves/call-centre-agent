@@ -1,0 +1,26 @@
+# MINIMAL REQUIREMENTS - Core Demo Only
+# Essential packages for basic Gemini + Rules Engine demo
+# Use this for minimal installation
+
+# UI Framework
+streamlit>=1.28.0
+plotly>=5.17.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# AI & LLM
+google-generativeai>=0.3.0
+python-dotenv>=1.0.0
+
+# ML Framework  
+scikit-learn>=1.3.0
+PyYAML>=6.0
+
+# Security
+beautifulsoup4>=4.12.0
+markupsafe>=2.1.0
+
+# Basic utilities
+requests>=2.31.0

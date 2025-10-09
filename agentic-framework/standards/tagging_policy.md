@@ -1,4 +1,9 @@
-# Tagging Policy (2025)
+# Tagging Poli## Required Tags
+| Tag Key         | Description                                 | Example Value                |
+|-----------------|---------------------------------------------|------------------------------|
+| `Project`       | Project or system name                      | my-project-name              |
+| `Environment`   | dev, test, staging, prod                    | prod                         |
+| `Owner`         | Responsible team or person                  | team@company.com             |25)
 
 ## Purpose
 Define a universal tagging standard for all resources (cloud, on-prem, data, ML/LLM/vector DB) to support cost management, security, compliance, and operational efficiency.
@@ -15,9 +20,9 @@ Define a universal tagging standard for all resources (cloud, on-prem, data, ML/
 ## Required Tags
 | Tag Key         | Description                                 | Example Value                |
 |-----------------|---------------------------------------------|------------------------------|
-| `Project`       | Project or system name                      | call-centre-agent            |
+| `Project`       | Project or system name                      | my-project-name              |
 | `Environment`   | dev, test, staging, prod                    | prod                         |
-| `Owner`         | Responsible team or person                  | ai-team@company.com          |
+| `Owner`         | Responsible team or person                  | team@company.com             |
 | `CostCenter`    | Billing or cost allocation code              | CC1234                       |
 | `DataResidency` | Data residency/compliance zone              | ZA, EU, US                   |
 | `Confidential`  | Data classification (yes/no)                | yes                          |

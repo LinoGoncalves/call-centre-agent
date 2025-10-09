@@ -57,3 +57,62 @@ htmlcov/
 
 # OS
 Thumbs.db
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+
+## IDE AUTO-GENERATED FILES (CRITICAL: Prevent pollution)
+# Code Citations (incident: 2025-10-05)
+**/# Code Citations.md
+**/#Code Citations.md
+**/Code Citations.md
+**/.code-citations.md
+
+# VS Code auto-generated
+**/.vscode/copilot-*
+**/.vscode/*.log
+**/.vscode/.ai-*
+
+# JetBrains auto-generated
+**/.idea/copilot/
+**/.idea/ai/
+**/.idea/codestream/
+
+# Cursor auto-generated
+**/.cursor/
+**/.cursorrules.backup
+
+# Tabnine auto-generated
+**/.tabnine/
+**/.tabnine.log
+
+## AI TOOL ARTIFACTS
+# Copilot logs and caches
+**/copilot-*.log
+**/.copilot/
+**/github-copilot/
+
+# AI chat logs
+**/.ai-chat-logs/
+**/.llm-cache/
+
+## BACKUP FILES (prevent commits)
+**/*.backup
+**/*~
+
+## TEMPORARY MARKDOWN FILES
+**/*.tmp.md
+**/*.draft.md
+
+## FRAMEWORK-SPECIFIC
+# User-specific overrides (templates provided)
+.github/copilot-instructions.local.md
+.cursorrules.local
+.tabnine.local.yml
+
+# Validation outputs
+scripts/validation-output/
+scripts/test-results/

@@ -6,13 +6,13 @@ Thank you for your interest in contributing to the Agentic Framework! This docum
 
 ### Reporting Issues
 
-1. Check if the issue already exists in [GitHub Issues](https://github.com/LinoGoncalves/agentic-framework/issues)
-2. Use the issue templates provided
+1. Check if the issue already exists in your project's issue tracker
+2. Use the issue templates provided (if available)
 3. Include clear descriptions and examples
 
 ### Suggesting Enhancements
 
-1. Open a discussion in [GitHub Discussions](https://github.com/LinoGoncalves/agentic-framework/discussions)
+1. Open a discussion in your project's discussions board or communication channel
 2. Describe the enhancement and its benefits
 3. Explain how it maintains tool-agnostic compatibility
 
@@ -153,7 +153,7 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ## 💡 Questions?
 
-- Open a [Discussion](https://github.com/LinoGoncalves/agentic-framework/discussions)
+- Open a discussion in your project's communication channel
 - Tag maintainers for guidance
 - Check existing issues and PRs
 

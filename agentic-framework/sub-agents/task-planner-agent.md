@@ -186,7 +186,7 @@ Risk Mitigation: [Planned risk reduction activities]
 ### Reference Development Standards
 Always align task planning with established organizational standards:
 - **Agile Ceremonies**: `../standards/agile_ceremonies_guide.md`
-- **Quality Gates**: `telco-call-centre/templates/quality-gates.md`
+- **Quality Gates**: `../templates/quality-gates.md`
 - **Documentation Standards**: `../standards/documentation_styleguide.md`
 - **Testing Strategy**: `../standards/testing_strategy.md`
 

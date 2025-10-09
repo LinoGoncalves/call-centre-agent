@@ -160,6 +160,268 @@ function useDebounceSearch<T>(
 }
 ```
 
+## Domain Application Examples
+
+### Sports Prediction System: React UI with Honesty Components
+
+**Example: React Component Library for Implementation Status**
+
+```tsx
+// components/HonestyBadge.tsx
+import React from 'react';
+import { Tooltip } from '@/components/ui/tooltip';
+
+type ImplementationStatus = '✅ IMPLEMENTED' | '⚠️ HEURISTIC' | '❌ PLANNED';
+
+interface HonestyBadgeProps {
+  status: ImplementationStatus;
+  accuracy?: string;
+  tooltip?: string;
+}
+
+export const HonestyBadge: React.FC<HonestyBadgeProps> = ({
+  status,
+  accuracy,
+  tooltip
+}) => {
+  const config = {
+    '✅ IMPLEMENTED': {
+      color: 'bg-green-100 text-green-800',
+      icon: '✅',
+      defaultTooltip: 'Validated and production-ready'
+    },
+    '⚠️ HEURISTIC': {
+      color: 'bg-yellow-100 text-yellow-800',
+      icon: '⚠️',
+      defaultTooltip: 'Pattern-based estimate, not ML validated'
+    },
+    '❌ PLANNED': {
+      color: 'bg-red-100 text-red-800',
+      icon: '❌',
+      defaultTooltip: 'Not yet implemented'
+    }
+  };
+
+  const { color, icon, defaultTooltip } = config[status];
+
+  return (
+    <Tooltip content={tooltip || defaultTooltip}>
+      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${color}`}>
+        <span className="mr-1">{icon}</span>
+        {status}
+        {accuracy && <span className="ml-1 font-normal">({accuracy})</span>}
+      </span>
+    </Tooltip>
+  );
+};
+```
+
+**Pool Estimate Component with Honesty Display**
+
+```tsx
+// components/PoolEstimateCard.tsx
+import { HonestyBadge } from './HonestyBadge';
+import { UncertaintyRange } from './UncertaintyRange';
+
+interface PoolEstimate {
+  estimate: number;
+  uncertainty: string;
+  implementationStatus: ImplementationStatus;
+  accuracyClaim: string;
+  validationStatus: string;
+}
+
+export const PoolEstimateCard: React.FC<{ data: PoolEstimate }> = ({ data }) => {
+  return (
+    <div className="border rounded-lg p-4 space-y-3">
+      {/* Implementation Status Badge - CRITICAL: Always visible */}
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold">Pool Estimate</h3>
+        <HonestyBadge 
+          status={data.implementationStatus}
+          accuracy={data.accuracyClaim}
+          tooltip={`Validation: ${data.validationStatus}`}
+        />
+      </div>
+
+      {/* Estimate with Uncertainty */}
+      <div className="text-3xl font-bold">
+        {(data.estimate * 100).toFixed(1)}%
+        <UncertaintyRange range={data.uncertainty} />
+      </div>
+
+      {/* ⚠️ HEURISTIC Warning (if applicable) */}
+      {data.implementationStatus === '⚠️ HEURISTIC' && (
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 text-sm">
+          <p className="font-medium text-yellow-800">Important Notice</p>
+          <p className="text-yellow-700">
+            This is a pattern-based estimate ({data.accuracyClaim}). 
+            Not validated by machine learning. Use for decision support only.
+          </p>
+        </div>
+      )}
+
+      {/* ❌ PLANNED Feature Block */}
+      {data.implementationStatus === '❌ PLANNED' && (
+        <div className="bg-red-50 border-l-4 border-red-400 p-3 text-sm">
+          <p className="font-medium text-red-800">Feature Not Available</p>
+          <p className="text-red-700">
+            This feature is planned but not yet implemented.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+```
+
+**Custom Hook for API with Honesty Validation**
+
+```tsx
+// hooks/usePredictionApi.ts
+import { useQuery } from '@tanstack/react-query';
+
+interface PredictionResponse {
+  estimate: number;
+  implementationStatus: ImplementationStatus;
+  accuracyClaim: string;
+  // ... other fields
+}
+
+export const usePredictionApi = (fixtureId: number) => {
+  return useQuery({
+    queryKey: ['prediction', fixtureId],
+    queryFn: async () => {
+      const response = await fetch(`/api/v1/prediction/pool/estimate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fixtureId })
+      });
+
+      const data = await response.json();
+
+      // ⚠️ CRITICAL: Validate honesty metadata present
+      if (!data.implementationStatus) {
+        console.error('HONESTY VIOLATION: Missing implementation_status');
+        throw new Error('API response missing honesty metadata');
+      }
+
+      // Check X-Implementation-Status header matches body
+      const headerStatus = response.headers.get('X-Implementation-Status');
+      if (headerStatus !== data.implementationStatus) {
+        console.error('HONESTY VIOLATION: Header/body status mismatch');
+      }
+
+      return data as PredictionResponse;
+    },
+    // Retry disabled for ❌ PLANNED endpoints
+    retry: (failureCount, error) => {
+      if (error.message.includes('501')) return false;  // Don't retry planned features
+      return failureCount < 3;
+    }
+  });
+};
+```
+
+**TypeScript Types for Honesty System**
+
+```tsx
+// types/honesty.ts
+export type ImplementationStatus = '✅ IMPLEMENTED' | '⚠️ HEURISTIC' | '❌ PLANNED';
+
+export interface HonestyMetadata {
+  implementationStatus: ImplementationStatus;
+  accuracyClaim: string;
+  validationStatus: 'VALIDATED' | 'UNVALIDATED';
+  uncertainty?: string;  // Required for ⚠️ HEURISTIC
+}
+
+export interface PredictionWithHonesty<T> {
+  data: T;
+  honesty: HonestyMetadata;
+}
+
+// Type guard
+export function isHeuristicPrediction(
+  pred: PredictionWithHonesty<any>
+): pred is PredictionWithHonesty<any> & { honesty: { implementationStatus: '⚠️ HEURISTIC' } } {
+  return pred.honesty.implementationStatus === '⚠️ HEURISTIC';
+}
+```
+
+### Telecommunications: React Dashboard
+
+```tsx
+// Example: Call Center Dashboard component
+export const CallCenterDashboard: React.FC = () => {
+  const { data } = useCallVolumeApi();
+  
+  return (
+    <div className="grid grid-cols-3 gap-4">
+      <MetricCard title="Active Calls" value={data?.activeCalls} />
+      <MetricCard title="Queue Length" value={data?.queueLength} />
+      <MetricCard title="Avg Wait Time" value={data?.avgWaitTime} />
+    </div>
+  );
+};
+```
+
+---
+
+### Honesty-First Principle for React Development
+
+**1. Component Library for Honesty**
+
+Create reusable components:
+- `<HonestyBadge />` - Display implementation status
+- `<UncertaintyRange />` - Show ±X% uncertainty
+- `<HeuristicWarning />` - Warning banner for ⚠️ HEURISTIC features
+
+**2. API Validation in Custom Hooks**
+
+```tsx
+// Validate API responses include honesty metadata
+if (!response.implementationStatus) {
+  throw new Error('Missing honesty metadata');
+}
+```
+
+**3. TypeScript Type Safety**
+
+```tsx
+// Type guard ensures ⚠️ HEURISTIC includes uncertainty
+interface HeuristicPrediction {
+  implementationStatus: '⚠️ HEURISTIC';
+  uncertainty: string;  // Required for heuristic
+}
+```
+
+**4. Visual Design System**
+
+- ✅ IMPLEMENTED: Green badge, no warning
+- ⚠️ HEURISTIC: Yellow badge + warning banner
+- ❌ PLANNED: Red badge + "not available" message
+
+**5. Accessibility**
+
+```tsx
+<HonestyBadge 
+  status="⚠️ HEURISTIC"
+  aria-label="Warning: This is a heuristic prediction with 60% plus or minus 20% accuracy"
+  role="status"
+/>
+```
+
+**React Engineer Honesty Checklist:**
+
+- [ ] `<HonestyBadge />` component displays status on ALL predictions
+- [ ] `<UncertaintyRange />` shows ±X% for ⚠️ HEURISTIC features
+- [ ] API hooks validate `implementationStatus` field presence
+- [ ] TypeScript types enforce honesty metadata structure
+- [ ] Accessibility: aria-labels describe honesty status
+
+---
+
 ## Universal Tool Integration Patterns
 
 ### Multi-Tool Frontend Development

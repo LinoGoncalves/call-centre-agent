@@ -10,7 +10,10 @@ The agentic SDLC framework has two distinct layers:
 
 ### 1. Core Framework (Template Repository)
 
-- **Location**: `c:\DEV\agentic_SDLC` (your template/trunk)
+- **Location**: `<FRAMEWORK_ROOT>` (your template/trunk - see "Deployment Scenarios" section below)
+  - Local: `~/projects/agentic-framework` (Linux/Mac) or `C:\projects\agentic-framework` (Windows)
+  - PyPI: Installed via `pip install agentic-framework`
+  - GitHub: Clone from `https://github.com/<org>/agentic-framework.git`
 - **Purpose**: Master template with reusable components
 - **Contents**: Agent definitions, development standards, workflow templates, automation scripts
 - **Maintenance**: Enhanced based on project learnings and improvements
@@ -21,6 +24,152 @@ The agentic SDLC framework has two distinct layers:
 - **Purpose**: Active development with project-specific customizations
 - **Contents**: Framework copy + project-specific code, data, configurations
 - **Lifecycle**: Created from template, customized for project, contributes back to template
+
+## Deployment Scenarios
+
+The framework supports multiple deployment models to suit different workflows:
+
+### Scenario 1: Local Development (Single Developer)
+
+**Setup**:
+```bash
+# Linux/Mac
+mkdir -p ~/projects/agentic-framework
+cd ~/projects/agentic-framework
+git clone https://github.com/<org>/agentic-framework.git .
+
+# Windows
+mkdir C:\projects\agentic-framework
+cd C:\projects\agentic-framework
+git clone https://github.com/<org>/agentic-framework.git .
+```
+
+**Environment Variable** (optional but recommended):
+```bash
+# Linux/Mac: Add to ~/.bashrc or ~/.zshrc
+export AGENTIC_FRAMEWORK_ROOT=~/projects/agentic-framework
+
+# Windows: Add to system environment variables
+setx AGENTIC_FRAMEWORK_ROOT "C:\projects\agentic-framework"
+```
+
+**Usage**:
+```bash
+cd $AGENTIC_FRAMEWORK_ROOT  # or %AGENTIC_FRAMEWORK_ROOT% on Windows
+python scripts/framework_manager.py init my-new-project --type web-app
+```
+
+### Scenario 2: PyPI Package Installation (Future)
+
+**Setup**:
+```bash
+pip install agentic-framework
+```
+
+**Usage**:
+```bash
+# Direct CLI usage
+agentic-framework init my-new-project --type api
+
+# Or Python module usage
+python -m agentic_framework init my-new-project --type api
+```
+
+**Framework Location**: Installed in Python's site-packages (e.g., `~/.local/lib/python3.x/site-packages/agentic_framework/`)
+
+### Scenario 3: GitHub/GitLab Organization Template
+
+**Setup** (one-time by framework maintainer):
+```bash
+# Create template repository
+git clone https://github.com/<org>/agentic-framework.git agentic-framework-template
+cd agentic-framework-template
+git remote set-url origin https://github.com/<org>/agentic-framework-template.git
+git push -u origin main
+
+# Mark as template in GitHub/GitLab repository settings
+```
+
+**Usage** (by team members):
+```bash
+# Use "Use this template" button in GitHub/GitLab UI
+# Or via GitHub CLI
+gh repo create my-new-project --template <org>/agentic-framework-template
+
+# Or via git clone
+git clone https://github.com/<org>/agentic-framework-template.git my-new-project
+cd my-new-project
+python scripts/framework_manager.py init my-new-project --type dashboard
+```
+
+### Scenario 4: Docker Container (Portable Development Environment)
+
+**Setup**:
+```bash
+# Pull pre-configured container with framework
+docker pull <org>/agentic-framework:latest
+
+# Or build locally
+docker build -t agentic-framework .
+```
+
+**Usage**:
+```bash
+# Run interactive container
+docker run -it -v $(pwd):/workspace agentic-framework bash
+
+# Inside container
+cd /workspace
+agentic-framework init my-new-project --type ml-model
+```
+
+### Scenario 5: Multi-Project Workspace
+
+**Setup**:
+```bash
+# Recommended structure for multiple projects sharing framework
+workspace/
+├── agentic-framework/          # Shared framework (git submodule or clone)
+├── project-a/                   # Project A
+│   └── .agentic-framework/     # -> symlink or submodule to ../agentic-framework
+├── project-b/                   # Project B
+│   └── .agentic-framework/     # -> symlink or submodule to ../agentic-framework
+└── project-c/                   # Project C
+    └── .agentic-framework/     # -> symlink or submodule to ../agentic-framework
+```
+
+**Implementation**:
+```bash
+# Linux/Mac: Use symlinks
+cd workspace/project-a
+ln -s ../agentic-framework .agentic-framework
+
+# Windows: Use junction or symlink (requires admin)
+cd workspace\project-a
+mklink /J .agentic-framework ..\agentic-framework
+
+# Or use git submodules for better portability
+cd workspace/project-a
+git submodule add ../agentic-framework .agentic-framework
+```
+
+### Path Placeholders Used in This Guide
+
+Throughout this document, you'll see these generic placeholders:
+
+- **`<FRAMEWORK_ROOT>`**: Root directory of the framework installation
+  - Local: `~/projects/agentic-framework` (Linux/Mac) or `C:\projects\agentic-framework` (Windows)
+  - PyPI: Python site-packages location
+  - Docker: `/opt/agentic-framework` or similar
+
+- **`<FRAMEWORK_REPO_PATH>`**: Path or URL to framework repository
+  - Local: `file:///home/user/agentic-framework` or `file:///C:/projects/agentic-framework`
+  - GitHub: `https://github.com/<org>/agentic-framework.git`
+  - GitLab: `https://gitlab.com/<org>/agentic-framework.git`
+
+- **`<yourorg>`**: Your organization or username in GitHub/GitLab
+
+Replace these placeholders with your actual paths when following the examples.
 
 ## Project Initialization Strategies
 
@@ -37,17 +186,24 @@ cd my-new-project
 git init
 
 # Step 3: Add agentic SDLC as a submodule
-git submodule add file:///c:/DEV/agentic_SDLC .agentic-framework
+# Option A: Local framework repository
+git submodule add <FRAMEWORK_REPO_PATH> .agentic-framework
+# Examples:
+#   git submodule add file:///home/user/agentic-framework .agentic-framework  (Linux/Mac)
+#   git submodule add file:///C:/projects/agentic-framework .agentic-framework (Windows)
+#
+# Option B: GitHub/remote repository
+#   git submodule add https://github.com/<org>/agentic-framework.git .agentic-framework
 
 # Step 4: Create project structure
 mkdir src tests docs data
 mkdir -p config/environments
 
 # Step 5: Create project-specific files
-cp .agentic-framework/project-brief-template.md project-brief.md
+cp .agentic-framework/templates/project-brief-template.md project-brief.md
 
-# Step 6: Initialize project with enhanced CLI
-python scripts/framework_manager.py init my-project --type web-app
+# Step 6: Initialize project with enhanced CLI (if available)
+python .agentic-framework/scripts/framework_manager.py init my-project --type web-app
 ```
 
 **Advantages**:
@@ -62,9 +218,15 @@ python scripts/framework_manager.py init my-project --type web-app
 For simpler scenarios where you want full control:
 
 ```bash
-# Step 1: Use the framework manager
-cd c:\DEV\agentic_SDLC
+# Step 1: Use the framework manager (if available)
+cd <FRAMEWORK_ROOT>
 python scripts/framework_manager.py init my-project --type api --copy
+
+# Or manually copy the framework:
+# Linux/Mac:
+#   cp -r ~/projects/agentic-framework my-project
+# Windows:
+#   xcopy C:\projects\agentic-framework my-project /E /I
 
 # This creates a complete copy with:
 # - All framework files copied
@@ -92,17 +254,26 @@ For organizations with multiple teams:
 
    ```bash
    # Create template repository from framework
-   git clone c:\DEV\agentic_SDLC agentic-sdlc-template
-   cd agentic-sdlc-template
+   git clone <FRAMEWORK_REPO_PATH> agentic-framework-template
+   # Examples:
+   #   git clone ~/projects/agentic-framework agentic-framework-template
+   #   git clone https://github.com/<org>/agentic-framework.git agentic-framework-template
+   
+   cd agentic-framework-template
    # Push to your Git hosting service as template repository
+   git remote add origin https://github.com/<yourorg>/agentic-framework-template.git
+   git push -u origin main
    ```
 
 2. **Usage** (for each new project):
+
    ```bash
    # Use "Use this template" button in GitHub/GitLab
    # Or clone and reinitialize:
-   git clone https://github.com/yourorg/agentic-sdlc-template.git my-new-project
+   git clone https://github.com/<yourorg>/agentic-framework-template.git my-new-project
    cd my-new-project
+   
+   # If framework_manager.py is available:
    python scripts/framework_manager.py init my-project --type dashboard
    ```
 
@@ -212,7 +383,7 @@ git push origin enhancement/better-error-handling
 
 ```bash
 # Option 1: Submodule approach (recommended)
-cd c:\DEV\agentic_SDLC
+cd <FRAMEWORK_ROOT>
 python scripts/framework_manager.py init customer-analytics --type dashboard
 
 # Option 2: Copy approach
@@ -301,7 +472,7 @@ git push origin v1.1.0
 
 ```bash
 # Initialize new fintech dashboard project
-cd c:\DEV\agentic_SDLC
+cd <FRAMEWORK_ROOT>
 python scripts/framework_manager.py init fintech-dashboard --type dashboard
 
 cd fintech-dashboard
@@ -373,12 +544,14 @@ git commit -m "Update framework to latest version"
 ### Framework Manager Not Found
 
 ```bash
-# If framework_manager.py is missing
-cd c:\DEV\agentic_SDLC
-git pull  # Update to latest framework version
+# If framework_manager.py is missing in submodule setup
+cd .agentic-framework
+git pull origin main  # Update to latest framework version
 
 # Or if you have a copy-based project:
 # Manually copy the new framework_manager.py from the master template
+# Example:
+#   cp <FRAMEWORK_ROOT>/scripts/framework_manager.py scripts/
 ```
 
 ### Project Configuration Issues

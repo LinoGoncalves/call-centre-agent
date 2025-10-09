@@ -35,6 +35,9 @@ sys.path.insert(0, str(project_root))
 
 try:
     from src.models.enhanced_classifier import GeminiEnhancedClassifier, EnhancedClassificationResult
+    from src.models.opensource_llm import OpenSourceLLM
+    from src.models.multi_provider_manager import MultiProviderManager, ClassificationResult
+    from src.models.config_manager import load_user_config, save_user_config, get_cost_info
     from src.ui.pipeline_visualization import (
         display_pipeline_visualization,
         create_real_pipeline_visualization
@@ -245,6 +248,19 @@ st.markdown("""
 # Initialize session state
 if 'classifier' not in st.session_state:
     st.session_state.classifier = None
+if 'multi_provider_manager' not in st.session_state:
+    st.session_state.multi_provider_manager = None
+if 'provider_config' not in st.session_state:
+    st.session_state.provider_config = {}
+if 'user_config' not in st.session_state:
+    try:
+        st.session_state.user_config = load_user_config()
+    except:
+        st.session_state.user_config = {
+            "llm_provider": "Gemini Pro (Cloud)",
+            "vector_provider": "Pinecone (Cloud)",
+            "show_pipeline_viz": True
+        }
 if 'classification_history' not in st.session_state:
     st.session_state.classification_history = []
 if 'initialization_attempted' not in st.session_state:
@@ -573,6 +589,50 @@ def initialize_classifier():
         st.error("💡 Please ensure your Google API key is set in the .env file")
         return False
 
+def initialize_multi_provider_system(llm_provider: str, vector_provider: str):
+    """Initialize multi-provider system based on user selection."""
+    try:
+        # Determine LLM configuration
+        if "Ollama" in llm_provider:
+            # Check if Ollama is available
+            ollama_llm = OpenSourceLLM()
+            if not ollama_llm.available:
+                st.warning("⚠️ Ollama not available - falling back to Gemini")
+                st.info("💡 To use Ollama: Install from https://ollama.com and run `ollama serve`")
+                llm_config = "gemini"
+            else:
+                st.success("✅ Ollama available for local inference")
+                llm_config = "ollama"
+        else:
+            llm_config = "gemini"
+        
+        # Determine Vector DB configuration  
+        if "ChromaDB" in vector_provider:
+            vector_config = "chromadb"
+            st.info("ℹ️ ChromaDB mode - local vector storage")
+        else:
+            vector_config = "pinecone"
+            
+        # Initialize multi-provider manager
+        manager = MultiProviderManager(
+            llm_provider=llm_config,
+            vector_provider=vector_config
+        )
+        
+        st.session_state.multi_provider_manager = manager
+        st.session_state.provider_config = {
+            "llm": llm_config,
+            "vector": vector_config,
+            "llm_display": llm_provider,
+            "vector_display": vector_provider
+        }
+        return True
+        
+    except Exception as e:
+        st.error(f"❌ Failed to initialize multi-provider system: {e}")
+        # Fallback to traditional classifier
+        return initialize_classifier()
+
 def format_confidence(confidence: float) -> str:
     """Format confidence with color coding."""
     if confidence >= 0.8:
@@ -631,11 +691,135 @@ def main():
     with st.sidebar:
         st.header("🔧 Configuration")
         
+        # Provider Selection Section
+        st.subheader("🤖 AI Provider Selection")
+        
+        # LLM Provider Selection
+        llm_options = ["Gemini Pro (Cloud)", "Ollama (Local)"]
+        llm_default_index = 0
+        try:
+            if st.session_state.user_config["llm_provider"] in llm_options:
+                llm_default_index = llm_options.index(st.session_state.user_config["llm_provider"])
+        except:
+            pass
+            
+        llm_provider = st.selectbox(
+            "LLM Provider",
+            options=llm_options,
+            index=llm_default_index,
+            help="Choose your LLM provider. Ollama provides free local inference."
+        )
+        
+        # Vector DB Provider Selection
+        vector_options = ["Pinecone (Cloud)", "ChromaDB (Local)"]
+        vector_default_index = 0
+        try:
+            if st.session_state.user_config["vector_provider"] in vector_options:
+                vector_default_index = vector_options.index(st.session_state.user_config["vector_provider"])
+        except:
+            pass
+            
+        vector_provider = st.selectbox(
+            "Vector Database",
+            options=vector_options,
+            index=vector_default_index,
+            help="Choose your vector database provider. ChromaDB is free and local."
+        )
+        
+        # Save configuration when changed
+        if (llm_provider != st.session_state.user_config.get("llm_provider") or
+            vector_provider != st.session_state.user_config.get("vector_provider")):
+            try:
+                st.session_state.user_config["llm_provider"] = llm_provider
+                st.session_state.user_config["vector_provider"] = vector_provider
+                save_user_config(st.session_state.user_config)
+            except Exception as e:
+                st.warning(f"Could not save preferences: {e}")
+        
+        # Show enhanced cost comparison
+        try:
+            cost_info = get_cost_info(llm_provider, vector_provider)
+            cost_level = cost_info["cost_level"]
+            estimated_monthly = cost_info["estimated_monthly"]
+            
+            if cost_level == "FREE":
+                st.success("💰 **ZERO COST** - Fully local setup!")
+                st.caption("🏠 Runs completely offline with no API costs")
+            elif cost_level == "LOW":
+                st.info(f"💰 **LOW COST** - ~${estimated_monthly:.2f}/month (1K requests)")
+                if "Ollama" in llm_provider:
+                    st.caption("🔓 Free LLM + Cloud Vector DB")
+            elif cost_level == "MEDIUM":
+                st.warning(f"💰 **MEDIUM COST** - ~${estimated_monthly:.2f}/month (1K requests)")
+                st.caption("☁️ Cloud LLM + Vector DB")
+            else:
+                st.error(f"💰 **HIGH COST** - ~${estimated_monthly:.2f}/month (1K requests)")
+        except Exception as e:
+            # Fallback to simple display
+            if llm_provider == "Ollama (Local)" and vector_provider == "ChromaDB (Local)":
+                st.success("💰 **ZERO COST** - Fully local setup!")
+            elif llm_provider == "Ollama (Local)":
+                st.info("💰 **LOW COST** - Free LLM + Cloud Vector DB")
+            else:
+                st.warning("💰 **PAID** - Cloud LLM + Vector DB")
+        
+        st.markdown("---")
+        
+        # Enhanced Pipeline Architecture Visualization
+        st.subheader("🏗️ Current Pipeline Architecture")
+        
+        # Show active configuration
+        col1, col2 = st.columns(2)
+        with col1:
+            if "Local" in llm_provider:
+                st.success(f"🧠 **LLM**: {llm_provider}")
+                st.caption("🏠 Local inference")
+            else:
+                st.info(f"🧠 **LLM**: {llm_provider}")
+                st.caption("☁️ Cloud API")
+        
+        with col2:
+            if "Local" in vector_provider:
+                st.success(f"🗃️ **Vector DB**: {vector_provider}")
+                st.caption("🏠 Local storage")
+            else:
+                st.info(f"🗃️ **Vector DB**: {vector_provider}")
+                st.caption("☁️ Cloud service")
+        
+        # Pipeline flow visualization
+        st.markdown("**🔄 Routing Decision Flow:**")
+        pipeline_flow = f"""
+        ```
+        📨 Ticket Input
+            ↓
+        🔧 Rules Engine (Instant)
+        {' ' * 8}├─ 85-99% confidence → ROUTE
+        {' ' * 8}└─ <85% confidence ↓
+        🔍 Vector Search ({vector_provider})
+        {' ' * 8}├─ 70-84% confidence → ROUTE  
+        {' ' * 8}└─ <70% confidence ↓
+        🤖 LLM Analysis ({llm_provider})
+        {' ' * 8}├─ Complex reasoning
+        {' ' * 8}└─ Final routing decision
+        ```
+        """
+        st.markdown(pipeline_flow)
+        
+        # Performance comparison
+        if "Local" in llm_provider and "Local" in vector_provider:
+            st.success("🚀 **Full Local Stack**: Maximum privacy + Zero API costs")
+        elif "Local" in llm_provider:
+            st.info("🔒 **Hybrid Setup**: Private LLM + Cloud vector search")
+        elif "Local" in vector_provider:
+            st.info("💾 **Hybrid Setup**: Cloud LLM + Local vector storage")  
+        else:
+            st.warning("☁️ **Full Cloud Stack**: Maximum performance + API costs")
+        
         # Pipeline visualization toggle
         show_pipeline_viz = st.checkbox(
-            "🔍 Show Routing Pipeline",
+            "🔍 Show Detailed Pipeline Steps",
             value=True,
-            help="Display step-by-step routing decision process"
+            help="Display step-by-step routing decision process during classification"
         )
         
         # Sample tickets guide
@@ -662,28 +846,37 @@ def main():
         ⚡ **[FAST]** vs 🧠 **[COMPLEX]** - Speed comparison
         """)
         
-        st.info("💡 Enable pipeline visualization above to see the complete routing flow!")        # Automatic initialization status
+        st.info("💡 Enable pipeline visualization above to see the complete routing flow!")        # Provider-aware initialization status
         env_api_key = os.getenv('GOOGLE_API_KEY')
-        if env_api_key:
-            st.success("✅ API key loaded from .env file")
-            
-            # Auto-initialize if not done yet
-            if not st.session_state.classifier and not st.session_state.initialization_attempted:
-                with st.spinner("🤖 Initializing Enhanced Classifier..."):
-                    if initialize_classifier():
-                        st.success("🚀 Enhanced classifier ready!")
-                        st.session_state.initialization_attempted = True
-                        st.rerun()
-                    else:
-                        st.session_state.initialization_attempted = True
-        else:
-            st.error("❌ No API key found in .env file")
+        
+        # Check provider requirements
+        needs_api_key = "Gemini" in llm_provider
+        provider_key = f"{llm_provider}_{vector_provider}"
+        
+        if needs_api_key and not env_api_key:
+            st.error("❌ Gemini requires API key in .env file")
             st.markdown("""
-            **Setup Required:**
+            **Setup Required for Gemini:**
             1. Add `GOOGLE_API_KEY=your_key` to `.env` file
             2. Get your key from: [Google AI Studio](https://aistudio.google.com/)
             3. Refresh this page
             """)
+        else:
+            if needs_api_key:
+                st.success("✅ Gemini API key loaded from .env file")
+            
+            # Initialize multi-provider system if not done yet or if providers changed
+            current_config = st.session_state.get('provider_config', {})
+            if (not st.session_state.get('multi_provider_manager') or 
+                current_config.get('llm_display') != llm_provider or 
+                current_config.get('vector_display') != vector_provider):
+                
+                with st.spinner(f"🤖 Initializing {llm_provider} + {vector_provider}..."):
+                    if initialize_multi_provider_system(llm_provider, vector_provider):
+                        st.success(f"🚀 {llm_provider} + {vector_provider} ready!")
+                        st.rerun()
+                    else:
+                        st.error("Failed to initialize multi-provider system")
         
         st.markdown("---")
         
@@ -917,9 +1110,25 @@ def main():
     
     # Classification results
     if classify_button and ticket_text:
-        with st.spinner("🤖 Enhanced AI Classification in Progress..."):
+        # Determine which system to use
+        if st.session_state.get('multi_provider_manager'):
+            provider_info = st.session_state.get('provider_config', {})
+            spinner_text = f"🤖 {provider_info.get('llm_display', 'AI')} Classification in Progress..."
+        else:
+            spinner_text = "🤖 Enhanced AI Classification in Progress..."
+            
+        with st.spinner(spinner_text):
             try:
-                result = st.session_state.classifier.classify_ticket(ticket_text)
+                # Use multi-provider system if available, fallback to traditional
+                if st.session_state.get('multi_provider_manager'):
+                    manager = st.session_state.multi_provider_manager
+                    result = manager.classify_ticket(ticket_text)
+                    
+                    # Convert to compatible format if needed
+                    if hasattr(result, 'to_enhanced_result'):
+                        result = result.to_enhanced_result()
+                else:
+                    result = st.session_state.classifier.classify_ticket(ticket_text)
                 
                 # Store in history
                 st.session_state.classification_history.append({
@@ -928,8 +1137,12 @@ def main():
                     'timestamp': time.time()
                 })
                 
-                # Display results
-                st.success("✅ Classification Complete!")
+                # Display results with provider info
+                provider_info = st.session_state.get('provider_config', {})
+                if provider_info:
+                    st.success(f"✅ Classification Complete via {provider_info.get('llm_display', 'AI')}!")
+                else:
+                    st.success("✅ Classification Complete!")
                 
                 # Main prediction
                 if result.is_other_category:
@@ -965,9 +1178,15 @@ def main():
                 # NEW: Departmental Routing Display
                 display_departmental_routing(result)
                 
-                # Pipeline visualization
+                # Enhanced Pipeline visualization with provider info
                 if show_pipeline_viz:
-                    pipeline_viz = create_real_pipeline_visualization(ticket_text, result)
+                    # Get current provider configuration
+                    current_providers = {
+                        'llm': llm_provider,
+                        'vector_db': vector_provider,
+                        'cost_level': get_cost_info(llm_provider, vector_provider).get('cost_level', 'UNKNOWN')
+                    }
+                    pipeline_viz = create_real_pipeline_visualization(ticket_text, result, provider_info=current_providers)
                     display_pipeline_visualization(pipeline_viz)
                 
                 # Model comparison

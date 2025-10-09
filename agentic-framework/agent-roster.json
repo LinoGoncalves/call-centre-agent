@@ -1,6 +1,6 @@
 {
   "agent_roster": {
-    "total_agents": 34,
+    "total_agents": 33,
     "master_agent": {
       "file": "master-agent.md",
       "role": "project_orchestrator",
@@ -75,12 +75,6 @@
         "role": "devops_engineer",
         "specialization": ["ci_cd_pipeline", "deployment_automation", "monitoring"],
         "context_scope": "system_wide"
-      },
-      {
-        "file": "scm-workflow-agent.md",
-        "role": "scm_workflow_specialist",
-        "specialization": ["version_control_workflow", "git_flow_enforcement", "branch_strategy_validation", "commit_standards_compliance", "pr_workflow_automation"],
-        "context_scope": "repository_wide"
       },
       {
         "file": "azure-principal-architect-agent.md",
@@ -222,7 +216,6 @@
     "data_science": ["data-scientist-agent", "data-engineer-agent", "ML-engineer-agent"],
     "documentation": ["technical-writer-agent", "business-analyst-agent", "solutions-architect-agent", "research-specialist-agent"],
     "deployment": ["devops-engineer-agent", "cloud-engineer-agent", "site-reliability-engineer-agent"],
-    "version_control": ["scm-workflow-agent", "devops-engineer-agent", "master-agent"],
     "user_experience": ["ui-designer-agent", "UX-research-agent", "product-owner-agent"],
     "research_analysis": ["research-specialist-agent", "critical-analyst-agent", "business-analyst-agent", "principal-engineer-agent"],
     "autonomous_execution": ["beast-mode-executor-agent", "task-planner-agent", "blueprint-executor-agent"],
@@ -245,11 +238,11 @@
     }
   },
   "tool_optimization": {
-    "tabnine_context_agents": ["software-developer-agent", "solutions-architect-agent", "devops-engineer-agent", "scm-workflow-agent"],
-    "copilot_chat_agents": ["master-agent", "business-analyst-agent", "technical-writer-agent", "scm-workflow-agent"],
+    "tabnine_context_agents": ["software-developer-agent", "solutions-architect-agent", "devops-engineer-agent"],
+    "copilot_chat_agents": ["master-agent", "business-analyst-agent", "technical-writer-agent"],
     "cursor_composer_agents": ["software-developer-agent", "QA-engineer-agent", "test-automation-expert-agent"],
     "universal_agents": "all"
   },
-  "updated": "2025-10-03T00:00:00Z",
-  "version": "2.1.0"
+  "updated": "2025-09-29T00:00:00Z",
+  "version": "2.0.0"
 }

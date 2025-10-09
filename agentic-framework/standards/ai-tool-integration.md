@@ -1,9 +1,8 @@
 # 🤖 AI Tool Integration Guide
 ## Universal Agent Personas for Multiple AI Development Tools
 
-**Project**: Telco Call Centre Agent  
 **Purpose**: Multi-tool AI integration without vendor lock-in  
-**Updated**: September 29, 2025  
+**Updated**: October 4, 2025  
 **Compatibility**: Tabnine, GitHub Copilot, Cursor, Codeium, JetBrains AI, and future tools
 
 ---
@@ -28,7 +27,7 @@ This project implements **tool-agnostic AI agent personas** designed to work sea
 #### 🧠 **Tabnine**
 - **Integration Method**: Project context files and documentation
 - **Benefits**: Enhanced code completion using agent persona context
-- **Configuration**: Uses `telco-call-centre/` folder structure for project understanding
+- **Configuration**: Uses `agentic-framework/` folder structure for project understanding
 - **Best Practices**: 
   - Keep agent files in project structure for maximum context
   - Use detailed specialization metadata for better suggestions
@@ -37,12 +36,12 @@ This project implements **tool-agnostic AI agent personas** designed to work sea
 #### 🤖 **GitHub Copilot**
 - **Integration Method**: Chat references, context files, and enhanced chat modes
 - **Benefits**: Interactive agent persona discussions, specialized chat modes, and workflow optimization
-- **Configuration**: Uses universal `telco-call-centre/` structure plus optional `.github/` enhancements
-- **Enhanced Features**: Specialized chat modes in `.github/chatmodes/` for advanced workflows
+- **Configuration**: Uses universal `agentic-framework/` structure plus optional `.github/` enhancements
+- **Enhanced Features**: Optional specialized configurations in `.github/` for advanced workflows
 - **Best Practices**:
-  - Use `@workspace` references to agent persona files in `telco-call-centre/`
+  - Use `@workspace` references to agent persona files in `agentic-framework/`
   - Leverage interaction patterns for structured conversations
-  - Optional: Load specialized chat modes from `.github/chatmodes/` for enhanced workflows
+  - Optional: Use `.github/copilot-instructions.md` for project-specific guidance
   - Always maintain compatibility with other tools by referencing universal standards
 
 #### ⚡ **Cursor**
@@ -78,17 +77,18 @@ This project implements **tool-agnostic AI agent personas** designed to work sea
 
 ### **Current Structure (Optimized for All Tools)**
 ```
-telco-call-centre/                    # Project-specific AI configuration
+agentic-framework/                   # Universal AI configuration
 ├── master-agent.md                  # Enhanced with metadata
 ├── sub-agents/                      # Individual agent personas
 │   ├── software-developer-agent.md # Code generation specialist
 │   ├── solutions-architect-agent.md# System design specialist
 │   ├── QA-engineer-agent.md       # Testing specialist
-│   └── [22 total specialized agents]
-└── development-standards/           # Enhanced standards
-    ├── ai-tool-integration.md      # This guide
-    ├── coding_styleguide.md        # Code standards
-    ├── approved_libraries.json     # Approved dependencies
+│   └── [27 total specialized agents]
+├── standards/                       # Enhanced standards
+│   ├── ai-tool-integration.md      # This guide
+│   ├── coding_styleguide.md        # Code standards
+│   └── [23 universal standards]
+└── templates/                       # Reusable templates
     └── [25 total standards files]
 ```
 
@@ -114,7 +114,7 @@ updated: "2025-09-29"
 ### **Tabnine Integration**
 
 #### Setup
-1. Ensure Tabnine has workspace access to `telco-call-centre/` folder
+1. Ensure Tabnine has workspace access to `agentic-framework/` folder
 2. Agent personas provide enhanced project context automatically
 3. Development standards inform coding suggestions
 
@@ -170,9 +170,9 @@ All AI tools can benefit from:
 #### File References
 ```markdown
 # Universal reference patterns work across tools:
-./telco-call-centre/master-agent.md              # Project orchestration
-./telco-call-centre/sub-agents/[role]-agent.md   # Specialized expertise  
-./telco-call-centre/development-standards/       # Project standards
+./agentic-framework/master-agent.md              # Project orchestration
+./agentic-framework/sub-agents/[role]-agent.md   # Specialized expertise  
+./agentic-framework/standards/                   # Development standards
 ```
 
 ---
@@ -203,41 +203,32 @@ All AI tools can benefit from:
 
 ### **Universal + Enhanced Structure**
 
-This project implements a layered approach for maximum compatibility and tool-specific optimization:
+This framework implements a layered approach for maximum compatibility and tool-specific optimization:
 
 ```
-📁 telco-call-centre/          # Universal (ALL TOOLS)
+📁 agentic-framework/          # Universal (ALL TOOLS)
 ├── sub-agents/                # Multi-tool agent personas
-├── development-standards/     # Tool-agnostic standards  
-└── ai-tool-integration.md     # This file
+├── standards/                 # Tool-agnostic standards  
+├── templates/                 # Reusable templates
+└── master-agent.md            # Central orchestration
 
-📁 .github/                    # GitHub Copilot Enhanced
-├── copilot-instructions.md    # Copilot-specific optimizations
-├── chatmodes/                 # Specialized chat modes
-│   ├── agent-orchestrator.md
-│   ├── development-expert.md
-│   └── quality-assurance-expert.md
-└── README.md                  # Architecture explanation
+📁 .github/                    # GitHub Copilot Enhanced (optional)
+└── copilot-instructions.md    # Project-specific Copilot guidance
 ```
 
 ### **Architecture Philosophy**
 
-- **📚 Source of Truth**: `telco-call-centre/` remains authoritative for all tools
-- **⚡ Tool Enhancement**: `.github/` provides GitHub Copilot optimizations  
+- **📚 Source of Truth**: `agentic-framework/` remains authoritative for all tools
+- **⚡ Tool Enhancement**: `.github/` provides project-specific optimizations  
 - **🔄 Vendor Independence**: Other tools use universal structure unaffected
-- **🔗 Seamless Integration**: GitHub Copilot users get enhanced workflows while maintaining compatibility
+- **🔗 Seamless Integration**: All tools benefit from standardized agent personas
 
-### **GitHub Copilot Enhanced Workflows**
+### **Universal Workflows**
 
-**Universal Approach** (compatible with all tools):
+**Standard Approach** (compatible with all tools):
 ```bash
-@workspace Using telco-call-centre/master-agent.md orchestration, coordinate appropriate agents for this task
+@workspace Using agentic-framework/master-agent.md orchestration, coordinate appropriate agents for this task
 ```
-
-**Enhanced Chat Modes** (GitHub Copilot specific):
-- Load `.github/chatmodes/agent-orchestrator.md` for master agent coordination
-- Load `.github/chatmodes/development-expert.md` for coding and architecture  
-- Load `.github/chatmodes/quality-assurance-expert.md` for testing and QA
 
 ---
 
@@ -303,9 +294,9 @@ This project implements a layered approach for maximum compatibility and tool-sp
 
 ### **Quick Setup (2 minutes)**
 
-1. **Verify Tool Access**: Ensure your AI tools can access the `telco-call-centre/` folder
+1. **Verify Tool Access**: Ensure your AI tools can access the `agentic-framework/` folder
 2. **Review Agent Roster**: Browse `sub-agents/` folder to understand available expertise
-3. **Check Standards**: Review `development-standards/` for project-specific guidelines  
+3. **Check Standards**: Review `standards/` for development guidelines  
 4. **Start Using**: Reference agent personas in your AI tool interactions
 
 ### **Tool-Specific Quickstart**

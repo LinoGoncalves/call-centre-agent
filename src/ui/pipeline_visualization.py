@@ -265,7 +265,45 @@ def display_pipeline_visualization(pipeline_viz: PipelineVisualization):
     
     st.markdown("### 🔄 Routing Pipeline Visualization")
     
-    # Pipeline overview
+    # Provider Configuration Display
+    provider_info = pipeline_viz.final_routing.get("provider_info", {})
+    if provider_info:
+        st.markdown("#### 🏗️ Active Configuration")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            llm_provider = provider_info.get('llm_provider', 'Unknown')
+            if "Local" in llm_provider:
+                st.success(f"🧠 **LLM**: {llm_provider}")
+            else:
+                st.info(f"🧠 **LLM**: {llm_provider}")
+        
+        with col2:
+            vector_provider = provider_info.get('vector_provider', 'Unknown')
+            if "Local" in vector_provider:
+                st.success(f"🗃️ **Vector DB**: {vector_provider}")
+            else:
+                st.info(f"🗃️ **Vector DB**: {vector_provider}")
+        
+        with col3:
+            cost_level = provider_info.get('cost_level', 'UNKNOWN')
+            if cost_level == 'FREE':
+                st.success(f"💰 **{cost_level} COST**")
+            elif cost_level == 'LOW':
+                st.info(f"💰 **{cost_level} COST**")
+            else:
+                st.warning(f"💰 **{cost_level} COST**")
+        
+        with col4:
+            setup_type = provider_info.get('setup_type', 'Unknown')
+            if "Local" in setup_type:
+                st.success(f"🏠 **{setup_type}**")
+            else:
+                st.info(f"☁️ **{setup_type}**")
+        
+        st.markdown("---")
+
+    # Pipeline overview  
     col1, col2, col3 = st.columns(3)
     
     with col1:
@@ -328,7 +366,7 @@ def display_pipeline_visualization(pipeline_viz: PipelineVisualization):
     cost_html = create_cost_optimization_summary(pipeline_viz)
     components.html(cost_html, height=200)
 
-def create_real_pipeline_visualization(ticket_text: str, result: Any) -> PipelineVisualization:
+def create_real_pipeline_visualization(ticket_text: str, result: Any, provider_info: Optional[Dict[str, str]] = None) -> PipelineVisualization:
     """
     Create pipeline visualization with actual rules engine integration.
     Tests real rules engine before proceeding to mock Vector DB and LLM steps.
@@ -389,6 +427,16 @@ def create_real_pipeline_visualization(ticket_text: str, result: Any) -> Pipelin
             
             total_time = rules_processing_time + decision_time
             
+            # Include provider information in cost optimization
+            provider_cost_info = {}
+            if provider_info:
+                provider_cost_info = {
+                    "llm_provider": provider_info.get('llm', 'Unknown'),
+                    "vector_provider": provider_info.get('vector_db', 'Unknown'),
+                    "cost_level": provider_info.get('cost_level', 'UNKNOWN'),
+                    "setup_type": "Full Local" if "Local" in provider_info.get('llm', '') and "Local" in provider_info.get('vector_db', '') else "Hybrid/Cloud"
+                }
+            
             return PipelineVisualization(
                 ticket_id=ticket_id,
                 ticket_text=ticket_text,
@@ -397,7 +445,8 @@ def create_real_pipeline_visualization(ticket_text: str, result: Any) -> Pipelin
                     "department": rules_match.department,
                     "confidence": rules_match.confidence,
                     "method": "rules_engine",
-                    "category": rules_match.rule_id
+                    "category": rules_match.rule_id,
+                    "provider_info": provider_cost_info
                 },
                 total_processing_time_ms=total_time,
                 pipeline_efficiency="optimal",
@@ -407,7 +456,8 @@ def create_real_pipeline_visualization(ticket_text: str, result: Any) -> Pipelin
                     "cache_utilized": False,
                     "api_calls_made": 0,
                     "estimated_cost_usd": 0.0,
-                    "savings_vs_llm": "100%"
+                    "savings_vs_llm": "100%",
+                    **provider_cost_info
                 }
             )
         else:
@@ -453,8 +503,10 @@ def create_real_pipeline_visualization(ticket_text: str, result: Any) -> Pipelin
     
     # Continue with Vector DB and RAG simulation (only if rules didn't match)
     if len(steps) == 1:  # Only rules engine step exists, no match found
-        # Simulate Vector DB step  
+        # Simulate Vector DB step with provider info
         vector_time = 45.2
+        vector_provider_name = provider_info.get('vector_db', 'Pinecone (Cloud)') if provider_info else 'Pinecone (Cloud)'
+        
         steps.append(PipelineStep(
             step_name="Vector DB Search",
             step_number=2,
@@ -462,11 +514,13 @@ def create_real_pipeline_visualization(ticket_text: str, result: Any) -> Pipelin
             decision="Found similar historical tickets",
             confidence=0.72,
             details={
+                "provider": vector_provider_name,
                 "similar_tickets_found": 3,
                 "top_similarity_score": 0.78,
                 "historical_accuracy": 0.89,
                 "cache_candidates": 2,
-                "vector_dimension": 768
+                "vector_dimension": 768,
+                "local_storage": "Local" in vector_provider_name
             },
             timestamp=datetime.now(), 
             success=True,
@@ -474,8 +528,11 @@ def create_real_pipeline_visualization(ticket_text: str, result: Any) -> Pipelin
         ))
         total_time += vector_time
         
-        # Simulate RAG/LLM step
+        # Simulate RAG/LLM step with provider info
         llm_time = getattr(result, 'processing_time_ms', 850.0)
+        llm_provider_name = provider_info.get('llm', 'Gemini Pro (Cloud)') if provider_info else 'Gemini Pro (Cloud)'
+        llm_model = "Ollama (llama3.1)" if "Ollama" in llm_provider_name else "Gemini 1.5"
+        
         steps.append(PipelineStep(
             step_name="RAG Analysis", 
             step_number=3,
@@ -483,11 +540,14 @@ def create_real_pipeline_visualization(ticket_text: str, result: Any) -> Pipelin
             decision=f"AI Classification: {result.predicted_category}",
             confidence=getattr(result, 'confidence', 0.85),
             details={
-                "llm_model": "Gemini 1.5",
+                "provider": llm_provider_name,
+                "llm_model": llm_model,
                 "context_tickets": 3,
                 "reasoning_tokens": 245,
                 "temperature": 0.1,
-                "ensemble_weight": 0.7
+                "ensemble_weight": 0.7,
+                "local_inference": "Local" in llm_provider_name,
+                "api_cost": 0.0 if "Local" in llm_provider_name else 0.003
             },
             timestamp=datetime.now(),
             success=True,
@@ -526,6 +586,20 @@ def create_real_pipeline_visualization(ticket_text: str, result: Any) -> Pipelin
         else:
             efficiency = "needs_optimization"
         
+        # Include provider information in RAG pipeline result
+        provider_cost_info = {}
+        api_cost = 0.003  # Default Gemini cost
+        if provider_info:
+            provider_cost_info = {
+                "llm_provider": provider_info.get('llm', 'Unknown'),
+                "vector_provider": provider_info.get('vector_db', 'Unknown'), 
+                "cost_level": provider_info.get('cost_level', 'UNKNOWN'),
+                "setup_type": "Full Local" if "Local" in provider_info.get('llm', '') and "Local" in provider_info.get('vector_db', '') else "Hybrid/Cloud"
+            }
+            # Adjust API cost based on provider
+            if "Local" in provider_info.get('llm', ''):
+                api_cost = 0.0  # Ollama is free
+        
         # Standard RAG pipeline result
         return PipelineVisualization(
             ticket_id=ticket_id,
@@ -535,7 +609,8 @@ def create_real_pipeline_visualization(ticket_text: str, result: Any) -> Pipelin
                 "department": getattr(result, 'department_allocation', 'BILLING'),
                 "confidence": getattr(result, 'confidence', 0.85),
                 "method": "rag_llm",
-                "category": result.predicted_category
+                "category": result.predicted_category,
+                "provider_info": provider_cost_info
             },
             total_processing_time_ms=total_time,
             pipeline_efficiency=efficiency,
@@ -543,9 +618,10 @@ def create_real_pipeline_visualization(ticket_text: str, result: Any) -> Pipelin
                 "method_used": "rag_llm",
                 "rules_bypassed": False,
                 "cache_utilized": False,
-                "api_calls_made": 1,
-                "estimated_cost_usd": 0.003,
-                "savings_vs_manual": "95%"
+                "api_calls_made": 0 if api_cost == 0.0 else 1,
+                "estimated_cost_usd": api_cost,
+                "savings_vs_manual": "95%",
+                **provider_cost_info
             }
         )
     

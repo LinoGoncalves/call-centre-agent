@@ -16,7 +16,7 @@ Establish a consistent, automated tagging standard for all cloud resources (Azur
 ## Required Tags
 | Tag Key         | Description                                 | Example Value                |
 |-----------------|---------------------------------------------|------------------------------|
-| `Project`       | Project or system name                      | call-centre-agent            |
+| `Project`       | Project or system name                      | superbru-epl-prediction      |
 | `Environment`   | dev, test, staging, prod                    | prod                         |
 | `Owner`         | Responsible team or person                  | ai-team@company.com          |
 | `CostCenter`    | Billing or cost allocation code              | CC1234                       |

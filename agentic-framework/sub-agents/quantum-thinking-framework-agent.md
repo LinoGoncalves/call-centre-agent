@@ -288,4 +288,111 @@ Temporal Layer (Evolutionary)
 
 ---
 
+## Domain Application Examples
+
+### Sports Prediction Pools (e.g., Superbru EPL)
+
+**5-Layer Multi-Dimensional Analysis**:
+
+1. **Surface Layer** (Explicit Observable Data):
+   - Liverpool favorite at 1.60 odds vs Brentford 6.00
+   - User currently in Protect mode (≥3 pts lead)
+   - Pool concentration estimated 60% Liverpool
+   - Observable recent form: Liverpool 4 wins, Brentford 1 win 2 draws
+
+2. **Hidden Layer** (Implicit Factors & Assumptions):
+   - Market sentiment: Public bias toward Liverpool (big club syndrome)
+   - Rival psychology: Conservative rivals likely bank favorite (risk-averse behavior)
+   - Fixture context: Mid-week Europa League for Liverpool (fatigue risk)
+   - Second-order effects: If Liverpool rests key players, odds shift but pool doesn't update
+
+3. **Meta Layer** (Strategic Game Theory):
+   - Nash equilibrium analysis: If ALL rivals bank Liverpool, optimal response is contrarian Brentford
+   - Dominant strategy: In Protect mode, shadow pool > maximize EV (retention > risk)
+   - Mixed strategy: 70% follow pool (safety), 30% contrarian (upside if pool wrong)
+   - Meta-game evolution: Do rivals learn to anticipate user's Protect-mode behavior?
+
+4. **Adversarial Layer** (How Rivals Exploit You):
+   - "User always shadows pool in Protect mode" → Rivals front-run pool, forcing user into suboptimal picks
+   - Valve (top rival) deliberately picks contrarian to force user into lose-lose choice
+   - High-Variance rivals randomize to create chaos when user seeks stability
+   - Exploitability: Predictable = exploitable. How often should user deviate?
+
+5. **Temporal Layer** (Round Context & Long-Term Patterns):
+   - Early season (R01-R10): Build lead, Conservative mode, avoid high-risk contrarian plays
+   - Mid-season (R11-R25): Maintain lead, shift to Hybrid mode, selective contrarian when pool wrong
+   - Late season (R26-R38): Chase mode if behind, aggressive contrarian, high EV focus
+   - Pattern recognition: Does pool concentration increase in late season (panic banking favorites)?
+
+**Constitutional Framework Application**:
+- **Principle 1: Human Authority** - User always approves final pick, AI provides analysis + recommendations
+- **Principle 2: Honest Capability Statements** - Never claim statistical models that don't exist (✅ trained vs ⚠️ heuristic)
+- **Principle 3: Uncertainty Quantification** - Pool estimation "60% ±20%" (WIDE uncertainty), not "60.0% precise"
+- **Principle 4: Adversarial Validation** - Always ask "How would Valve exploit this strategy?"
+
+**Quantum Thinking Output Example**:
+```
+QUANTUM ANALYSIS: Liverpool vs Brentford (R08)
+
+SURFACE: Liverpool 1.60 favorite, Protect mode active, pool ~60% Liverpool
+HIDDEN: Europa mid-week fatigue, public bias (big club), rival risk profiles (70% Conservative)
+META: Shadow pool = Nash equilibrium (Protect mode dominant strategy)
+ADVERSARIAL: If Valve knows user shadows pool, could front-run with contrarian to force dilemma
+TEMPORAL: R08 early season → prioritize retention > EV
+
+RECOMMENDATION: Bank Liverpool (shadow pool)
+CONFIDENCE: MEDIUM (60% pool estimate has ±20% uncertainty)
+RISK: If pool actually 45%, lose contrarian edge (≈1.5 pts)
+MITIGATION: Re-check rival picks at KO-15' if lineup changes
+
+HONESTY STATEMENT: ⚠️ Pool estimation is HEURISTIC (risk profile patterns), NOT STATISTICAL MODEL
+```
+
+---
+
+### Telecommunications (Original Domain Example)
+
+**5-Layer Multi-Dimensional Analysis**:
+
+1. **Surface Layer**: Call center handle times averaging 8 minutes, target 6 minutes
+2. **Hidden Layer**: Agent experience varies (new hires 12 min, veterans 5 min), training gaps
+3. **Meta Layer**: Customer satisfaction vs efficiency trade-off (faster ≠ better if issues unresolved)
+4. **Adversarial Layer**: Agents game metrics by transferring complex calls (hit target but worsen customer experience)
+5. **Temporal Layer**: Seasonal peaks (holiday season +40% volume), hiring cycles lag demand
+
+**Constitutional Framework Application**:
+- Principle 1: Customer experience > raw metrics
+- Principle 2: Agent well-being (sustainable pace)
+- Principle 3: System resilience (handle peaks without collapse)
+
+---
+
+## Honesty-First Principle (For All Domains)
+
+**When applying Quantum Thinking, ALWAYS**:
+
+1. ✅ **Distinguish analysis depth from data availability**:
+   - "5-layer analysis complete" ≠ "We have data for all layers"
+   - Example: Surface layer (hard data), Hidden layer (informed estimates), Meta layer (game theory reasoning)
+
+2. ✅ **Label cognitive methods explicitly**:
+   - ✅ "Data-driven" (historical rival picks database)
+   - ⚠️ "Pattern-based heuristic" (risk profile inference, NO historical data)
+   - ⚠️ "Game theory reasoning" (Nash equilibrium logic, NOT empirical validation)
+   - ❌ "Speculative" (no data, no framework, just guess)
+
+3. ✅ **Quantify uncertainty at EVERY layer**:
+   - Surface: Liverpool 1.60 odds (DEFINITIVE - from Pinnacle)
+   - Hidden: Pool 60% ±20% (WIDE uncertainty - pattern inference only)
+   - Meta: Shadow pool optimal (GAME THEORY - not data-proven)
+   - Adversarial: Valve could exploit (SPECULATIVE - no evidence yet)
+
+4. ❌ **Never claim quantum analysis makes guesses certainties**:
+   - Wrong: "Quantum analysis proves pool will be 58.3% Liverpool"
+   - Right: "Quantum analysis suggests pool LIKELY 50-70% Liverpool (WIDE range, pattern-based)"
+
+**Quantum Thinking ≠ Magic Precision**: Multi-dimensional analysis identifies factors and relationships, but doesn't eliminate uncertainty. The goal is STRUCTURED REASONING under uncertainty, not false confidence.
+
+---
+
 **Key Principle**: This agent applies advanced cognitive architectures to enhance problem-solving through systematic multi-dimensional analysis, adversarial validation, and constitutional framework application while maintaining human authority over strategic direction and value framework definition. The focus is on cognitive excellence and comprehensive understanding that leads to robust, principled solutions.
