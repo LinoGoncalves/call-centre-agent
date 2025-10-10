@@ -333,6 +333,29 @@ python test_enhanced_routing_intelligence.py
 
 ---
 
+## 🎯 Recent Updates & Fixes
+
+### **Provider Display Transparency** (Latest)
+- ✅ Fixed misleading provider display in pipeline visualization
+- ✅ Shows actual provider used (e.g., "Gemini Pro (Fallback from Ollama)")
+- ✅ Enhanced success messages with real provider information
+- ✅ Automatic fallback detection and user notification
+
+### **UI/UX Improvements**
+- ✅ Fixed empty keyword list display in pipeline details
+- ✅ Improved item count accuracy ("5 of 8 items" vs misleading counts)
+- ✅ Enhanced R010_PAYMENT_ISSUES rule with appropriate keywords
+- ✅ Pipeline visualization with fallback warning styling
+
+### **Technical Stability**
+- ✅ Python 3.13 threading compatibility resolved
+- ✅ MultiProviderManager initialization fixes
+- ✅ Graceful degradation for missing classifier attributes
+- ✅ F-string linting warnings cleaned up
+
+---
+
 *Last Updated: October 10, 2025*  
-*Version: 2.0*  
-*AI Compatibility: Universal (Tabnine, Copilot, Cursor, Codeium, JetBrains AI)*
+*Version: 2.1*  
+*AI Compatibility: Universal (Tabnine, Copilot, Cursor, Codeium, JetBrains AI)*  
+*Latest Commit: Provider Display Transparency & UI Improvements*
