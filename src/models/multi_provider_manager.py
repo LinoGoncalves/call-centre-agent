@@ -51,7 +51,7 @@ class MultiProviderManager:
     Orchestrates LLM and Vector DB providers with intelligent routing and fallbacks
     """
     
-    def __init__(self, config_file: str = "provider_config.json"):
+    def __init__(self, config_file: str = "config/provider_config.json"):
         """
         Initialize multi-provider manager
         

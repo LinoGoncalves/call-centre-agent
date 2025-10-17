@@ -1,6 +1,6 @@
 {
-  "llm_provider": "Ollama (Local)",
-  "vector_provider": "ChromaDB (Local)",
+  "llm_provider": "Gemini Pro (Cloud)",
+  "vector_provider": "Pinecone (Cloud)",
   "show_pipeline_viz": true,
   "debug_mode": false,
   "ensemble_weight": 0.7,

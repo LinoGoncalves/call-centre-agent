@@ -48,3 +48,7 @@ Thumbs.db
 # Coverage reports
 .coverage
 coverage.xml
+
+# User-specific configuration (auto-generated at runtime)
+user_config.json
+config/user_config.json

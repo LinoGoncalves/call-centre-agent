@@ -66,7 +66,7 @@ class MultiProviderConfig:
     Manages LLM and Vector DB provider selection with user preferences
     """
     
-    def __init__(self, config_file: str = "provider_config.json"):
+    def __init__(self, config_file: str = "config/provider_config.json"):
         """
         Initialize multi-provider configuration
         

@@ -15,9 +15,8 @@ Purpose: Multi-provider configuration persistence
 """
 
 import json
-import os
 from pathlib import Path
-from typing import Dict, Optional, Any
+from typing import Dict, Any
 import logging
 
 logger = logging.getLogger(__name__)
@@ -25,7 +24,7 @@ logger = logging.getLogger(__name__)
 class ConfigManager:
     """Manages user configuration persistence"""
     
-    def __init__(self, config_path: str = "user_config.json"):
+    def __init__(self, config_path: str = "config/user_config.json"):
         """Initialize config manager with file path"""
         self.config_path = Path(config_path)
         self.default_config = {
