@@ -1,0 +1,10 @@
+pypi.org
+files.pythonhosted.org
+pypi.python.org
+generativelanguage.googleapis.com
+ai.google.dev
+api.pinecone.io
+*.pinecone.io
+api.openai.com
+github.com
+raw.githubusercontent.com

@@ -88,7 +88,8 @@ def test_enhanced_demo():
         print(f"❌ Enhanced demo file not found: {demo_file}")
         return False
     
-    launcher_file = Path(__file__).parent / "launch_enhanced_demo.py"
+    # Launcher file is in root directory
+    launcher_file = Path(__file__).parent.parent / "launch_enhanced_demo.py"
     if launcher_file.exists():
         print(f"✅ Demo launcher found: {launcher_file.name}")
     else:

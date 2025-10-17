@@ -1,0 +1,93 @@
+{
+  "llm_providers": {
+    "gemini": {
+      "name": "Google Gemini Pro",
+      "enabled": true,
+      "priority": 1,
+      "cost_per_query": 0.0003,
+      "avg_response_time_ms": 1500,
+      "availability_check": true,
+      "fallback_providers": [
+        "ollama"
+      ],
+      "metadata": {
+        "model": "gemini-pro",
+        "api_key_required": true,
+        "data_sovereignty": "cloud",
+        "rate_limits": "60 requests/minute",
+        "status": "available"
+      }
+    },
+    "ollama": {
+      "name": "Ollama Local LLM",
+      "enabled": true,
+      "priority": 2,
+      "cost_per_query": 0.0,
+      "avg_response_time_ms": 3000,
+      "availability_check": true,
+      "fallback_providers": [
+        "gemini"
+      ],
+      "metadata": {
+        "model": "llama3.2:3b",
+        "api_key_required": false,
+        "data_sovereignty": "local",
+        "rate_limits": "No limits",
+        "status": "available"
+      }
+    }
+  },
+  "vector_db_providers": {
+    "pinecone": {
+      "name": "Pinecone Vector Database",
+      "enabled": true,
+      "priority": 1,
+      "cost_per_query": 0.005,
+      "avg_response_time_ms": 100,
+      "availability_check": true,
+      "fallback_providers": [
+        "chromadb"
+      ],
+      "metadata": {
+        "index_name": "telco-tickets",
+        "api_key_required": true,
+        "data_sovereignty": "cloud",
+        "scalability": "enterprise",
+        "status": "available"
+      }
+    },
+    "chromadb": {
+      "name": "ChromaDB Embedded Vector DB",
+      "enabled": true,
+      "priority": 2,
+      "cost_per_query": 0.0,
+      "avg_response_time_ms": 50,
+      "availability_check": true,
+      "fallback_providers": [
+        "pinecone"
+      ],
+      "metadata": {
+        "collection_name": "telco_tickets",
+        "api_key_required": false,
+        "data_sovereignty": "local",
+        "scalability": "development",
+        "status": "available"
+      }
+    }
+  },
+  "user_preferences": {
+    "preferred_llm": "gemini",
+    "preferred_vector_db": "chromadb",
+    "cost_optimization": true,
+    "fallback_enabled": true,
+    "max_cost_per_query": 0.01,
+    "max_response_time_ms": 5000
+  },
+  "global_settings": {
+    "version": "1.0",
+    "last_updated": 1760161792.3719668,
+    "auto_fallback": true,
+    "availability_check_interval": 300,
+    "cost_tracking": true
+  }
+}

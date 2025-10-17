@@ -1,0 +1,14 @@
+{
+  "llm_provider": "Ollama (Local)",
+  "vector_provider": "ChromaDB (Local)",
+  "show_pipeline_viz": true,
+  "debug_mode": false,
+  "ensemble_weight": 0.7,
+  "other_threshold": 0.6,
+  "auto_initialize": true,
+  "preferences": {
+    "theme": "default",
+    "show_cost_info": true,
+    "show_performance_metrics": true
+  }
+}

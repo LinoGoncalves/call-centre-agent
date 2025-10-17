@@ -44,3 +44,7 @@ Thumbs.db
 
 # 🎯 Streamlit
 .streamlit/
+
+# Coverage reports
+.coverage
+coverage.xml

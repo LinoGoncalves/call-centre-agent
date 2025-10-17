@@ -1,0 +1,256 @@
+{
+  "timestamp": "2025-10-17T21:08:46.981523",
+  "dry_run": false,
+  "operations": [
+    {
+      "source": "C:\\DEV\\call-centre-agent\\demo_epic_1_6_complete.py",
+      "destination": "C:\\DEV\\call-centre-agent\\scripts\\demos\\demo_epic_1_6_complete.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\demo_epic_1_11_rag_complete.py",
+      "destination": "C:\\DEV\\call-centre-agent\\scripts\\demos\\demo_epic_1_11_rag_complete.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\demo_epic_1_16_1_20_complete.py",
+      "destination": "C:\\DEV\\call-centre-agent\\scripts\\demos\\demo_epic_1_16_1_20_complete.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\enhanced_demo_complete.py",
+      "destination": "C:\\DEV\\call-centre-agent\\scripts\\demos\\enhanced_demo_complete.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\enhanced_vector_schema_demo.py",
+      "destination": "C:\\DEV\\call-centre-agent\\scripts\\demos\\enhanced_vector_schema_demo.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\stepwise_demo.py",
+      "destination": "C:\\DEV\\call-centre-agent\\scripts\\demos\\stepwise_demo.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\comprehensive_test_data.json",
+      "destination": "C:\\DEV\\call-centre-agent\\data\\test\\comprehensive_test_data.json",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\domains.txt",
+      "destination": "C:\\DEV\\call-centre-agent\\data\\test\\domains.txt",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\rag_system_test_cases.csv",
+      "destination": "C:\\DEV\\call-centre-agent\\data\\test\\rag_system_test_cases.csv",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\rag_system_test_data.json",
+      "destination": "C:\\DEV\\call-centre-agent\\data\\test\\rag_system_test_data.json",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\rules_engine_test_cases.csv",
+      "destination": "C:\\DEV\\call-centre-agent\\data\\test\\rules_engine_test_cases.csv",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\rules_engine_test_data.json",
+      "destination": "C:\\DEV\\call-centre-agent\\data\\test\\rules_engine_test_data.json",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\routing_decisions.jsonl",
+      "destination": "C:\\DEV\\call-centre-agent\\data\\test\\routing_decisions.jsonl",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\validation_results.json",
+      "destination": "C:\\DEV\\call-centre-agent\\data\\test\\validation_results.json",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\CLIENT_SETUP_GUIDE.md",
+      "destination": "C:\\DEV\\call-centre-agent\\docs\\guides\\CLIENT_SETUP_GUIDE.md",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\IMPLEMENTATION_PACKAGE.md",
+      "destination": "C:\\DEV\\call-centre-agent\\docs\\guides\\IMPLEMENTATION_PACKAGE.md",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\NETWORK_WHITELIST.md",
+      "destination": "C:\\DEV\\call-centre-agent\\docs\\guides\\NETWORK_WHITELIST.md",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\SETUP_GUIDE.md",
+      "destination": "C:\\DEV\\call-centre-agent\\docs\\guides\\SETUP_GUIDE.md",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\test_data_generator.py",
+      "destination": "C:\\DEV\\call-centre-agent\\scripts\\utils\\test_data_generator.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\validate_setup.py",
+      "destination": "C:\\DEV\\call-centre-agent\\scripts\\utils\\validate_setup.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\validation_summary.py",
+      "destination": "C:\\DEV\\call-centre-agent\\scripts\\utils\\validation_summary.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\validate_test_data.py",
+      "destination": "C:\\DEV\\call-centre-agent\\scripts\\utils\\validate_test_data.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\test_enhanced_routing_intelligence.py",
+      "destination": "C:\\DEV\\call-centre-agent\\tests\\integration\\test_enhanced_routing_intelligence.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\test_full_pinecone.py",
+      "destination": "C:\\DEV\\call-centre-agent\\tests\\integration\\test_full_pinecone.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\test_pinecone_connection.py",
+      "destination": "C:\\DEV\\call-centre-agent\\tests\\integration\\test_pinecone_connection.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\test_regions.py",
+      "destination": "C:\\DEV\\call-centre-agent\\tests\\integration\\test_regions.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\test_vector_operations.py",
+      "destination": "C:\\DEV\\call-centre-agent\\tests\\integration\\test_vector_operations.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\quick_pinecone_test.py",
+      "destination": "C:\\DEV\\call-centre-agent\\tests\\integration\\quick_pinecone_test.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\setup_env.py",
+      "destination": "C:\\DEV\\call-centre-agent\\scripts\\setup\\setup_env.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\quick_setup.py",
+      "destination": "C:\\DEV\\call-centre-agent\\scripts\\setup\\quick_setup.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\vector_routing_intelligence_migration.py",
+      "destination": "C:\\DEV\\call-centre-agent\\scripts\\migrations\\vector_routing_intelligence_migration.py",
+      "operation": "move"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\.coverage",
+      "operation": "delete"
+    },
+    {
+      "source": "C:\\DEV\\call-centre-agent\\coverage.xml",
+      "operation": "delete"
+    }
+  ],
+  "log": [
+    "[2025-10-17 21:08:46] [INFO] \n============================================================",
+    "[2025-10-17 21:08:46] [INFO] ROOT DIRECTORY CLEANUP - EXECUTE MODE",
+    "[2025-10-17 21:08:46] [INFO] ============================================================",
+    "[2025-10-17 21:08:46] [INFO] Root directory: C:\\DEV\\call-centre-agent",
+    "[2025-10-17 21:08:46] [INFO] Mode: EXECUTE",
+    "[2025-10-17 21:08:46] [INFO] \n============================================================",
+    "[2025-10-17 21:08:46] [INFO] PHASE 1: Moving Demo Files",
+    "[2025-10-17 21:08:46] [INFO] ============================================================",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Created directory: scripts\\demos",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: demo_epic_1_6_complete.py \u2192 scripts\\demos\\demo_epic_1_6_complete.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: demo_epic_1_11_rag_complete.py \u2192 scripts\\demos\\demo_epic_1_11_rag_complete.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: demo_epic_1_16_1_20_complete.py \u2192 scripts\\demos\\demo_epic_1_16_1_20_complete.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: enhanced_demo_complete.py \u2192 scripts\\demos\\enhanced_demo_complete.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: enhanced_vector_schema_demo.py \u2192 scripts\\demos\\enhanced_vector_schema_demo.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: stepwise_demo.py \u2192 scripts\\demos\\stepwise_demo.py",
+    "[2025-10-17 21:08:46] [INFO] \n============================================================",
+    "[2025-10-17 21:08:46] [INFO] PHASE 2: Moving Test Data",
+    "[2025-10-17 21:08:46] [INFO] ============================================================",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Created directory: data\\test",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: comprehensive_test_data.json \u2192 data\\test\\comprehensive_test_data.json",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: domains.txt \u2192 data\\test\\domains.txt",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: rag_system_test_cases.csv \u2192 data\\test\\rag_system_test_cases.csv",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: rag_system_test_data.json \u2192 data\\test\\rag_system_test_data.json",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: rules_engine_test_cases.csv \u2192 data\\test\\rules_engine_test_cases.csv",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: rules_engine_test_data.json \u2192 data\\test\\rules_engine_test_data.json",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: routing_decisions.jsonl \u2192 data\\test\\routing_decisions.jsonl",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: validation_results.json \u2192 data\\test\\validation_results.json",
+    "[2025-10-17 21:08:46] [INFO] \n============================================================",
+    "[2025-10-17 21:08:46] [INFO] PHASE 3: Moving Documentation",
+    "[2025-10-17 21:08:46] [INFO] ============================================================",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Created directory: docs\\guides",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: CLIENT_SETUP_GUIDE.md \u2192 docs\\guides\\CLIENT_SETUP_GUIDE.md",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: IMPLEMENTATION_PACKAGE.md \u2192 docs\\guides\\IMPLEMENTATION_PACKAGE.md",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: NETWORK_WHITELIST.md \u2192 docs\\guides\\NETWORK_WHITELIST.md",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: SETUP_GUIDE.md \u2192 docs\\guides\\SETUP_GUIDE.md",
+    "[2025-10-17 21:08:46] [INFO] \n============================================================",
+    "[2025-10-17 21:08:46] [INFO] PHASE 4: Archiving Unused Launchers",
+    "[2025-10-17 21:08:46] [INFO] ============================================================",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Created directory: legacy\\launchers",
+    "[2025-10-17 21:08:46] [WARNING] \u26a0\ufe0f  launch_demo_intelligent.py is referenced in: scripts\\cleanup_root_directory.py",
+    "[2025-10-17 21:08:46] [WARNING]    Skipping move. Review references first.",
+    "[2025-10-17 21:08:46] [WARNING] \u26a0\ufe0f  launch_enhanced_demo.py is referenced in: tests\\test_enhanced_classifier.py, scripts\\cleanup_root_directory.py",
+    "[2025-10-17 21:08:46] [WARNING]    Skipping move. Review references first.",
+    "[2025-10-17 21:08:46] [WARNING] \u26a0\ufe0f  launch_safe_demo.bat is referenced in: scripts\\cleanup_root_directory.py",
+    "[2025-10-17 21:08:46] [WARNING]    Skipping move. Review references first.",
+    "[2025-10-17 21:08:46] [INFO] \n============================================================",
+    "[2025-10-17 21:08:46] [INFO] PHASE 5: Moving Utility Scripts",
+    "[2025-10-17 21:08:46] [INFO] ============================================================",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Created directory: scripts\\utils",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: test_data_generator.py \u2192 scripts\\utils\\test_data_generator.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: validate_setup.py \u2192 scripts\\utils\\validate_setup.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: validation_summary.py \u2192 scripts\\utils\\validation_summary.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: validate_test_data.py \u2192 scripts\\utils\\validate_test_data.py",
+    "[2025-10-17 21:08:46] [INFO] \n============================================================",
+    "[2025-10-17 21:08:46] [INFO] PHASE 6: Moving Test Scripts",
+    "[2025-10-17 21:08:46] [INFO] ============================================================",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Created directory: tests\\integration",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: test_enhanced_routing_intelligence.py \u2192 tests\\integration\\test_enhanced_routing_intelligence.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: test_full_pinecone.py \u2192 tests\\integration\\test_full_pinecone.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: test_pinecone_connection.py \u2192 tests\\integration\\test_pinecone_connection.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: test_regions.py \u2192 tests\\integration\\test_regions.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: test_vector_operations.py \u2192 tests\\integration\\test_vector_operations.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: quick_pinecone_test.py \u2192 tests\\integration\\quick_pinecone_test.py",
+    "[2025-10-17 21:08:46] [INFO] \n============================================================",
+    "[2025-10-17 21:08:46] [INFO] PHASE 7: Moving Setup Scripts",
+    "[2025-10-17 21:08:46] [INFO] ============================================================",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Created directory: scripts\\setup",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: setup_env.py \u2192 scripts\\setup\\setup_env.py",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: quick_setup.py \u2192 scripts\\setup\\quick_setup.py",
+    "[2025-10-17 21:08:46] [INFO] \n============================================================",
+    "[2025-10-17 21:08:46] [INFO] PHASE 8: Moving Migration Scripts",
+    "[2025-10-17 21:08:46] [INFO] ============================================================",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Created directory: scripts\\migrations",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Moved: vector_routing_intelligence_migration.py \u2192 scripts\\migrations\\vector_routing_intelligence_migration.py",
+    "[2025-10-17 21:08:46] [INFO] \n============================================================",
+    "[2025-10-17 21:08:46] [INFO] PHASE 9: Cleaning Build Artifacts",
+    "[2025-10-17 21:08:46] [INFO] ============================================================",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Deleted: .coverage",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Deleted: coverage.xml",
+    "[2025-10-17 21:08:46] [INFO] \u2713 Updated .gitignore with: .coverage, coverage.xml",
+    "[2025-10-17 21:08:46] [INFO] \n============================================================",
+    "[2025-10-17 21:08:46] [INFO] PHASE 10: Evaluating packages.txt",
+    "[2025-10-17 21:08:46] [INFO] ============================================================",
+    "[2025-10-17 21:08:46] [WARNING] \u26a0\ufe0f  packages.txt differs from requirements.txt",
+    "[2025-10-17 21:08:46] [INFO]   Review differences before deletion"
+  ]
+}
