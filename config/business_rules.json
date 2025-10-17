@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "effective_date": "2025-10-17",
+  "description": "Configurable business rules for call centre ticket routing and escalation",
+  "metadata": {
+    "last_updated": "2025-10-17T00:00:00Z",
+    "updated_by": "system",
+    "environment": "production"
+  },
+  
+  "routing_thresholds": {
+    "_comment": "Confidence thresholds for AI-based department routing",
+    "credit_management_confidence": 0.95,
+    "standard_confidence": 0.80,
+    "hitl_trigger_threshold": 0.80,
+    "dispute_detection_confidence": 0.95,
+    "min_confidence_floor": 0.50,
+    "max_confidence_ceiling": 1.00
+  },
+  
+  "processing_time_sla": {
+    "_comment": "Processing time targets in minutes for each stage",
+    "ai_classification_minutes": 5,
+    "service_desk_review_minutes": 10,
+    "total_routing_minutes": 15,
+    "max_processing_timeout_minutes": 30
+  },
+  
+  "department_sla_hours": {
+    "_comment": "Department-specific SLA response times in hours by rule ID",
+    "R001_DISPUTE_EXPLICIT": 6,
+    "R002_REFUND_REQUEST": 6,
+    "R003_DOUBLE_BILLING": 6,
+    "R004_ACCOUNT_LOCKED": 2,
+    "R005_PASSWORD_RESET": 4,
+    "R006_SECURITY_BREACH": 1,
+    "R007_SERVICE_OUTAGE": 4,
+    "R008_SLOW_INTERNET": 8,
+    "R009_BILLING_INQUIRY": 12,
+    "R010_PAYMENT_ISSUES": 8,
+    "R011_NEW_SERVICE": 24,
+    "R012_UPGRADE_PLAN": 24,
+    "R013_CANCELLATION": 24,
+    "R014_RETENTION_RISK": 12,
+    "R015_POSITIVE_FEEDBACK": 48,
+    "default_sla_hours": 24
+  },
+  
+  "escalation_thresholds": {
+    "_comment": "Age-based escalation triggers",
+    "team_lead_age_days": 2,
+    "production_support_age_days": 7,
+    "p0_warning_minutes": 30,
+    "p1_warning_hours": 4,
+    "p2_warning_hours": 18,
+    "p3_warning_hours": 30
+  },
+  
+  "priority_sla_response": {
+    "_comment": "Priority-based SLA response times",
+    "P0_IMMEDIATE": {
+      "response_hours": 1,
+      "escalation_warning_minutes": 30,
+      "description": "Critical outage or security incident"
+    },
+    "P1_HIGH": {
+      "response_hours": 6,
+      "escalation_warning_hours": 4,
+      "description": "Service-impacting issue"
+    },
+    "P2_MEDIUM": {
+      "response_hours": 24,
+      "escalation_warning_hours": 18,
+      "description": "Standard business issue"
+    },
+    "P3_STANDARD": {
+      "response_hours": 36,
+      "escalation_warning_hours": 30,
+      "description": "Low-priority request"
+    }
+  },
+  
+  "accuracy_targets": {
+    "_comment": "Quality metrics and targets",
+    "dispute_detection_accuracy": 0.98,
+    "department_routing_accuracy": 0.95,
+    "false_positive_rate_max": 0.02,
+    "internal_transfer_rate_max": 0.05
+  },
+  
+  "currency_settings": {
+    "_comment": "Multi-region currency configuration",
+    "default_currency": "USD",
+    "default_locale": "en_US",
+    "region_currencies": {
+      "za": {
+        "currency": "ZAR",
+        "locale": "en_ZA",
+        "symbol": "R",
+        "description": "South Africa - Rand"
+      },
+      "au": {
+        "currency": "AUD",
+        "locale": "en_AU",
+        "symbol": "$",
+        "description": "Australia - Dollar"
+      },
+      "us": {
+        "currency": "USD",
+        "locale": "en_US",
+        "symbol": "$",
+        "description": "United States - Dollar"
+      },
+      "uk": {
+        "currency": "GBP",
+        "locale": "en_GB",
+        "symbol": "£",
+        "description": "United Kingdom - Pound"
+      }
+    }
+  },
+  
+  "feature_flags": {
+    "_comment": "Feature toggles for gradual rollout",
+    "use_config_driven_thresholds": true,
+    "enable_multi_region_support": true,
+    "enable_dynamic_sla_adjustment": true,
+    "enable_ab_testing": false,
+    "log_threshold_violations": true
+  },
+  
+  "validation_rules": {
+    "_comment": "Configuration validation boundaries",
+    "min_confidence_threshold": 0.50,
+    "max_confidence_threshold": 1.00,
+    "min_sla_hours": 1,
+    "max_sla_hours": 168,
+    "min_processing_minutes": 1,
+    "max_processing_minutes": 60
+  }
+}

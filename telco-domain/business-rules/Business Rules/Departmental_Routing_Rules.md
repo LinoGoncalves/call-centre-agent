@@ -1,8 +1,21 @@
 # Departmental Routing & Escalation Rules
 
-**Version:** 1.0  
-**Effective Date:** September 28, 2025  
+**Version:** 1.1  
+**Effective Date:** October 17, 2025  
 **Department:** Customer Service Operations  
+**Configuration Status:** ✨ **Now supports dynamic configuration via `config/business_rules.json`**
+
+## 📋 Configuration Overview
+
+This document describes business rules that are **now configurable** without code changes. Thresholds, SLA times, and confidence levels can be adjusted via:
+
+- **Configuration File**: `config/business_rules.json`
+- **Environment Overrides**: `config/business_rules.{env}.json`
+- **Region Overrides**: `config/regions/{region}.json`
+
+See **Section 8: Configuration Management** at the bottom of this document for implementation details.
+
+---
 
 ## 1. Dispute vs General Billing Inquiry Classification
 
@@ -144,10 +157,10 @@
 - **Department Assignment**: < 15 minutes total end-to-end
 
 ### 5.2 Accuracy Targets
-- **Dispute Detection**: ≥ 98% accuracy
-- **Department Routing**: ≥ 95% accuracy overall
-- **False Positive Rate**: < 2% for disputes
-- **Internal Transfers**: < 5% between departments
+- **Dispute Detection**: ≥ 98% accuracy *(configurable via `accuracy_targets.dispute_detection_accuracy`)*
+- **Department Routing**: ≥ 95% accuracy overall *(configurable via `accuracy_targets.department_routing_accuracy`)*
+- **False Positive Rate**: < 2% for disputes *(configurable via `accuracy_targets.false_positive_rate_max`)*
+- **Internal Transfers**: < 5% between departments *(configurable via `accuracy_targets.internal_transfer_rate_max`)*
 
 ## 6. Training & Change Management
 
@@ -177,6 +190,227 @@
 - Customer satisfaction impact analysis
 
 ---
+
+## 8. Configuration Management
+
+### 8.1 Configuration System Overview
+
+All business rule thresholds are now externally configurable via JSON configuration files. This enables business users to adjust routing behavior, SLA targets, and escalation policies **without code changes or developer involvement**.
+
+**Benefits:**
+- ✅ **Self-Service Threshold Adjustment** - Operations teams can tune parameters independently
+- ✅ **Multi-Environment Support** - Different thresholds for dev/test/prod environments  
+- ✅ **Multi-Region Customization** - Region-specific rules for South Africa, Australia, US, UK
+- ✅ **Gradual Rollout Control** - Feature flags enable A/B testing and phased deployment
+- ✅ **Audit Trail** - Version-controlled configuration changes tracked in Git
+- ✅ **Safety Validation** - Automatic bounds checking prevents invalid threshold values
+
+### 8.2 Configuration File Locations
+
+```
+config/
+├── business_rules.json              # Base configuration (applies to all environments)
+├── business_rules.dev.json          # Development overrides (optional)
+├── business_rules.test.json         # Test environment overrides (optional)
+├── business_rules.prod.json         # Production overrides (optional)
+└── regions/
+    ├── business_rules.za.json       # South Africa region overrides
+    ├── business_rules.au.json       # Australia region overrides
+    ├── business_rules.us.json       # United States region overrides
+    └── business_rules.uk.json       # United Kingdom region overrides
+```
+
+**Hierarchy:** Base config → Environment config → Region config (later values override earlier)
+
+### 8.3 Configuration Sections Reference
+
+| Section | Purpose | Example Keys |
+|---------|---------|--------------|
+| **routing_thresholds** | Confidence levels for routing decisions | `dispute_confidence_min`, `standard_confidence_min`, `hitl_trigger_threshold` |
+| **department_sla_hours** | SLA targets per routing rule (R001-R015) | `R001_DISPUTE_EXPLICIT`, `R007_PASSWORD_RESET`, etc. |
+| **processing_time_sla** | Stage-specific processing time limits | `triage_minutes`, `classification_minutes`, `routing_minutes` |
+| **escalation_thresholds** | Age-based escalation triggers | `team_lead_days`, `production_support_days` |
+| **priority_sla_response** | Priority-based response time targets | `P0_critical_hours`, `P1_high_hours`, etc. |
+| **currency_settings** | Multi-region currency configurations | `default_currency`, `decimal_precision`, `region_currencies` |
+| **feature_flags** | Runtime toggles for new features | `use_config_driven_thresholds`, `enable_ml_predictions` |
+| **validation_rules** | Safety bounds for threshold values | `confidence_min/max`, `sla_hours_min/max` |
+
+### 8.4 Common Configuration Changes
+
+#### Example 1: Adjust Dispute Detection Confidence Threshold
+**Business Scenario:** Reduce false positives by increasing confidence requirement from 95% to 98%
+
+**File:** `config/business_rules.json`
+```json
+{
+  "routing_thresholds": {
+    "dispute_confidence_min": 0.98,  // Changed from 0.95
+    "standard_confidence_min": 0.80,
+    "hitl_trigger_threshold": 0.80
+  }
+}
+```
+
+**Impact:** Only disputes with ≥98% confidence will auto-route to Credit Management
+
+#### Example 2: Reduce Password Reset SLA for Better Customer Experience
+**Business Scenario:** Improve response time for password resets from 6 hours to 2 hours
+
+**File:** `config/business_rules.json`
+```json
+{
+  "department_sla_hours": {
+    "R007_PASSWORD_RESET": 2,  // Changed from 6
+    "R001_DISPUTE_EXPLICIT": 6,
+    ...
+  }
+}
+```
+
+**Impact:** Password reset tickets now have 2-hour SLA target
+
+#### Example 3: Environment-Specific Configuration
+**Business Scenario:** Test aggressive routing thresholds in dev environment before production
+
+**File:** `config/business_rules.dev.json`
+```json
+{
+  "routing_thresholds": {
+    "dispute_confidence_min": 0.90,  // Lower threshold for testing
+    "standard_confidence_min": 0.75,
+    "hitl_trigger_threshold": 0.75
+  },
+  "feature_flags": {
+    "use_config_driven_thresholds": true,
+    "enable_experimental_rules": true  // Only in dev
+  }
+}
+```
+
+**Impact:** Dev environment uses different thresholds than production
+
+#### Example 4: Region-Specific Currency and SLA Adjustments
+**Business Scenario:** Australia region needs faster response times due to timezone differences
+
+**File:** `config/regions/business_rules.au.json`
+```json
+{
+  "currency_settings": {
+    "default_currency": "AUD",
+    "decimal_precision": 2
+  },
+  "priority_sla_response": {
+    "P0_critical_hours": 1,    // 1 hour (vs 1 hour globally)
+    "P1_high_hours": 3,        // 3 hours (vs 6 hours globally)
+    "P2_medium_hours": 12,     // 12 hours (vs 24 hours globally)
+    "P3_low_hours": 24         // 24 hours (vs 36 hours globally)
+  }
+}
+```
+
+**Impact:** Australia region has tighter SLA targets and uses AUD currency
+
+### 8.5 Validation and Safety Checks
+
+All configuration changes are automatically validated against safety bounds defined in `validation_rules`:
+
+| Parameter | Minimum | Maximum | Rationale |
+|-----------|---------|---------|-----------|
+| **Confidence Thresholds** | 0.50 (50%) | 1.0 (100%) | Below 50% is unreliable; 100% is maximum |
+| **SLA Hours** | 1 hour | 168 hours (7 days) | Minimum responsiveness; maximum reasonable delay |
+| **Processing Time** | 1 minute | 60 minutes | Minimum viable; maximum attention span |
+| **Escalation Days** | 1 day | 30 days | Immediate escalation; maximum aging tolerance |
+
+**Validation Error Example:**
+```
+ThresholdValidationError: Invalid threshold value for 'dispute_confidence_min': 
+0.45 is below minimum allowed value of 0.5
+```
+
+### 8.6 Testing Configuration Changes
+
+**Before Deploying to Production:**
+
+1. **Validate JSON Syntax:**
+   ```bash
+   python -c "import json; print(json.load(open('config/business_rules.json')))"
+   ```
+
+2. **Run Configuration Unit Tests:**
+   ```bash
+   python -m pytest tests/test_business_rules_config.py -v
+   ```
+
+3. **Run Integration Tests:**
+   ```bash
+   python -m pytest tests/test_rules_engine_config_integration.py -v
+   ```
+
+4. **Test in Dev Environment First:**
+   - Deploy changes to `config/business_rules.dev.json`
+   - Validate routing behavior matches expectations
+   - Monitor metrics for 24-48 hours
+   - Graduate to production after validation
+
+### 8.7 Rollback Procedure
+
+If configuration changes cause unexpected behavior:
+
+**Option 1: Git Rollback (Recommended)**
+```bash
+git checkout HEAD~1 config/business_rules.json
+git commit -m "Rollback: Revert config changes due to [issue]"
+```
+
+**Option 2: Feature Flag Disable**
+```json
+{
+  "feature_flags": {
+    "use_config_driven_thresholds": false  // Revert to hard-coded defaults
+  }
+}
+```
+
+**Option 3: Environment Override**
+Create emergency override file:
+```bash
+# Create emergency production override
+cp config/business_rules.json.backup config/business_rules.prod.json
+```
+
+### 8.8 Configuration Change Process
+
+**Recommended Workflow:**
+
+1. **Identify Business Need** - Document why threshold change is needed (e.g., "too many false positives")
+2. **Propose Change** - Create change request with before/after values
+3. **Review Configuration Keys** - Reference section 8.3 to find correct config key
+4. **Update Configuration File** - Edit appropriate JSON file (base/env/region)
+5. **Validate Syntax** - Run JSON validation (section 8.6)
+6. **Test in Dev** - Deploy to dev environment first
+7. **Monitor Metrics** - Track impact on routing accuracy, SLA compliance
+8. **Graduate to Production** - Deploy after successful dev validation
+9. **Document Change** - Update this document if threshold becomes new standard
+
+### 8.9 Support and Troubleshooting
+
+**Common Issues:**
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| Configuration not loading | JSON syntax error | Run validation command (section 8.6 step 1) |
+| Changes not taking effect | Feature flag disabled | Set `use_config_driven_thresholds: true` |
+| Validation error on startup | Value outside safety bounds | Check validation_rules section, adjust value |
+| Environment override not working | Wrong file name | Verify file follows `business_rules.{env}.json` pattern |
+
+**For Additional Help:**
+- **Technical Issues:** Contact Development Team (dev-team@company.com)
+- **Business Rule Questions:** Contact Operations Manager (ops-manager@company.com)
+- **Configuration Review:** Weekly config review meeting (Fridays 2pm)
+
+---
+
 **Document Owner:** Customer Service Operations Manager  
+**Technical Owner:** Development Team Lead  
 **Review Frequency:** Monthly  
-**Next Review:** October 28, 2025  
+**Next Review:** October 28, 2025

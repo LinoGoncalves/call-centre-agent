@@ -179,6 +179,11 @@ addopts = [
     "--strict-markers",
     "-v"
 ]
+markers = [
+    "integration: marks tests as integration tests",
+    "slow: marks tests as slow running",
+    "unit: marks tests as unit tests"
+]
 
 [tool.mypy]
 python_version = "3.13"

@@ -3,18 +3,30 @@ Rules Engine for Deterministic Routing
 =====================================
 High-confidence pattern matching for ticket routing before ML/LLM analysis.
 Based on telco domain business rules and routing logic.
+
+Now supports configuration-driven thresholds via BusinessRulesConfig for:
+- Department-specific confidence thresholds
+- Rule-specific SLA hours
+- Dynamic threshold adjustment without code changes
 """
 
 import re
 import yaml
-from typing import Dict, List, Optional, Tuple
-from dataclasses import dataclass
-from datetime import datetime
+from typing import Dict, List, Optional
+from dataclasses import dataclass, field
 import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Import business rules configuration (optional dependency)
+try:
+    from .business_rules_config import BusinessRulesConfig
+    CONFIG_AVAILABLE = True
+except ImportError:
+    CONFIG_AVAILABLE = False
+    logger.warning("BusinessRulesConfig not available - using hard-coded defaults")
 
 @dataclass
 class RuleMatch:
@@ -37,7 +49,7 @@ class RoutingRule:
     department: str
     urgency: str = "Medium"
     confidence: float = 0.90
-    keywords: List[str] = None
+    keywords: Optional[List[str]] = None
     regex: bool = False
     sla_hours: int = 24
     description: str = ""
@@ -52,11 +64,26 @@ class TelcoRulesEngine:
     
     Implements business rules from telco-domain/business-rules/Departmental_Routing_Rules.md
     with high-confidence pattern matching for common scenarios.
+    
+    Now supports configuration-driven thresholds via BusinessRulesConfig:
+    - Pass business_config parameter to use configurable thresholds
+    - Falls back to hard-coded defaults if no config provided (backward compatible)
     """
     
-    def __init__(self, rules_config_path: str = None):
-        """Initialize rules engine with telco domain rules."""
+    def __init__(
+        self, 
+        rules_config_path: Optional[str] = None,
+        business_config: Optional['BusinessRulesConfig'] = None
+    ):
+        """
+        Initialize rules engine with telco domain rules.
+        
+        Args:
+            rules_config_path: Optional path to YAML rules configuration
+            business_config: Optional BusinessRulesConfig for dynamic thresholds
+        """
         self.rules: List[RoutingRule] = []
+        self.business_config = business_config
         self.rule_stats = {
             "total_evaluations": 0,
             "total_matches": 0,
@@ -64,10 +91,47 @@ class TelcoRulesEngine:
             "confidence_distribution": {"high": 0, "medium": 0, "low": 0}
         }
         
+        # Log configuration mode
+        if self.business_config:
+            logger.info("TelcoRulesEngine initialized with BusinessRulesConfig (config-driven mode)")
+        else:
+            logger.info("TelcoRulesEngine initialized with hard-coded defaults (legacy mode)")
+        
         if rules_config_path:
             self.load_rules_from_yaml(rules_config_path)
         else:
             self._load_default_telco_rules()
+    
+    def _get_sla_hours(self, rule_id: str, default: int = 24) -> int:
+        """
+        Get SLA hours for rule from config or use default.
+        
+        Args:
+            rule_id: Rule identifier (e.g., 'R001_DISPUTE_EXPLICIT')
+            default: Fallback SLA hours if config not available
+            
+        Returns:
+            SLA hours (integer)
+        """
+        if self.business_config and self.business_config.is_feature_enabled("use_config_driven_thresholds"):
+            return self.business_config.get_sla_hours(rule_id)
+        return default
+    
+    def _get_confidence(self, rule_id: str, department: str, default: float) -> float:
+        """
+        Get confidence threshold from config or use default.
+        
+        Args:
+            rule_id: Rule identifier
+            department: Department name (credit_management, billing_team, etc.)
+            default: Fallback confidence value
+            
+        Returns:
+            Confidence threshold (0.0 - 1.0)
+        """
+        if self.business_config and self.business_config.is_feature_enabled("use_config_driven_thresholds"):
+            return self.business_config.get_confidence_threshold(department)
+        return default
     
     def _load_default_telco_rules(self):
         """Load default telco domain routing rules based on business requirements."""
@@ -79,9 +143,9 @@ class TelcoRulesEngine:
                 pattern=r"dispute|disagree with.*charge|incorrect.*billing|unauthorized.*charge",
                 department="credit_management",
                 urgency="High",
-                confidence=0.98,
+                confidence=self._get_confidence("R001_DISPUTE_EXPLICIT", "credit_management", 0.98),
                 regex=True,
-                sla_hours=6,
+                sla_hours=self._get_sla_hours("R001_DISPUTE_EXPLICIT", 6),
                 description="Explicit dispute language - route to Credit Management"
             ),
             RoutingRule(
@@ -89,9 +153,9 @@ class TelcoRulesEngine:
                 pattern=r"refund|credit.*account|remove.*charge|billing.*error",
                 department="credit_management", 
                 urgency="High",
-                confidence=0.95,
+                confidence=self._get_confidence("R002_REFUND_REQUEST", "credit_management", 0.95),
                 regex=True,
-                sla_hours=6,
+                sla_hours=self._get_sla_hours("R002_REFUND_REQUEST", 6),
                 description="Refund requests - Credit Management priority"
             ),
             RoutingRule(
@@ -99,9 +163,9 @@ class TelcoRulesEngine:
                 pattern=r"charged.*twice|double.*billing|duplicate.*charge",
                 department="credit_management",
                 urgency="High", 
-                confidence=0.97,
+                confidence=self._get_confidence("R003_DOUBLE_BILLING", "credit_management", 0.97),
                 regex=True,
-                sla_hours=4,
+                sla_hours=self._get_sla_hours("R003_DOUBLE_BILLING", 6),
                 description="Double billing issues - immediate investigation required"
             )
         ]
@@ -113,9 +177,9 @@ class TelcoRulesEngine:
                 pattern=r"account.*locked|cannot.*login|access.*denied|locked.*out",
                 department="technical_support_l2",
                 urgency="High",
-                confidence=0.99,
+                confidence=self._get_confidence("R004_ACCOUNT_LOCKED", "technical_support_l2", 0.99),
                 regex=True,
-                sla_hours=2,
+                sla_hours=self._get_sla_hours("R004_ACCOUNT_LOCKED", 2),
                 description="Account access issues - high priority technical support"
             ),
             RoutingRule(
@@ -123,9 +187,9 @@ class TelcoRulesEngine:
                 pattern=r"password.*reset|forgot.*password|password.*not.*working",
                 department="technical_support_l1",
                 urgency="Medium",
-                confidence=0.92,
+                confidence=self._get_confidence("R005_PASSWORD_RESET", "technical_support_l1", 0.92),
                 regex=True,
-                sla_hours=4,
+                sla_hours=self._get_sla_hours("R005_PASSWORD_RESET", 4),
                 description="Password reset requests - L1 technical support"
             ),
             RoutingRule(
@@ -133,9 +197,9 @@ class TelcoRulesEngine:
                 pattern=r"security.*breach|unauthorized.*access|account.*compromised|fraud.*alert",
                 department="security_team",
                 urgency="Critical",
-                confidence=0.98,
+                confidence=self._get_confidence("R006_SECURITY_BREACH", "security_team", 0.98),
                 regex=True,
-                sla_hours=1,
+                sla_hours=self._get_sla_hours("R006_SECURITY_BREACH", 1),
                 description="Security incidents - immediate security team response"
             )
         ]
@@ -147,9 +211,9 @@ class TelcoRulesEngine:
                 pattern=r"service.*down|outage|cannot.*connect|no.*internet|network.*issue",
                 department="technical_support_l2",
                 urgency="High",
-                confidence=0.94,
+                confidence=self._get_confidence("R007_SERVICE_OUTAGE", "technical_support_l2", 0.94),
                 regex=True,
-                sla_hours=4,
+                sla_hours=self._get_sla_hours("R007_SERVICE_OUTAGE", 4),
                 description="Service outage reports - L2 technical investigation"
             ),
             RoutingRule(
@@ -157,9 +221,9 @@ class TelcoRulesEngine:
                 pattern=r"slow.*internet|connection.*slow|speed.*issue|bandwidth.*problem",
                 department="technical_support_l1",
                 urgency="Medium",
-                confidence=0.89,
+                confidence=self._get_confidence("R008_SLOW_INTERNET", "technical_support_l1", 0.89),
                 regex=True,
-                sla_hours=8,
+                sla_hours=self._get_sla_hours("R008_SLOW_INTERNET", 8),
                 description="Performance issues - L1 technical diagnostics"
             )
         ]
@@ -171,9 +235,9 @@ class TelcoRulesEngine:
                 pattern=r"explain.*bill|billing.*question|understand.*charges|bill.*breakdown",
                 department="billing_team",
                 urgency="Medium",
-                confidence=0.87,
+                confidence=self._get_confidence("R009_BILLING_INQUIRY", "billing_team", 0.87),
                 regex=True,
-                sla_hours=12,
+                sla_hours=self._get_sla_hours("R009_BILLING_INQUIRY", 12),
                 description="General billing inquiries - billing team explanation"
             ),
             RoutingRule(
@@ -182,9 +246,9 @@ class TelcoRulesEngine:
                 keywords=["payment", "failed", "card", "declined", "pay"],
                 department="billing_team",
                 urgency="Medium",
-                confidence=0.91,
+                confidence=self._get_confidence("R010_PAYMENT_ISSUES", "billing_team", 0.91),
                 regex=True,
-                sla_hours=8,
+                sla_hours=self._get_sla_hours("R010_PAYMENT_ISSUES", 8),
                 description="Payment processing issues - billing team resolution"
             )
         ]
@@ -196,9 +260,9 @@ class TelcoRulesEngine:
                 pattern=r"new.*service|install.*internet|setup.*account|activate.*service",
                 department="order_management",
                 urgency="Medium",
-                confidence=0.93,
+                confidence=self._get_confidence("R011_NEW_SERVICE", "order_management", 0.93),
                 regex=True,
-                sla_hours=24,
+                sla_hours=self._get_sla_hours("R011_NEW_SERVICE", 24),
                 description="New service orders - order management processing"
             ),
             RoutingRule(
@@ -206,9 +270,9 @@ class TelcoRulesEngine:
                 pattern=r"upgrade.*plan|change.*plan|faster.*internet|higher.*speed",
                 department="order_management",
                 urgency="Low",
-                confidence=0.88,
+                confidence=self._get_confidence("R012_UPGRADE_PLAN", "order_management", 0.88),
                 regex=True,
-                sla_hours=36,
+                sla_hours=self._get_sla_hours("R012_UPGRADE_PLAN", 24),
                 description="Plan changes and upgrades - order management"
             )
         ]
@@ -216,23 +280,33 @@ class TelcoRulesEngine:
         # Customer satisfaction and retention
         crm_rules = [
             RoutingRule(
-                id="R013_RETENTION_RISK",
+                id="R013_CANCELLATION",
                 pattern=r"cancel.*service|thinking.*leaving|switch.*provider|poor.*service",
                 department="crm_team",
                 urgency="High",
-                confidence=0.91,
+                confidence=self._get_confidence("R013_CANCELLATION", "crm_team", 0.91),
                 regex=True,
-                sla_hours=6,
+                sla_hours=self._get_sla_hours("R013_CANCELLATION", 24),
+                description="Cancellation request - CRM team engagement required"
+            ),
+            RoutingRule(
+                id="R014_RETENTION_RISK",
+                pattern=r"retention|churn.*risk|considering.*switching",
+                department="crm_team",
+                urgency="High",
+                confidence=self._get_confidence("R014_RETENTION_RISK", "crm_team", 0.91),
+                regex=True,
+                sla_hours=self._get_sla_hours("R014_RETENTION_RISK", 12),
                 description="Retention risk - CRM team engagement required"
             ),
             RoutingRule(
-                id="R014_POSITIVE_FEEDBACK",
+                id="R015_POSITIVE_FEEDBACK",
                 pattern=r"thank.*you|excellent.*service|great.*support|satisfied.*service",
                 department="crm_team",
                 urgency="Low",
-                confidence=0.85,
+                confidence=self._get_confidence("R015_POSITIVE_FEEDBACK", "crm_team", 0.85),
                 regex=True,
-                sla_hours=72,
+                sla_hours=self._get_sla_hours("R015_POSITIVE_FEEDBACK", 48),
                 description="Positive feedback - CRM team relationship management"
             )
         ]
@@ -241,7 +315,8 @@ class TelcoRulesEngine:
         self.rules = (dispute_rules + security_rules + technical_rules + 
                      billing_rules + order_rules + crm_rules)
         
-        logger.info(f"Loaded {len(self.rules)} default telco routing rules")
+        config_mode = "config-driven" if self.business_config else "hard-coded"
+        logger.info(f"Loaded {len(self.rules)} default telco routing rules ({config_mode} mode)")
     
     def load_rules_from_yaml(self, file_path: str):
         """Load routing rules from YAML configuration file."""
